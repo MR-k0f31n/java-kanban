@@ -1,3 +1,5 @@
+package ru.yandex.javadev;
+
 public class Main {
 
     public static void main(String[] args) {

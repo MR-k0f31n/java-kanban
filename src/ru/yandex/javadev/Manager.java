@@ -1,3 +1,5 @@
+package ru.yandex.javadev;
+
 import java.util.HashMap;
 import java.util.Objects;
 
