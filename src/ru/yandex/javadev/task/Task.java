@@ -1,5 +1,4 @@
 package ru.yandex.javadev.task;
-
 import java.util.Objects;
 
 public class Task {
@@ -58,20 +57,11 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Task{" +
+        return "\n" + "Task{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", status='" + status + '\'' +
                 ", description='" + description + '\'' +
                 '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Task task = (Task) o;
-        return id == task.id && Objects.equals(name, task.name) && Objects.equals(status, task.status)
-                && Objects.equals(description, task.description);
     }
 }

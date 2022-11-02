@@ -3,13 +3,7 @@ import java.util.ArrayList;
 
 public class EpicTask extends Task {
     protected ArrayList<Integer> subTaskIDs = new ArrayList<>();
-    protected boolean isEpic;
 
-
-    public EpicTask(int id, String name, String status, String description, ArrayList<Integer> subTaskIDs, boolean isEpic) {
-        super(id, name, status, description);
-        this.isEpic = isEpic;
-    }
     public EpicTask(String name, String description) {
         super(name, description);
     }
@@ -22,11 +16,14 @@ public class EpicTask extends Task {
         this.subTaskIDs = subTaskIDs;
     }
 
-    public boolean isEpic() {
-        return isEpic;
-    }
-
-    public void setEpic(boolean epic) {
-        isEpic = epic;
+    @Override
+    public String toString() {
+        return "\n" + "EpicTask{" +
+                "subTaskIDs=" + subTaskIDs +
+                ", id=" + id +
+                ", name='" + name + '\'' +
+                ", status='" + status + '\'' +
+                ", description='" + description + '\'' +
+                '}';
     }
 }
