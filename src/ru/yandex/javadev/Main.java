@@ -23,8 +23,8 @@ public class Main {
 
         manager.addNewEpicTask(epicTask1);
 
-        manager.addNewSubTask(subTask1);
-        manager.addNewSubTask(subTask2);
+        manager.addNewSubTask(subTask1, epicTask1);
+        manager.addNewSubTask(subTask2, epicTask1);
 
         System.out.println(manager.taskList);
         System.out.println(manager.subTaskList);

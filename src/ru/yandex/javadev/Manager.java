@@ -26,16 +26,43 @@ public class Manager {
         epicTaskList.put(epicTask.getId(), epicTask);
     }
 
-    public void addNewSubTask (SubTask subTask){
-        subTask.setId(currencyID++);
-        subTask.setStatus(status[0]);
-        subTask.setSubTask();
-        subTaskList.put(subTask.getId(), subTask);
+    public void addNewSubTask (SubTask subTask, EpicTask epicTask){
+        if (epicTaskList.containsKey(epicTask.getId())) {
+            subTask.setId(currencyID++);
+            subTask.setSubTask();
+            EpicTask epic = epicTaskList.get(epicTask.getId());
+            subTask.setStatus(epic.getStatus());
+            subTask.setEpicID(epic.getId());
+            epic.addSubTaskIDs(subTask.getId());
+            subTaskList.put(subTask.getId(), subTask);
+            epicTaskList.put(epic.getId(), epic);
+        } else {
+            System.out.println("Error 404: Task not found");
+        }
     }
 
-    public void syncTaskID (EpicTask epicTask) {
-        for (int epicID : epicTask.getSubTaskIDs()) {
-            SubTask subTask = subTaskList.get(epicID);
+    public void syncTaskStatus (EpicTask epicTask, SubTask subTask) {
+        if (epicTaskList.containsKey(epicTask.getId())) {
+            EpicTask oldEpicTask = epicTaskList.get(epicTask.getId());
+            ArrayList<Integer> listAllIDsSub = oldEpicTask.getSubTaskIDs();
+            if (listAllIDsSub.size() != 0) {
+                for (int i = 0; i < listAllIDsSub.size(); i++) {
+                    int DoneSub = 0;
+                    SubTask oldSubTask = subTaskList.get(listAllIDsSub.get(i));
+                    if (oldSubTask.getStatus().equals(status[2])) {
+                        DoneSub ++;
+                    } else if (DoneSub == listAllIDsSub.size()){
+                        oldEpicTask.setStatus(status[2]);
+                        epicTaskList.put(oldEpicTask.getId(), oldEpicTask);
+                    } else {
+                        oldSubTask.setStatus(oldEpicTask.getStatus());
+                        subTaskList.put(oldSubTask.getId(), oldSubTask);
+                    }
+                }
+            }
+
+        } else {
+            System.out.println("Error: Task not found");
         }
     }
 
@@ -79,13 +106,9 @@ public class Manager {
                 case "New":
                     oldEpicTask.setStatus(status[1]);
                     break;
-                case "InProgress":
-                    oldEpicTask.setStatus(status[2]);
-                    break;
-                default:
-                    System.out.println("Task is done");
             }
             epicTaskList.put(oldEpicTask.getId(), oldEpicTask);
+            syncTaskStatus(epicTaskList.get(id), subTaskList.get(epicTaskList.get(id).getSubTaskIDs()));
         } else {
             System.out.println("Error 404: Task not found");
         }
@@ -105,6 +128,7 @@ public class Manager {
                     System.out.println("Task is done");
             }
             subTaskList.put(oldSubTask.getId(), oldSubTask);
+            syncTaskStatus(epicTaskList.get(oldSubTask.getEpicID()), subTaskList.get(oldSubTask.getId()));
         } else {
             System.out.println("Error 404: Task not found");
         }

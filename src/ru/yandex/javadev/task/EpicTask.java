@@ -12,8 +12,8 @@ public class EpicTask extends Task {
         return subTaskIDs;
     }
 
-    public void setSubTaskIDs(ArrayList<Integer> subTaskIDs) {
-        this.subTaskIDs = subTaskIDs;
+    public void addSubTaskIDs(int id) {
+        subTaskIDs.add(id);
     }
 
     @Override
