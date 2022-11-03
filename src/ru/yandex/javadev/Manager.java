@@ -99,21 +99,6 @@ public class Manager {
        }
     }
 
-    public void updateStatusEpicTask (int id) {
-        if (epicTaskList.containsKey(id)) {
-            EpicTask oldEpicTask = epicTaskList.get(id);
-            switch (oldEpicTask.getStatus()) {
-                case "New":
-                    oldEpicTask.setStatus(status[1]);
-                    break;
-            }
-            epicTaskList.put(oldEpicTask.getId(), oldEpicTask);
-            syncTaskStatus(epicTaskList.get(id), subTaskList.get(epicTaskList.get(id).getSubTaskIDs()));
-        } else {
-            System.out.println("Error 404: Task not found");
-        }
-    }
-
     public void updateStatusSubTask (int id) {
         if (subTaskList.containsKey(id)) {
             SubTask oldSubTask = subTaskList.get(id);
@@ -221,6 +206,10 @@ public class Manager {
 
     public void deleteEpicTaskListById (int id) {
         if (epicTaskList.containsKey(id)) {
+            ArrayList<Integer> listIdsSubTask = epicTaskList.get(id).getSubTaskIDs();
+            for (Integer subId : listIdsSubTask) {
+                subTaskList.remove(subId);
+            }
             epicTaskList.remove(id);
         } else {
             System.out.println("Error 404: Object not found!");
