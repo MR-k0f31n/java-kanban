@@ -2,38 +2,32 @@ package ru.yandex.javadev.task;
 
 public class SubTask extends Task {
 
-    protected int epicID;
-    protected boolean isSubTask;
+    private Integer epicId;
 
     public SubTask (String name, String description) {
         super(name, description);
     }
 
-    public int getEpicID() {
-        return epicID;
+    public SubTask (Integer id, String name, String description, Status status) {
+        super(id, name, description, status);
     }
 
-    public void setEpicID(int epicID) {
-        this.epicID = epicID;
+    public Integer getEpicID() {
+        return epicId;
     }
 
-    public boolean isSubTask() {
-        return isSubTask;
-    }
-
-    public void setSubTask () {
-        isSubTask = true;
+    public void setEpicID(int epicId) {
+        this.epicId = epicId;
     }
 
     @Override
     public String toString() {
-        return "\n" + "SubTask{" +
-                "epicID=" + epicID +
-                ", isSubTask=" + isSubTask +
+        return "SubTask{" +
+                "epicID=" + epicId +
                 ", id=" + id +
-                ", name='" + name + '\'' +
+                ", name='" + name.length() + '\'' +
                 ", status='" + status + '\'' +
-                ", description='" + description + '\'' +
+                ", description='" + description.length() + '\'' +
                 '}';
     }
 }

@@ -2,28 +2,40 @@ package ru.yandex.javadev.task;
 import java.util.ArrayList;
 
 public class EpicTask extends Task {
-    protected ArrayList<Integer> subTaskIDs = new ArrayList<>();
+    private ArrayList<Integer> subTaskIds = new ArrayList<>();
 
     public EpicTask(String name, String description) {
         super(name, description);
     }
 
-    public ArrayList<Integer> getSubTaskIDs() {
-        return subTaskIDs;
+    public EpicTask (Integer id, String name, String description, Status status) {
+        super(id, name, description, status);
     }
 
-    public void addSubTaskIDs(int id) {
-        subTaskIDs.add(id);
+    public ArrayList<Integer> getSubTaskIds() {
+        return subTaskIds;
+    }
+
+    public void addSubTaskIds(int id) {
+        subTaskIds.add(id);
+    }
+
+    public void removeIdsSubTask (Integer id) {
+        subTaskIds.remove(id);
+    }
+
+    public void updateSubTaskIds (ArrayList<Integer> subTaskIds) {
+        this.subTaskIds = subTaskIds;
     }
 
     @Override
     public String toString() {
-        return "\n" + "EpicTask{" +
-                "subTaskIDs=" + subTaskIDs +
+        return "EpicTask{" +
+                "subTaskIDs=" + subTaskIds +
                 ", id=" + id +
-                ", name='" + name + '\'' +
+                ", name='" + name.length()  + '\'' +
                 ", status='" + status + '\'' +
-                ", description='" + description + '\'' +
+                ", description='" + description.length() + '\'' +
                 '}';
     }
 }

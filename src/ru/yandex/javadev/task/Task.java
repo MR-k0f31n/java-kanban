@@ -1,26 +1,28 @@
 package ru.yandex.javadev.task;
+
 import java.util.Objects;
 
 public class Task {
 
-    protected int id;
+    protected Integer id;
 
     protected String name;
 
-    protected String status;
+    protected Enum status;
 
     protected String description;
-
-    public Task(int id, String name,String status, String description) {
-        this.id = id;
-        this.name = name;
-        this.status = status;
-        this.description = description;
-    }
 
     public Task (String name, String description) {
         this.name = name;
         this.description = description;
+        status = Status.New;
+    }
+
+    public  Task (Integer id, String name, String description, Status status) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.status = status;
     }
 
     public int getId() {
@@ -39,11 +41,11 @@ public class Task {
         this.name = name;
     }
 
-    public String getStatus() {
+    public Enum getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Enum status) {
         this.status = status;
     }
 
@@ -57,11 +59,11 @@ public class Task {
 
     @Override
     public String toString() {
-        return "\n" + "Task{" +
+        return "Task{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
+                ", name='" + name.length()  + '\'' +
                 ", status='" + status + '\'' +
-                ", description='" + description + '\'' +
+                ", description='" + description.length() + '\'' +
                 '}';
     }
 }
