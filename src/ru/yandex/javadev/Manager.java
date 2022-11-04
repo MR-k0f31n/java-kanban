@@ -11,9 +11,9 @@ public class Manager {
 
     protected int currencyID = 1;
 
-    protected HashMap<Integer, Task> taskList = new HashMap<>();
-    protected HashMap<Integer, SubTask> subTaskList = new HashMap<>();
-    protected HashMap<Integer, EpicTask> epicTaskList = new HashMap<>();
+    private HashMap<Integer, Task> taskList = new HashMap<>();
+    private HashMap<Integer, SubTask> subTaskList = new HashMap<>();
+    private HashMap<Integer, EpicTask> epicTaskList = new HashMap<>();
 
     public void addNewTask (Task task) {
         task.setId(currencyID++);
@@ -25,13 +25,12 @@ public class Manager {
         epicTaskList.put(epicTask.getId(), epicTask);
     }
 
-    public void addNewSubTask (SubTask subTask, Integer idEpic){
-        if (epicTaskList.containsKey(idEpic)) {
+    public void addNewSubTask (SubTask subTask){
+        if (epicTaskList.containsKey(subTask.getEpicID())) {
             subTask.setId(currencyID++);
-            subTask.setEpicID(idEpic);
-            epicTaskList.get(idEpic).addSubTaskIds(subTask.getId());
+            epicTaskList.get(subTask.getEpicID()).addSubTaskIds(subTask.getId());
             subTaskList.put(subTask.getId(), subTask);
-            syncEpicTaskStatus(idEpic);
+            syncEpicTaskStatus(subTask.getEpicID());
         } else {
             System.out.println("Error 404: Task not found");
         }
@@ -45,24 +44,24 @@ public class Manager {
             EpicTask epicTask = epicTaskList.get(idEpic);
             if (epicTask.getSubTaskIds().size() != 0) {
                 for (Integer idSubs : epicTask.getSubTaskIds()) {
-                    if (subTaskList.get(idSubs).getStatus().equals(Status.New)) {
+                    if (subTaskList.get(idSubs).getStatus().equals(Status.NEW)) {
                         subNew ++;
-                    } else if (subTaskList.get(idSubs).getStatus().equals(Status.Done)) {
+                    } else if (subTaskList.get(idSubs).getStatus().equals(Status.DONE)) {
                         subDone ++;
                     }
                 }
                 if (epicTask.getSubTaskIds().size() == subNew) {
-                    epicTask.setStatus(Status.New);
+                    epicTask.setStatus(Status.NEW);
                     epicTaskList.put(epicTask.getId(), epicTask);
                 } else if (epicTask.getSubTaskIds().size() == subDone) {
-                    epicTask.setStatus(Status.Done);
+                    epicTask.setStatus(Status.DONE);
                     epicTaskList.put(epicTask.getId(), epicTask);
                 } else {
-                    epicTask.setStatus(Status.InProgress);
+                    epicTask.setStatus(Status.IN_PROGRESS);
                     epicTaskList.put(epicTask.getId(), epicTask);
                 }
             } else {
-                epicTask.setStatus(Status.New);
+                epicTask.setStatus(Status.NEW);
                 epicTaskList.put(epicTask.getId(), epicTask);
             }
         }
@@ -71,8 +70,8 @@ public class Manager {
     public ArrayList<SubTask> getAllSubByEpicTask (int id) {
         ArrayList <SubTask> subByEpicTaskList = new ArrayList<>();
         if (epicTaskList.containsKey(id)) {
-            ArrayList<Integer> SubTaskIDs = epicTaskList.get(id).getSubTaskIds();
-            for (Integer idSub : SubTaskIDs) {
+            ArrayList<Integer> subTaskIds = epicTaskList.get(id).getSubTaskIds();
+            for (Integer idSub : subTaskIds) {
                 if (idSub != null) {
                     subByEpicTaskList.add(subTaskList.get(idSub));
                 }
@@ -83,8 +82,7 @@ public class Manager {
 
     public void updateTask (Task newTask) {
         if (taskList.containsKey(newTask.getId())) {
-            Task oldTask = taskList.get(newTask.getId());
-            taskList.put(oldTask.getId(), newTask);
+            taskList.put(newTask.getId(), newTask);
         }
     }
 
@@ -93,9 +91,11 @@ public class Manager {
             EpicTask oldTask = epicTaskList.get(newTask.getId());
             if (oldTask.getSubTaskIds().size() != 0) {
                 newTask.updateSubTaskIds(oldTask.getSubTaskIds());
+                // как передать старый лист ид я не придумал)
             }
             if (!oldTask.getStatus().equals(newTask.getStatus())) {
                 newTask.setStatus(oldTask.getStatus());
+                // ИМХО чтобы умники не пытались руками поменять статус!
             }
             epicTaskList.put(oldTask.getId(), newTask);
         }
@@ -109,13 +109,7 @@ public class Manager {
         }
     }
 
-    public ArrayList<Task> getAllTask () {
-        ArrayList<Task> listAllTask = new ArrayList<>();
-        for (Integer taskID : taskList.keySet()) {
-            listAllTask.add(taskList.get(taskID));
-        }
-        return listAllTask;
-    }
+    public ArrayList<Task> getAllTask () { return new ArrayList(taskList.values()); }
 
     public ArrayList<SubTask> getAllSubTask () {
         ArrayList<SubTask> listAllSubTask = new ArrayList<>();
@@ -172,18 +166,19 @@ public class Manager {
         }
     }
 
-    public void deleteSubTaskListById (int id) {
+    public void deleteSubTaskById (int id) {
         if (subTaskList.containsKey(id)) {
             SubTask oldSubTask = subTaskList.get(id);
             epicTaskList.get(oldSubTask.getEpicID()).removeIdsSubTask(id);
             subTaskList.remove(id);
+            //remove (Object key)
             syncEpicTaskStatus(oldSubTask.getEpicID());
         } else {
             System.out.println("Error 404: Object not found!");
         }
     }
 
-    public void deleteEpicTaskListById (int id) {
+    public void deleteEpicTaskById (int id) {
         if (epicTaskList.containsKey(id)) {
             ArrayList<Integer> listIdsSubTask = epicTaskList.get(id).getSubTaskIds();
             for (Integer subId : listIdsSubTask) {
@@ -193,5 +188,17 @@ public class Manager {
         } else {
             System.out.println("Error 404: Object not found!");
         }
+    }
+
+    public HashMap<Integer, Task> getTaskList() {
+        return taskList;
+    }
+
+    public HashMap<Integer, SubTask> getSubTaskList() {
+        return subTaskList;
+    }
+
+    public HashMap<Integer, EpicTask> getEpicTaskList() {
+        return epicTaskList;
     }
 }
