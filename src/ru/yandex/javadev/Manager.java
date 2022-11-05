@@ -9,7 +9,7 @@ import java.util.HashMap;
 
 public class Manager {
 
-    protected int currencyID = 1;
+    private int currencyID = 1;
 
     private HashMap<Integer, Task> taskList = new HashMap<>();
     private HashMap<Integer, SubTask> subTaskList = new HashMap<>();
