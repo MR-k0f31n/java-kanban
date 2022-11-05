@@ -25,10 +25,11 @@ public class Manager {
         epicTaskList.put(epicTask.getId(), epicTask);
     }
 
-    public void addNewSubTask (SubTask subTask){
-        if (epicTaskList.containsKey(subTask.getEpicID())) {
+    public void addNewSubTask (SubTask subTask, Integer idEpic){
+        if (epicTaskList.containsKey(idEpic)) {
             subTask.setId(currencyID++);
-            epicTaskList.get(subTask.getEpicID()).addSubTaskIds(subTask.getId());
+            epicTaskList.get(idEpic).addSubTaskIds(subTask.getId());
+            subTask.setEpicID(idEpic);
             subTaskList.put(subTask.getId(), subTask);
             syncEpicTaskStatus(subTask.getEpicID());
         } else {

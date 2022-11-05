@@ -16,17 +16,17 @@ public class Main {
                 "Если вес больше 300 грамм, заставить бегать в колесе");
         EpicTask epicTask1 = new EpicTask("Глобальный переезд",
                 "Сьезжаем с этой студии начинаем новую жизнь");
-        SubTask subTask1 = new SubTask("Собрать чумаданы", "Упаковать в коробки все необходимое", 3);
+        SubTask subTask1 = new SubTask("Собрать чумаданы", "Упаковать в коробки все необходимое");
         SubTask subTask2 = new SubTask("Не забыть пикселя и байта",
-                "Перед переездом их нужно покормить!", 3);
+                "Перед переездом их нужно покормить!");
 
         EpicTask epicTask2 = new EpicTask("Поехать провериться к доктору",
                 "На всякий случай пройти психиатора");
-        SubTask subTask3 = new SubTask("Пройти терапевта", "Рассказать о недуге в левом глазу", 4);
+        SubTask subTask3 = new SubTask("Пройти терапевта", "Рассказать о недуге в левом глазу");
         SubTask subTask4 = new SubTask("Напроситься на визит к психиатру",
-                "Уточнить как у меня вообще может что-то получится в программировании", 4);
+                "Уточнить как у меня вообще может что-то получится в программировании");
         SubTask subTask5 = new SubTask("Записаться к Акулисту",
-                "От всех этих задач кажется 'Глаз замылился'", 4);
+                "От всех этих задач кажется 'Глаз замылился'");
 
         manager.addNewTask(task1);
         manager.addNewTask(task2);
@@ -34,12 +34,12 @@ public class Main {
         manager.addNewEpicTask(epicTask1);
         manager.addNewEpicTask(epicTask2);
 
-        manager.addNewSubTask(subTask1);
-        manager.addNewSubTask(subTask2);
+        manager.addNewSubTask(subTask1, epicTask1.getId());
+        manager.addNewSubTask(subTask2, epicTask1.getId());
 
-        manager.addNewSubTask(subTask3);
-        manager.addNewSubTask(subTask4);
-        manager.addNewSubTask(subTask5);
+        manager.addNewSubTask(subTask3, epicTask2.getId());
+        manager.addNewSubTask(subTask4, epicTask2.getId());
+        manager.addNewSubTask(subTask5, epicTask2.getId());
 
         System.out.println("Выводим спискок  тасков " + manager.getAllTask());
         System.out.println("Выводим спискок  саб тасков " + manager.getAllSubTask());
