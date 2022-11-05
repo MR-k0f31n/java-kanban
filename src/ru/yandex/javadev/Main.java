@@ -41,34 +41,36 @@ public class Main {
         manager.addNewSubTask(subTask4);
         manager.addNewSubTask(subTask5);
 
-        System.out.println(manager.getTaskList());
-        System.out.println(manager.getSubTaskList());
-        System.out.println(manager.getEpicTaskList());
+        System.out.println("Выводим спискок  тасков " + manager.getAllTask());
+        System.out.println("Выводим спискок  саб тасков " + manager.getAllSubTask());
+        System.out.println("Выводим спискок  епик тасков " + manager.getAllEpicTask());
 
         Task taskNew = new Task(task1.getId(), "Не забыть покормить кота Пикселя",
                 "200 грамм корма на день ему достаточно и байту дать корма", Status.IN_PROGRESS);
         manager.updateTask(taskNew);
-        System.out.println(manager.getTaskList());
+        System.out.println("Обновили таску " + manager.getAllTask());
 
         EpicTask newEpicTask = new EpicTask(epicTask1.getId(), epicTask1.getName(),
                 "Сьезжаем с этой студии начинаем новую жизнь вместе со своим питомником", Status.IN_PROGRESS);
         manager.updateEpicTask(newEpicTask);
-        System.out.println(manager.getEpicTaskList());
+        System.out.println("Обновили эпик " + manager.getAllEpicTask());
 
-        SubTask newSubTask = new SubTask(subTask2.getId(), subTask2.getName(), subTask2.getDescription(), Status.DONE);
+        SubTask newSubTask = new SubTask(subTask4.getId(), subTask4.getName(), subTask4.getDescription(), Status.DONE);
         manager.updateSubTask(newSubTask);
-        System.out.println(manager.getEpicTaskList());
-        System.out.println(manager.getSubTaskList());
-        SubTask newSubTask1 = new SubTask(subTask1.getId(), subTask1.getName(), subTask1.getDescription(), Status.DONE);
+        System.out.println("Обновили сабы " + manager.getAllEpicTask());
+        System.out.println("Обновили сабы " + manager.getAllSubTask());
+        SubTask newSubTask1 = new SubTask(subTask1.getId(), subTask1.getName(), subTask1.getDescription(),
+                Status.IN_PROGRESS);
         manager.updateSubTask(newSubTask1);
-        System.out.println(manager.getEpicTaskList());
+        System.out.println("Обновили еще раз " + manager.getAllEpicTask());
 
-        manager.deleteSubTaskById(8);
-        manager.deleteSubTaskById(6);
-        System.out.println(manager.getEpicTaskList());
+        manager.deleteSubTaskById(subTask2.getId());
+        manager.deleteSubTaskById(subTask4.getId());
+        System.out.println("Удаляем сабы " + manager.getAllEpicTask());
+        System.out.println("Удаляем сабы " + manager.getAllSubTask());
 
-        manager.deleteEpicTaskById(3);
-        System.out.println(manager.getEpicTaskList());
-        System.out.println(manager.getSubTaskList());
+        manager.deleteEpicTaskById(epicTask1.getId());
+        System.out.println("Удалили эпик " + manager.getAllEpicTask());
+        System.out.println("Удалили эпик " + manager.getAllSubTask());
     }
 }

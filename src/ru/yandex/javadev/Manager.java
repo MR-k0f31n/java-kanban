@@ -91,11 +91,11 @@ public class Manager {
             EpicTask oldTask = epicTaskList.get(newTask.getId());
             if (oldTask.getSubTaskIds().size() != 0) {
                 newTask.updateSubTaskIds(oldTask.getSubTaskIds());
-                // как передать старый лист ид я не придумал)
+                // To translate a collection's
             }
             if (!oldTask.getStatus().equals(newTask.getStatus())) {
                 newTask.setStatus(oldTask.getStatus());
-                // ИМХО чтобы умники не пытались руками поменять статус!
+                // Prohibition to change the status manually
             }
             epicTaskList.put(oldTask.getId(), newTask);
         }
@@ -111,21 +111,9 @@ public class Manager {
 
     public ArrayList<Task> getAllTask () { return new ArrayList(taskList.values()); }
 
-    public ArrayList<SubTask> getAllSubTask () {
-        ArrayList<SubTask> listAllSubTask = new ArrayList<>();
-        for (Integer taskID : subTaskList.keySet()) {
-            listAllSubTask.add(subTaskList.get(taskID));
-        }
-        return listAllSubTask;
-    }
+    public ArrayList<SubTask> getAllSubTask () { return new ArrayList<>(subTaskList.values()); }
 
-    public ArrayList<EpicTask> getAllEpicTask () {
-        ArrayList<EpicTask> listAAllEpicTask = new ArrayList<>();
-        for (Integer taskID : epicTaskList.keySet()) {
-            listAAllEpicTask.add(epicTaskList.get(taskID));
-        }
-        return listAAllEpicTask;
-    }
+    public ArrayList<EpicTask> getAllEpicTask () { return new ArrayList<>(epicTaskList.values()); }
 
     public void clearAll () {
         System.out.println("ВЫ уверены?");
@@ -166,12 +154,14 @@ public class Manager {
         }
     }
 
-    public void deleteSubTaskById (int id) {
+    public void deleteSubTaskById (Integer id) {
         if (subTaskList.containsKey(id)) {
             SubTask oldSubTask = subTaskList.get(id);
             epicTaskList.get(oldSubTask.getEpicID()).removeIdsSubTask(id);
+            // without this method there will be an exception null
             subTaskList.remove(id);
-            //remove (Object key)
+            // remove (Object key)
+            /* на английском не силен, сюда что только не пробовал передавать все работает */
             syncEpicTaskStatus(oldSubTask.getEpicID());
         } else {
             System.out.println("Error 404: Object not found!");
@@ -188,17 +178,5 @@ public class Manager {
         } else {
             System.out.println("Error 404: Object not found!");
         }
-    }
-
-    public HashMap<Integer, Task> getTaskList() {
-        return taskList;
-    }
-
-    public HashMap<Integer, SubTask> getSubTaskList() {
-        return subTaskList;
-    }
-
-    public HashMap<Integer, EpicTask> getEpicTaskList() {
-        return epicTaskList;
     }
 }
