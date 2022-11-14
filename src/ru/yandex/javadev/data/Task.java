@@ -1,6 +1,4 @@
-package ru.yandex.javadev.task;
-
-import java.util.Objects;
+package ru.yandex.javadev.data;
 
 public class Task {
 

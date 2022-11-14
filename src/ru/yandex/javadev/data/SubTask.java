@@ -1,11 +1,12 @@
-package ru.yandex.javadev.task;
+package ru.yandex.javadev.data;
 
 public class SubTask extends Task {
 
     private Integer epicId;
 
-    public SubTask (String name, String description) {
+    public SubTask (String name, String description, Integer epicId {
         super(name, description);
+        this.epicId = epicId;
     }
 
     public SubTask (Integer id, String name, String description, Status status) {

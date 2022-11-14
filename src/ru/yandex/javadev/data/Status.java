@@ -1,4 +1,4 @@
-package ru.yandex.javadev.task;
+package ru.yandex.javadev.data;
 
 public enum Status {
     NEW,

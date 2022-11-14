@@ -1,34 +1,38 @@
 package ru.yandex.javadev;
 
-import ru.yandex.javadev.task.EpicTask;
-import ru.yandex.javadev.task.Status;
-import ru.yandex.javadev.task.SubTask;
-import ru.yandex.javadev.task.Task;
+
+import ru.yandex.javadev.data.EpicTask;
+import ru.yandex.javadev.data.SubTask;
+import ru.yandex.javadev.data.Task;
+
 
 public class Main {
 
     public static void main(String[] args) {
         System.out.println("Version on Sprint 3");
-        Manager manager = new Manager();
+
+
         Task task1 = new Task("Не забыть покормить кота Пикселя",
                 "200 грамм корма на день ему достаточно");
         Task task2 = new Task("Проверить насколько потолстел Пиксель",
                 "Если вес больше 300 грамм, заставить бегать в колесе");
         EpicTask epicTask1 = new EpicTask("Глобальный переезд",
                 "Сьезжаем с этой студии начинаем новую жизнь");
-        SubTask subTask1 = new SubTask("Собрать чумаданы", "Упаковать в коробки все необходимое");
+        SubTask subTask1 = new SubTask("Собрать чумаданы", "Упаковать в коробки все необходимое",
+                epicTask1.getId());
         SubTask subTask2 = new SubTask("Не забыть пикселя и байта",
-                "Перед переездом их нужно покормить!");
+                "Перед переездом их нужно покормить!", epicTask1.getId());
 
         EpicTask epicTask2 = new EpicTask("Поехать провериться к доктору",
                 "На всякий случай пройти психиатора");
-        SubTask subTask3 = new SubTask("Пройти терапевта", "Рассказать о недуге в левом глазу");
+        SubTask subTask3 = new SubTask("Пройти терапевта", "Рассказать о недуге в левом глазу",
+                epicTask2.getId());
         SubTask subTask4 = new SubTask("Напроситься на визит к психиатру",
-                "Уточнить как у меня вообще может что-то получится в программировании");
+                "Уточнить как у меня вообще может что-то получится в программировании", epicTask2.getId());
         SubTask subTask5 = new SubTask("Записаться к Акулисту",
-                "От всех этих задач кажется 'Глаз замылился'");
+                "От всех этих задач кажется 'Глаз замылился'", epicTask2.getId());
 
-        manager.addNewTask(task1);
+        /*manager.addNewTask(task1);
         manager.addNewTask(task2);
 
         manager.addNewEpicTask(epicTask1);
@@ -71,6 +75,6 @@ public class Main {
 
         manager.deleteEpicTaskById(epicTask1.getId());
         System.out.println("Удалили эпик " + manager.getAllEpicTask());
-        System.out.println("Удалили эпик " + manager.getAllSubTask());
+        System.out.println("Удалили эпик " + manager.getAllSubTask());*/
     }
 }
