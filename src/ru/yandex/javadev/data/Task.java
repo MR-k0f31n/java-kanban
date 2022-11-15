@@ -1,8 +1,10 @@
 package ru.yandex.javadev.data;
 
+import java.time.chrono.MinguoDate;
+
 public class Task {
 
-    protected Integer id;
+    protected int id;
 
     protected String name;
 

@@ -1,20 +1,50 @@
 package ru.yandex.javadev.manager.task;
 
+import ru.yandex.javadev.data.EpicTask;
+import ru.yandex.javadev.data.SubTask;
+import ru.yandex.javadev.data.Task;
+
+import java.util.List;
+
 public interface TaskManager {
 
-    Object getAllListTask ();
+    List<Task> getAllListTask ();
 
-    void deleteAllTask ();
+    List<EpicTask> getAllEpicTask();
 
-    void getTaskId (int id);
+    List<SubTask> getAllSubTask();
 
-    void addNewTask (Object object);
+    void clearAllTask();
 
-    void updateTask (Object object);
+    void clearAllEpicTask();
 
-    void deleteFromId (int id);
+    void clearAllSubTask();
 
-    Object getListSubsFromEpic(int idEpic);
+    Task getTaskById (Integer id);
 
-    void syncEpicTaskStatus (int idEpic);
+    EpicTask getEpicById (Integer id);
+
+    SubTask getSubById(Integer id);
+
+    int addNewTask (Task task);
+
+    int addNewTask (EpicTask epicTask);
+
+    int addNewTask (SubTask subTask);
+
+    void updateTask (Task newTask);
+
+    void updateEpicTask (EpicTask newTask);
+
+    void updateSubTask (SubTask newTask);
+
+    void deleteTaskById (Integer id);
+
+    void deleteEpicTaskById (Integer id);
+
+    void deleteSubTaskById (Integer id);
+
+    Object getAllSubByEpicTask(Integer idEpic);
+
+    void syncEpicTaskStatus (Integer idEpic);
 }

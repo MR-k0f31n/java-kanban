@@ -4,43 +4,141 @@ import ru.yandex.javadev.data.EpicTask;
 import ru.yandex.javadev.data.Status;
 import ru.yandex.javadev.data.SubTask;
 import ru.yandex.javadev.data.Task;
+import ru.yandex.javadev.manager.history.HistoryManager;
+import ru.yandex.javadev.manager.manager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class InMemoryTaskManager implements TaskManager {
 
+    HistoryManager history = manager.getDefaultHistory();
     private static int currencyID = 1;
 
-    private static HashMap<Integer, Task> taskList = new HashMap<>();
-    private static HashMap<Integer, SubTask> subTaskList = new HashMap<>();
-    private static HashMap<Integer, EpicTask> epicTaskList = new HashMap<>();
+    private final HashMap<Integer, Task> taskList = new HashMap<>();
+    private final HashMap<Integer, SubTask> subTaskList = new HashMap<>();
+    private final HashMap<Integer, EpicTask> epicTaskList = new HashMap<>();
 
+    public ArrayList<Task> getAllListTask () { return new ArrayList<>(taskList.values()); }
 
-    public static void addNewTask (Task task) {
+    public ArrayList<SubTask> getAllSubTask () { return new ArrayList<>(subTaskList.values()); }
+
+    public ArrayList<EpicTask> getAllEpicTask () { return new ArrayList<>(epicTaskList.values()); }
+
+    public void clearAllTask () {
+        taskList.clear();
+    }
+
+    public void clearAllEpicTask () {
+        epicTaskList.clear();
+    }
+
+    public void clearAllSubTask () {
+        subTaskList.clear();
+    }
+
+    public Task getTaskById (Integer id) {
+        history.add(taskList.get(id));
+        return taskList.get(id);
+    }
+
+    public EpicTask getEpicById (Integer id) {
+        history.add(epicTaskList.get(id));
+        return epicTaskList.get(id);
+    }
+
+    public SubTask getSubById (Integer id) {
+        history.add(subTaskList.get(id));
+        return subTaskList.get(id);
+    }
+
+    public int addNewTask (Task task) {
         task.setId(currencyID++);
         taskList.put(task.getId(), task);
+        return task.getId();
     }
-
-
-    public static void addNewTask (EpicTask epicTask) {
+   public int addNewTask (EpicTask epicTask) {
         epicTask.setId(currencyID++);
         epicTaskList.put(epicTask.getId(), epicTask);
+        return epicTask.getId();
     }
 
-    public static void addNewTask (SubTask subTask, Integer idEpic){
-        if (epicTaskList.containsKey(idEpic)) {
-            subTask.setId(currencyID++);
-            epicTaskList.get(idEpic).addSubTaskIds(subTask.getId());
-            subTask.setEpicID(idEpic);
-            subTaskList.put(subTask.getId(), subTask);
-            syncEpicTaskStatus(subTask.getEpicID());
-        } else {
-            System.out.println("Error 404: Task not found");
+   public int addNewTask (SubTask subTask) {
+       if (epicTaskList.containsKey(subTask.getEpicID())) {
+           subTask.setId(currencyID++);
+           epicTaskList.get(subTask.getEpicID()).addSubTaskIds(subTask.getId());
+           subTaskList.put(subTask.getId(), subTask);
+           syncEpicTaskStatus(subTask.getEpicID());
+           return subTask.getId();
+       } else {
+           return -1;
+       }
+   }
+
+    public void updateTask (Task newTask) {
+        if (taskList.containsKey(newTask.getId())) {
+            taskList.put(newTask.getId(), newTask);
         }
     }
 
-    public static void syncEpicTaskStatus (Integer idEpic) {
+    public void updateEpicTask (EpicTask newTask) {
+        if (epicTaskList.containsKey(newTask.getId())) {
+            if (epicTaskList.get(newTask.getId()).getSubTaskIds().size() != 0) {
+                newTask.setSubTaskIds(epicTaskList.get(newTask.getId()).getSubTaskIds());
+            }
+            if (epicTaskList.get(newTask.getId()).getStatus().equals(newTask.getStatus())) {
+                newTask.setStatus(epicTaskList.get(newTask.getId()).getStatus());
+                // Protected to change the status manually
+            }
+            epicTaskList.put(newTask.getId(), newTask);
+        }
+    }
+
+    public void updateSubTask (SubTask newTask) {
+        if (subTaskList.containsKey(newTask.getId())) {
+            subTaskList.put(newTask.getId(), newTask);
+            syncEpicTaskStatus(newTask.getEpicID());
+        }
+    }
+
+    public void deleteTaskById (Integer id) {
+        if (taskList.containsKey(id)) {
+            taskList.remove(id);
+        }
+    }
+
+    public void deleteEpicTaskById (Integer id) {
+        if (epicTaskList.containsKey(id)) {
+            for (Integer subId : epicTaskList.get(id).getSubTaskIds()) {
+                subTaskList.remove(subId);
+            }
+            epicTaskList.remove(id);
+        }
+    }
+
+    public void deleteSubTaskById (Integer id) {
+        if (subTaskList.containsKey(id)) {
+            SubTask oldSubTask = subTaskList.get(id);
+            epicTaskList.get(oldSubTask.getEpicID()).removeIdsSubTask(id);
+            subTaskList.remove(id);
+            syncEpicTaskStatus(oldSubTask.getEpicID());
+        }
+    }
+
+    public ArrayList<SubTask> getAllSubByEpicTask (Integer id) {
+        ArrayList <SubTask> subByEpicTaskList = new ArrayList<>();
+        if (epicTaskList.containsKey(id)) {
+            ArrayList<Integer> subTaskIds = epicTaskList.get(id).getSubTaskIds();
+            for (Integer idSub : subTaskIds) {
+                if (idSub != null) {
+                    subByEpicTaskList.add(subTaskList.get(idSub));
+                }
+            }
+        }
+        return subByEpicTaskList;
+    }
+
+    public void syncEpicTaskStatus(Integer idEpic) {
         int subNew = 0;
         int subDone = 0;
 
@@ -71,139 +169,5 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    public static ArrayList<SubTask> getAllSubByEpicTask (int id) {
-        ArrayList <SubTask> subByEpicTaskList = new ArrayList<>();
-        if (epicTaskList.containsKey(id)) {
-            ArrayList<Integer> subTaskIds = epicTaskList.get(id).getSubTaskIds();
-            for (Integer idSub : subTaskIds) {
-                if (idSub != null) {
-                    subByEpicTaskList.add(subTaskList.get(idSub));
-                }
-            }
-        }
-        return subByEpicTaskList;
-    }
 
-    public static void updateTask (Task newTask) {
-        if (taskList.containsKey(newTask.getId())) {
-            taskList.put(newTask.getId(), newTask);
-        }
-    }
-
-    public static void updateEpicTask (EpicTask newTask) {
-        if (epicTaskList.containsKey(newTask.getId())) {
-            EpicTask oldTask = epicTaskList.get(newTask.getId());
-            if (oldTask.getSubTaskIds().size() != 0) {
-                newTask.updateSubTaskIds(epicTaskList.get(newTask.getId()).getSubTaskIds());
-                // To translate a collection's
-            }
-            if (!oldTask.getStatus().equals(newTask.getStatus())) {
-                newTask.setStatus(oldTask.getStatus());
-                // Prohibition to change the status manually
-            }
-            epicTaskList.put(oldTask.getId(), newTask);
-        }
-    }
-
-    public static void updateSubTask (SubTask newTask) {
-        if (subTaskList.containsKey(newTask.getId())) {
-            newTask.setEpicID(subTaskList.get(newTask.getId()).getEpicID());
-            subTaskList.put(newTask.getId(), newTask);
-            syncEpicTaskStatus(newTask.getEpicID());
-        }
-    }
-
-    public ArrayList<Task> getAllTask () { return new ArrayList(taskList.values()); }
-
-    public ArrayList<SubTask> getAllSubTask () { return new ArrayList<>(subTaskList.values()); }
-
-    public ArrayList<EpicTask> getAllEpicTask () { return new ArrayList<>(epicTaskList.values()); }
-
-    public static void clearAll () {
-        System.out.println("ВЫ уверены?");
-        clearAllTask();
-        clearAllEpicTask();
-        clearAllSubTask();
-    }
-
-    public static void clearAllTask () {
-        taskList.clear();
-    }
-
-    public static void clearAllEpicTask () {
-        epicTaskList.clear();
-    }
-
-    public static void clearAllSubTask () {
-        subTaskList.clear();
-    }
-
-    public Task getTaskById (int id) {
-        return taskList.get(id);
-    }
-
-    public EpicTask getEpicTaskById (int id) {
-        return epicTaskList.get(id);
-    }
-
-    public SubTask getSubTaskById (int id) {
-        return subTaskList.get(id);
-    }
-
-    public static void deleteTaskById (int id) {
-        if (taskList.containsKey(id)) {
-            taskList.remove(id);
-        } else {
-            System.out.println("Error 404: Object not found!");
-        }
-    }
-
-    public static void deleteSubTaskById (Integer id) {
-        if (subTaskList.containsKey(id)) {
-            SubTask oldSubTask = subTaskList.get(id);
-            epicTaskList.get(oldSubTask.getEpicID()).removeIdsSubTask(id);
-            // without this method there will be an exception null
-            subTaskList.remove(id);
-            // remove (Object key)
-            /* на английском не силен, сюда что только не пробовал передавать все работает */
-            syncEpicTaskStatus(oldSubTask.getEpicID());
-        } else {
-            System.out.println("Error 404: Object not found!");
-        }
-    }
-
-    public static void deleteEpicTaskById (int id) {
-        if (epicTaskList.containsKey(id)) {
-            ArrayList<Integer> listIdsSubTask = epicTaskList.get(id).getSubTaskIds();
-            for (Integer subId : listIdsSubTask) {
-                subTaskList.remove(subId);
-            }
-            epicTaskList.remove(id);
-        } else {
-            System.out.println("Error 404: Object not found!");
-        }
-    }
-
-    @Override
-    public void addNewTask(Task task) {
-        if (task != null) {
-            task.setId(currencyID++);
-            taskList.put(((Task) task).getId(), ((Task) task));
-        }
-        if ((task != null) && (task instanceof EpicTask)) {
-            ((EpicTask) task).setId(currencyID++);
-            epicTaskList.put(((EpicTask) task).getId(), ((EpicTask) task));
-        }
-        if ((task != null) && (task instanceof SubTask)) {
-            if (epicTaskList.containsKey(((SubTask) task).getEpicID())) {
-                ((SubTask) task).setId(currencyID++);
-                epicTaskList.get(((SubTask) task).getEpicID()).addSubTaskIds(((SubTask) task).getId());
-                ((SubTask) task).setEpicID(((SubTask) task).getEpicID());
-                subTaskList.put(((SubTask) task).getId(), ((SubTask) task));
-                syncEpicTaskStatus(((SubTask) task).getEpicID());
-            } else {
-                System.out.println("Error 404: Task not found");
-            }
-        }
-    }
 }

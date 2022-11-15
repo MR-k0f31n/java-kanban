@@ -2,7 +2,7 @@ package ru.yandex.javadev.data;
 import java.util.ArrayList;
 
 public class EpicTask extends Task {
-    private ArrayList<Integer> subTaskIds = new ArrayList<>();
+    private static ArrayList<Integer> subTaskIds = new ArrayList<>();
 
     public EpicTask(String name, String description) {
         super(name, description);
@@ -12,20 +12,20 @@ public class EpicTask extends Task {
         super(id, name, description, status);
     }
 
-    public ArrayList<Integer> getSubTaskIds() {
+    public static ArrayList<Integer> getSubTaskIds() {
         return subTaskIds;
     }
 
-    public void addSubTaskIds(int id) {
+    public static void setSubTaskIds(ArrayList<Integer> subTaskIds) {
+        EpicTask.subTaskIds = subTaskIds;
+    }
+
+    public static void addSubTaskIds(int id) {
         subTaskIds.add(id);
     }
 
-    public void removeIdsSubTask (Integer id) {
+    public static void removeIdsSubTask (Integer id) {
         subTaskIds.remove(id);
-    }
-
-    public void updateSubTaskIds (ArrayList<Integer> subTaskIds) {
-        this.subTaskIds = subTaskIds;
     }
 
     @Override

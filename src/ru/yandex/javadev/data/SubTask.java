@@ -2,9 +2,9 @@ package ru.yandex.javadev.data;
 
 public class SubTask extends Task {
 
-    private Integer epicId;
+    private static Integer epicId;
 
-    public SubTask (String name, String description, Integer epicId {
+    public SubTask (String name, String description, Integer epicId) {
         super(name, description);
         this.epicId = epicId;
     }
@@ -15,10 +15,6 @@ public class SubTask extends Task {
 
     public Integer getEpicID() {
         return epicId;
-    }
-
-    public void setEpicID(int epicId) {
-        this.epicId = epicId;
     }
 
     @Override
