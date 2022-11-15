@@ -118,10 +118,10 @@ public class InMemoryTaskManager implements TaskManager {
 
     public void deleteSubTaskById (Integer id) {
         if (subTaskList.containsKey(id)) {
-            SubTask oldSubTask = subTaskList.get(id);
-            epicTaskList.get(oldSubTask.getEpicID()).removeIdsSubTask(id);
+            Integer idEpic = subTaskList.get(id).getEpicID();
+            epicTaskList.get(idEpic).removeIdsSubTask(id);
             subTaskList.remove(id);
-            syncEpicTaskStatus(oldSubTask.getEpicID());
+            syncEpicTaskStatus(idEpic);
         }
     }
 
@@ -168,6 +168,4 @@ public class InMemoryTaskManager implements TaskManager {
             }
         }
     }
-
-
 }

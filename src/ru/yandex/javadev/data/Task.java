@@ -1,10 +1,8 @@
 package ru.yandex.javadev.data;
 
-import java.time.chrono.MinguoDate;
-
 public class Task {
 
-    protected int id;
+    protected Integer id;
 
     protected String name;
 
@@ -18,14 +16,14 @@ public class Task {
         status = Status.NEW;
     }
 
-    public  Task (Integer id, String name, String description, Status status) {
+    public Task (int id, String name, String description, Status status) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.status = status;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 

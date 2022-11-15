@@ -2,14 +2,14 @@ package ru.yandex.javadev.data;
 
 public class SubTask extends Task {
 
-    private static Integer epicId;
+    private Integer epicId;
 
-    public SubTask (String name, String description, Integer epicId) {
+    public SubTask (String name, String description, int epicId) {
         super(name, description);
         this.epicId = epicId;
     }
 
-    public SubTask (Integer id, String name, String description, Status status) {
+    public SubTask (int id, String name, String description, Status status) {
         super(id, name, description, status);
     }
 

@@ -2,29 +2,29 @@ package ru.yandex.javadev.data;
 import java.util.ArrayList;
 
 public class EpicTask extends Task {
-    private static ArrayList<Integer> subTaskIds = new ArrayList<>();
+    private ArrayList<Integer> subTaskIds = new ArrayList<>();
 
     public EpicTask(String name, String description) {
         super(name, description);
     }
 
-    public EpicTask (Integer id, String name, String description, Status status) {
+    public EpicTask (int id, String name, String description, Status status) {
         super(id, name, description, status);
     }
 
-    public static ArrayList<Integer> getSubTaskIds() {
+    public ArrayList<Integer> getSubTaskIds() {
         return subTaskIds;
     }
 
-    public static void setSubTaskIds(ArrayList<Integer> subTaskIds) {
-        EpicTask.subTaskIds = subTaskIds;
+    public void setSubTaskIds(ArrayList<Integer> subTaskIds) {
+        this.subTaskIds = subTaskIds;
     }
 
-    public static void addSubTaskIds(int id) {
+    public void addSubTaskIds(Integer id) {
         subTaskIds.add(id);
     }
 
-    public static void removeIdsSubTask (Integer id) {
+    public void removeIdsSubTask (Integer id) {
         subTaskIds.remove(id);
     }
 
