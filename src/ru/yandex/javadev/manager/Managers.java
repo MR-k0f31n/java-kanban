@@ -5,7 +5,7 @@ import ru.yandex.javadev.manager.history.InMemoryHistoryManager;
 import ru.yandex.javadev.manager.task.InMemoryTaskManager;
 import ru.yandex.javadev.manager.task.TaskManager;
 
-public class manager {
+public class Managers {
     public static TaskManager getDefault() {
         return new InMemoryTaskManager();
     }

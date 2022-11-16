@@ -5,7 +5,7 @@ import ru.yandex.javadev.data.EpicTask;
 import ru.yandex.javadev.data.Status;
 import ru.yandex.javadev.data.SubTask;
 import ru.yandex.javadev.data.Task;
-import ru.yandex.javadev.manager.manager;
+import ru.yandex.javadev.manager.Managers;
 import ru.yandex.javadev.manager.task.TaskManager;
 
 
@@ -13,7 +13,7 @@ public class Main {
 
     public static void main(String[] args) {
         System.out.println("Version on Sprint 4");
-        TaskManager taskManager = manager.getDefault();
+        TaskManager taskManager = Managers.getDefault();
 
         Task task1 = new Task("Не забыть покормить кота Пикселя",
                 "200 грамм корма на день ему достаточно");
@@ -64,38 +64,77 @@ public class Main {
         System.out.println("Выводим спискок  епик тасков " + taskManager.getAllEpicTask());
         System.out.println("Выводим спискок  саб тасков " + taskManager.getAllSubTask());
 
-        Task taskNew = new Task(feedCat, "Не забыть покормить кота Пикселя",
-                "200 грамм корма на день ему достаточно и байту дать корма", Status.IN_PROGRESS);
+        Task taskNew = taskManager.getTaskById(feedCat);
+        taskNew.setName("Не забыть покормить кота Пикселя");
+        taskNew.setDescription("200 грамм корма на день ему достаточно и байту дать корма");
+        taskNew.setStatus(Status.IN_PROGRESS);
         taskManager.updateTask(taskNew);
 
         System.out.println("Обновили таску " + taskManager.getAllListTask());
 
-        EpicTask newEpicTask = new EpicTask(moving, epicTask1.getName(),
-                "Сьезжаем с этой студии начинаем новую жизнь вместе со своим питомником", Status.IN_PROGRESS);
+        taskManager.deleteTaskById(weighHamster);
+
+        EpicTask newEpicTask = taskManager.getEpicById(moving);
+        newEpicTask.setDescription("Сьезжаем с этой студии начинаем новую жизнь вместе со своим питомником");
         taskManager.updateEpicTask(newEpicTask);
 
         System.out.println("Обновили эпик " + taskManager.getAllEpicTask());
+        System.out.println("Обновили эпик " + taskManager.getAllSubTask());
 
-        SubTask newSubTask = new SubTask(listDoctor2, subTask4.getName(), subTask4.getDescription(), Status.DONE);
+        //new SubTask(listDoctor2, subTask4.getName(), subTask4.getDescription(), Status.DONE, subTask4.getEpicID());
+
+        SubTask newSubTask = taskManager.getSubById(listDoctor2);
+        newSubTask.setStatus(Status.DONE);
         taskManager.updateSubTask(newSubTask);
+
+        EpicTask newEpicTask1 = taskManager.getEpicById(moving);
+        newEpicTask1.setDescription("Сьезжаем с этой студии начинаем новую жизнь вместе со своим питомником");
+        taskManager.updateEpicTask(newEpicTask1);
+
+        System.out.println("History" + taskManager.getHistory());
 
         System.out.println("Обновили сабы " + taskManager.getAllEpicTask());
         System.out.println("Обновили сабы " + taskManager.getAllSubTask());
 
-        SubTask newSubTask1 = new SubTask(packBag, subTask1.getName(), subTask1.getDescription(),
-                Status.IN_PROGRESS);
+
+        SubTask newSubTask1 = taskManager.getSubById(packBag);
+        newEpicTask1.setStatus(Status.IN_PROGRESS);
         taskManager.updateSubTask(newSubTask1);
 
+        SubTask newSubTask2 = taskManager.getSubById(listDoctor3);
+        newSubTask2.setStatus(Status.DONE);
+        taskManager.updateSubTask(newSubTask2);
+
+        SubTask newSubTask3 = taskManager.getSubById(listDoctor1);
+        newSubTask3.setStatus(Status.DONE);
+        taskManager.updateSubTask(newSubTask3);
+
+
         System.out.println("Обновили еще раз " + taskManager.getAllEpicTask());
+        System.out.println("History" + taskManager.getHistory());
 
         taskManager.deleteSubTaskById(reminder);
         taskManager.deleteSubTaskById(listDoctor2);
 
         System.out.println("Удаляем сабы " + taskManager.getAllEpicTask());
         System.out.println("Удаляем сабы " + taskManager.getAllSubTask());
+        System.out.println("History" + taskManager.getHistory());
 
         taskManager.deleteEpicTaskById(moving);
+
+        //test history
+        taskManager.getSubById(listDoctor3);
+        taskManager.getTaskById(feedCat);
+        taskManager.getSubById(listDoctor3);
+        taskManager.getTaskById(feedCat);
+        taskManager.getSubById(listDoctor3);
+        taskManager.getTaskById(feedCat);
+        taskManager.getSubById(listDoctor3);
+        taskManager.getTaskById(feedCat);
+
+
         System.out.println("Удалили эпик " + taskManager.getAllEpicTask());
         System.out.println("Удалили эпик " + taskManager.getAllSubTask());
+        System.out.println("History" + taskManager.getHistory());
     }
 }

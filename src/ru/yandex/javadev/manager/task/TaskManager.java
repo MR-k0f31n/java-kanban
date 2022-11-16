@@ -4,6 +4,7 @@ import ru.yandex.javadev.data.EpicTask;
 import ru.yandex.javadev.data.SubTask;
 import ru.yandex.javadev.data.Task;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public interface TaskManager {
@@ -20,11 +21,11 @@ public interface TaskManager {
 
     void clearAllSubTask();
 
-    Task getTaskById (Integer id);
+    Task getTaskById (int id);
 
-    EpicTask getEpicById (Integer id);
+    EpicTask getEpicById (int id);
 
-    SubTask getSubById(Integer id);
+    SubTask getSubById(int id);
 
     int addNewTask (Task task);
 
@@ -38,13 +39,15 @@ public interface TaskManager {
 
     void updateSubTask (SubTask newTask);
 
-    void deleteTaskById (Integer id);
+    void deleteTaskById (int id);
 
-    void deleteEpicTaskById (Integer id);
+    void deleteEpicTaskById (int id);
 
-    void deleteSubTaskById (Integer id);
+    void deleteSubTaskById (int id);
 
-    Object getAllSubByEpicTask(Integer idEpic);
+    ArrayList<SubTask> getAllSubByEpicTask(int idEpic);
 
-    void syncEpicTaskStatus (Integer idEpic);
+    void syncEpicTaskStatus (int idEpic);
+
+    ArrayList<Task> getHistory();
 }
