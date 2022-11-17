@@ -1,12 +1,12 @@
-package ru.yandex.kanban;
+package java.kanban;
 
 
-import ru.yandex.kanban.data.EpicTask;
-import ru.yandex.kanban.data.Status;
-import ru.yandex.kanban.data.SubTask;
-import ru.yandex.kanban.data.Task;
-import ru.yandex.kanban.manager.Managers;
-import ru.yandex.kanban.manager.task.TaskManager;
+import java.kanban.data.EpicTask;
+import java.kanban.data.Status;
+import java.kanban.data.SubTask;
+import java.kanban.data.Task;
+import java.kanban.manager.Managers;
+import java.kanban.manager.task.TaskManager;
 
 
 public class Main {

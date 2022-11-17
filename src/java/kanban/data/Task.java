@@ -1,4 +1,4 @@
-package ru.yandex.kanban.data;
+package java.kanban.data;
 
 public class Task {
 
