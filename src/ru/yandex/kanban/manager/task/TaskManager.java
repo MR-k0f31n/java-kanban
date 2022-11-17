@@ -1,8 +1,8 @@
-package ru.yandex.javadev.manager.task;
+package ru.yandex.kanban.manager.task;
 
-import ru.yandex.javadev.data.EpicTask;
-import ru.yandex.javadev.data.SubTask;
-import ru.yandex.javadev.data.Task;
+import ru.yandex.kanban.data.EpicTask;
+import ru.yandex.kanban.data.SubTask;
+import ru.yandex.kanban.data.Task;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package ru.yandex.javadev.data;
+package ru.yandex.kanban.data;
 import java.util.ArrayList;
 
 public class EpicTask extends Task {

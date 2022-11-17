@@ -1,11 +1,11 @@
-package ru.yandex.javadev.manager.task;
+package ru.yandex.kanban.manager.task;
 
-import ru.yandex.javadev.data.EpicTask;
-import ru.yandex.javadev.data.Status;
-import ru.yandex.javadev.data.SubTask;
-import ru.yandex.javadev.data.Task;
-import ru.yandex.javadev.manager.history.HistoryManager;
-import ru.yandex.javadev.manager.Managers;
+import ru.yandex.kanban.data.EpicTask;
+import ru.yandex.kanban.data.Status;
+import ru.yandex.kanban.data.SubTask;
+import ru.yandex.kanban.data.Task;
+import ru.yandex.kanban.manager.history.HistoryManager;
+import ru.yandex.kanban.manager.Managers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,19 +52,25 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task getTaskById (int id) {
-        history.addHistory(taskMap.get(id));
+        if (taskMap.containsKey(id)) {
+            history.addHistory(taskMap.get(id));
+        }
         return taskMap.get(id);
     }
 
     @Override
     public EpicTask getEpicById (int id) {
-        history.addHistory(epicTaskMap.get(id));
+        if (epicTaskMap.containsKey(id)) {
+            history.addHistory(epicTaskMap.get(id));
+        }
         return epicTaskMap.get(id);
     }
 
     @Override
     public SubTask getSubById (int id) {
-        history.addHistory(subTaskMap.get(id));
+        if (subTaskMap.containsKey(id)) {
+            history.addHistory(subTaskMap.get(id));
+        }
         return subTaskMap.get(id);
     }
 

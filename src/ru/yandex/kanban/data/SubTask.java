@@ -1,4 +1,4 @@
-package ru.yandex.javadev.data;
+package ru.yandex.kanban.data;
 
 public class SubTask extends Task {
 
