@@ -1,6 +1,6 @@
-package java.kanban.manager.history;
+package ru.yandex.kanban.manager.history;
 
-import java.kanban.data.Task;
+import ru.yandex.kanban.data.Task;
 
 import java.util.ArrayList;
 

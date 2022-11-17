@@ -1,13 +1,11 @@
-package java.kanban;
+package ru.yandex.kanban;
 
-
-import java.kanban.data.EpicTask;
-import java.kanban.data.Status;
-import java.kanban.data.SubTask;
-import java.kanban.data.Task;
-import java.kanban.manager.Managers;
-import java.kanban.manager.task.TaskManager;
-
+import ru.yandex.kanban.data.EpicTask;
+import ru.yandex.kanban.data.Status;
+import ru.yandex.kanban.data.SubTask;
+import ru.yandex.kanban.data.Task;
+import ru.yandex.kanban.manager.Managers;
+import ru.yandex.kanban.manager.task.TaskManager;
 
 public class Main {
 
@@ -80,8 +78,6 @@ public class Main {
 
         System.out.println("Обновили эпик " + taskManager.getAllEpicTask());
         System.out.println("Обновили эпик " + taskManager.getAllSubTask());
-
-        //new SubTask(listDoctor2, subTask4.getName(), subTask4.getDescription(), Status.DONE, subTask4.getEpicID());
 
         SubTask newSubTask = taskManager.getSubById(listDoctor2);
         newSubTask.setStatus(Status.DONE);

@@ -1,11 +1,11 @@
-package java.kanban.manager.task;
+package ru.yandex.kanban.manager.task;
 
-import java.kanban.data.EpicTask;
-import java.kanban.data.Status;
-import java.kanban.data.SubTask;
-import java.kanban.data.Task;
-import java.kanban.manager.history.HistoryManager;
-import java.kanban.manager.Managers;
+import ru.yandex.kanban.manager.history.HistoryManager;
+import ru.yandex.kanban.data.EpicTask;
+import ru.yandex.kanban.data.Status;
+import ru.yandex.kanban.data.SubTask;
+import ru.yandex.kanban.data.Task;
+import ru.yandex.kanban.manager.Managers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
