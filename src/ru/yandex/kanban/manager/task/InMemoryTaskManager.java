@@ -166,8 +166,8 @@ public class InMemoryTaskManager implements TaskManager {
         return subByEpicTaskList;
     }
 
-    @Override
-    public void syncEpicTaskStatus(int idEpic) {
+
+    void syncEpicTaskStatus(int idEpic) {
         int subNew = 0;
         int subDone = 0;
 
