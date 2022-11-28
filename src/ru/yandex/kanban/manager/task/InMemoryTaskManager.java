@@ -167,7 +167,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
 
-    void syncEpicTaskStatus(int idEpic) {
+    private void syncEpicTaskStatus(int idEpic) {
         int subNew = 0;
         int subDone = 0;
 
