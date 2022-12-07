@@ -122,7 +122,7 @@ public class Main {
         //test history
         taskManager.getEpicById(goToDoctor);
         taskManager.getTaskById(feedCat);
-        taskManager.getEpicById(goToDoctor);
+        taskManager.deleteEpicTaskById(goToDoctor);
 
 
         System.out.println("Удалили эпик " + taskManager.getAllEpicTask());
