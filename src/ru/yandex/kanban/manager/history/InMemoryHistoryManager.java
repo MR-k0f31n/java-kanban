@@ -16,47 +16,44 @@ public class InMemoryHistoryManager implements HistoryManager {
     private int size = 0;
 
     public int size() {
-        return size;
+        return this.size;
     }
 
     @Override
-    public final void addHistory(Task task) {
+    public final void add(Task task) {
+        int id = task.getId();
         if (size() > 10) {
-            removeNode(idMap.get(0));
+            remove(id);
         }
-        addInLast(task);
+        if (idMap.containsKey(id)) {
+            remove(id);
+        }
+        idMap.put(id, linkLast(task));
     }
 
     @Override
     public List<Task> getHistory() {
-        return getHistoryCustom();
+        return getTasks();
     }
 
     @Override
-    public void removeHistory(int id) {
+    public void remove(int id) {
         if (idMap.containsKey(id)) {
-            Node node = idMap.get(id);
-            removeNode(node);
+            removeNode(id);
         }
     }
 
-    private List<Task> getHistoryCustom() {
-        List<Task> showHistory = new ArrayList<>();
-
-        for (Node task : idMap.values()) {
-            if (task.task != null) {
-                showHistory.add((Task) task.task);
-            }
+    private List<Task> getTasks() {
+        List<Task> list = new ArrayList<>();
+        Node<Task> node = head;
+        while (node != null) {
+            list.add(node.task);
+            node = node.nextTask;
         }
-
-        return showHistory;
+        return list;
     }
 
-    private void addInLast(Task task) {
-        if (idMap.containsKey(task.getId())) {
-            removeNode(idMap.get(task.getId()));
-        }
-
+    private Node linkLast(Task task) {
         final Node<Task> oldTail = tail;
         final Node<Task> newNode = new Node<>(oldTail, task, null);
         tail = newNode;
@@ -65,26 +62,29 @@ public class InMemoryHistoryManager implements HistoryManager {
         } else {
             oldTail.nextTask = newNode;
         }
-        idMap.put(task.getId(), newNode);
         size++;
+        return newNode;
     }
 
-    private void removeNode(Node<Task> node) {
-            final Node<Task> nextTask = node.nextTask;
-            final Node<Task> prevTask = node.prevTask;
+    private void removeNode(int id) {
+        Node node = idMap.get(id);
+        if (node != null) {
+            final Node nextTask = node.nextTask;
+            final Node prevTask = node.prevTask;
             if (prevTask == null) {
-                head = nextTask;
+                head = node.nextTask;
             } else {
                 prevTask.nextTask = nextTask;
             }
-
             if (nextTask == null) {
-                tail = prevTask;
+                tail = node.prevTask;
             } else {
                 nextTask.prevTask = prevTask;
+                node.nextTask = null;
             }
-            idMap.remove(node.task.getId());
+            idMap.remove(id);
             size--;
+        }
     }
 
     private static class Node<Task> {
