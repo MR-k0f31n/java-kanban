@@ -42,11 +42,11 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     private List<Task> getHistoryCustom() {
         List<Task> showHistory = new ArrayList<>();
-        Node node = head;
 
-        while (node != null) {
-            showHistory.add((Task) node.task);
-            node = node.nextTask;
+        for (Node task : idMap.values()) {
+            if (task.task != null) {
+                showHistory.add((Task) task.task);
+            }
         }
 
         return showHistory;
@@ -83,6 +83,7 @@ public class InMemoryHistoryManager implements HistoryManager {
             } else {
                 nextTask.prevTask = prevTask;
             }
+            idMap.remove(node.task.getId());
             size--;
     }
 
