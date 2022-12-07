@@ -10,6 +10,7 @@ import ru.yandex.kanban.manager.task.TaskManager;
 public class Main {
 
     public static void main(String[] args) {
+
         System.out.println("Version on Sprint 4");
         TaskManager taskManager = Managers.getDefault();
 
@@ -119,14 +120,9 @@ public class Main {
         taskManager.deleteEpicTaskById(moving);
 
         //test history
-        taskManager.getSubById(listDoctor3);
+        taskManager.getEpicById(goToDoctor);
         taskManager.getTaskById(feedCat);
-        taskManager.getSubById(listDoctor3);
-        taskManager.getTaskById(feedCat);
-        taskManager.getSubById(listDoctor3);
-        taskManager.getTaskById(feedCat);
-        taskManager.getSubById(listDoctor3);
-        taskManager.getTaskById(feedCat);
+        taskManager.getEpicById(goToDoctor);
 
 
         System.out.println("Удалили эпик " + taskManager.getAllEpicTask());
