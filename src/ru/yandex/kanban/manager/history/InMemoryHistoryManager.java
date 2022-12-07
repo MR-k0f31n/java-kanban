@@ -53,7 +53,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         return list;
     }
 
-    private Node linkLast(Task task) {
+    private Node<Task> linkLast(Task task) {
         final Node<Task> oldTail = tail;
         final Node<Task> newNode = new Node<>(oldTail, task, null);
         tail = newNode;
@@ -67,10 +67,10 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     private void removeNode(int id) {
-        Node node = idMap.get(id);
+        Node<Task> node = idMap.get(id);
         if (node != null) {
-            final Node nextTask = node.nextTask;
-            final Node prevTask = node.prevTask;
+            final Node<Task> nextTask = node.nextTask;
+            final Node<Task> prevTask = node.prevTask;
             if (prevTask == null) {
                 head = node.nextTask;
             } else {
