@@ -1,5 +1,8 @@
 package ru.yandex.kanban.data;
 
+import ru.yandex.kanban.data.enums.Status;
+import ru.yandex.kanban.data.enums.TypeTask;
+
 public class SubTask extends Task {
 
     private int epicId;
@@ -18,6 +21,9 @@ public class SubTask extends Task {
         return epicId;
     }
 
+    public TypeTask getTypeTask () {
+        return TypeTask.SUB_TASK;
+    }
 
     @Override
     public String toString() {

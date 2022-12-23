@@ -1,6 +1,7 @@
 package ru.yandex.kanban.manager.history;
 
 import ru.yandex.kanban.data.Task;
+import ru.yandex.kanban.manager.interfaces.HistoryManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,7 +24,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     public final void add(Task task) {
         int id = task.getId();
         if (size() > 10) {
-            remove(id);
+            remove(head.task.getId());
         }
         if (idMap.containsKey(id)) {
             remove(id);

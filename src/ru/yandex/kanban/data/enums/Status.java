@@ -1,4 +1,4 @@
-package ru.yandex.kanban.data;
+package ru.yandex.kanban.data.enums;
 
 public enum Status {
     NEW,

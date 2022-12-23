@@ -1,11 +1,12 @@
-package ru.yandex.kanban.manager.task;
+package ru.yandex.kanban.manager.implemented;
 
-import ru.yandex.kanban.manager.history.HistoryManager;
+import ru.yandex.kanban.manager.interfaces.HistoryManager;
 import ru.yandex.kanban.data.EpicTask;
-import ru.yandex.kanban.data.Status;
+import ru.yandex.kanban.data.enums.Status;
 import ru.yandex.kanban.data.SubTask;
 import ru.yandex.kanban.data.Task;
-import ru.yandex.kanban.manager.Managers;
+import ru.yandex.kanban.manager.util.Managers;
+import ru.yandex.kanban.manager.interfaces.TaskManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -207,4 +208,15 @@ public class InMemoryTaskManager implements TaskManager {
         return history.getHistory();
     }
 
+    public HashMap<Integer, Task> getTaskMap() {
+        return taskMap;
+    }
+
+    public HashMap<Integer, SubTask> getSubTaskMap() {
+        return subTaskMap;
+    }
+
+    public HashMap<Integer, EpicTask> getEpicTaskMap() {
+        return epicTaskMap;
+    }
 }

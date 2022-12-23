@@ -1,17 +1,17 @@
 package ru.yandex.kanban;
 
 import ru.yandex.kanban.data.EpicTask;
-import ru.yandex.kanban.data.Status;
+import ru.yandex.kanban.data.enums.Status;
 import ru.yandex.kanban.data.SubTask;
 import ru.yandex.kanban.data.Task;
-import ru.yandex.kanban.manager.Managers;
-import ru.yandex.kanban.manager.task.TaskManager;
+import ru.yandex.kanban.manager.util.Managers;
+import ru.yandex.kanban.manager.interfaces.TaskManager;
 
 public class Main {
 
     public static void main(String[] args) {
 
-        System.out.println("Version on Sprint 4");
+        System.out.println("Version on Sprint 6");
         TaskManager taskManager = Managers.getDefault();
 
         Task task1 = new Task("Не забыть покормить кота Пикселя",
@@ -59,7 +59,7 @@ public class Main {
 
         int listDoctor3 = taskManager.addNewTask(subTask5);
 
-        System.out.println("Выводим спискок  тасков " + taskManager.getAllListTask());
+    /*    System.out.println("Выводим спискок  тасков " + taskManager.getAllListTask());
         System.out.println("Выводим спискок  епик тасков " + taskManager.getAllEpicTask());
         System.out.println("Выводим спискок  саб тасков " + taskManager.getAllSubTask());
 
@@ -127,6 +127,6 @@ public class Main {
 
         System.out.println("Удалили эпик " + taskManager.getAllEpicTask());
         System.out.println("Удалили эпик " + taskManager.getAllSubTask());
-        System.out.println("History" + taskManager.getHistory());
+        System.out.println("History" + taskManager.getHistory());*/
     }
 }

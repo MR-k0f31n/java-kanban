@@ -1,4 +1,7 @@
 package ru.yandex.kanban.data;
+import ru.yandex.kanban.data.enums.Status;
+import ru.yandex.kanban.data.enums.TypeTask;
+
 import java.util.ArrayList;
 
 public class EpicTask extends Task {
@@ -22,6 +25,9 @@ public class EpicTask extends Task {
         subTaskIds.add(id);
     }
 
+    public TypeTask getTypeTask () {
+        return TypeTask.EPIC_TASK;
+    }
 
     @Override
     public String toString() {

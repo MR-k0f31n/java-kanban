@@ -1,4 +1,4 @@
-package ru.yandex.kanban.manager.task;
+package ru.yandex.kanban.manager.interfaces;
 
 import ru.yandex.kanban.data.EpicTask;
 import ru.yandex.kanban.data.SubTask;

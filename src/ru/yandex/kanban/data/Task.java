@@ -1,5 +1,8 @@
 package ru.yandex.kanban.data;
 
+import ru.yandex.kanban.data.enums.Status;
+import ru.yandex.kanban.data.enums.TypeTask;
+
 public class Task {
 
     protected Integer id;
@@ -53,6 +56,10 @@ public class Task {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public TypeTask getTypeTask () {
+        return TypeTask.TASK;
     }
 
     @Override
