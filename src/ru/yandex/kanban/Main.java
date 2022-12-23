@@ -59,7 +59,7 @@ public class Main {
 
         int listDoctor3 = taskManager.addNewTask(subTask5);
 
-    /*    System.out.println("Выводим спискок  тасков " + taskManager.getAllListTask());
+        System.out.println("Выводим спискок  тасков " + taskManager.getAllListTask());
         System.out.println("Выводим спискок  епик тасков " + taskManager.getAllEpicTask());
         System.out.println("Выводим спискок  саб тасков " + taskManager.getAllSubTask());
 
@@ -127,6 +127,6 @@ public class Main {
 
         System.out.println("Удалили эпик " + taskManager.getAllEpicTask());
         System.out.println("Удалили эпик " + taskManager.getAllSubTask());
-        System.out.println("History" + taskManager.getHistory());*/
+        System.out.println("History" + taskManager.getHistory());
     }
 }

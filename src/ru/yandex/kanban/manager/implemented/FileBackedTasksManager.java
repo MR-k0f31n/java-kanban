@@ -15,7 +15,7 @@ import java.util.Map;
 public class FileBackedTasksManager extends InMemoryTaskManager {
 
     private void save() {
-        try (Writer writer = new FileWriter("resources/history.csv", StandardCharsets.UTF_8, true)) {
+        try (Writer writer = new FileWriter("resources/history.csv", StandardCharsets.UTF_8, false)) {
             String firstStr = "id,type,name,status,description,epic";
             writer.write(firstStr + "\n");
             for (Task task : getTaskMap().values()) {
@@ -96,5 +96,22 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return task.getId();
     }
 
+    @Override
+    public void updateTask (Task newTask) {
+        super.updateTask(newTask);
+        save();
+    }
+
+    @Override
+    public void updateEpicTask (EpicTask newTask) {
+        super.updateTask(newTask);
+        save();
+    }
+
+    @Override
+    public void updateSubTask (SubTask newTask) {
+        super.updateTask(newTask);
+        save();
+    }
 }
 
