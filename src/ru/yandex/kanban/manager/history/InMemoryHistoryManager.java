@@ -23,9 +23,6 @@ public class InMemoryHistoryManager implements HistoryManager {
     @Override
     public final void add(Task task) {
         int id = task.getId();
-        if (size() > 10) {
-            remove(head.task.getId());
-        }
         if (idMap.containsKey(id)) {
             remove(id);
         }

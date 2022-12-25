@@ -15,16 +15,20 @@ import java.util.List;
 public class InMemoryTaskManager implements TaskManager {
 
     private final HistoryManager history;
-    private int currencyID = 1;
-    private final HashMap<Integer, Task> taskMap;
-    private final HashMap<Integer, SubTask> subTaskMap;
-    private final HashMap<Integer, EpicTask> epicTaskMap;
+    protected int currencyID = 1;
+    protected final HashMap<Integer, Task> taskMap;
+    protected final HashMap<Integer, SubTask> subTaskMap;
+    protected final HashMap<Integer, EpicTask> epicTaskMap;
 
     public InMemoryTaskManager () {
         this.history = Managers.getDefaultHistory();
         this.taskMap = new HashMap<>();
         this.epicTaskMap = new HashMap<>();
         this.subTaskMap = new HashMap<>();
+    }
+
+    private int getCurrencyID () {
+        return this.currencyID;
     }
 
     @Override

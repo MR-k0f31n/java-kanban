@@ -20,7 +20,7 @@ public class Main {
         int feedCat = taskManager.addNewTask(task1);
 
         Task task2 = new Task("Проверить насколько потолстел Пиксель",
-                "Если вес больше 300 грамм, заставить бегать в колесе");
+                "Если вес больше 300 грамм - заставить бегать в колесе");
 
         int weighHamster = taskManager.addNewTask(task2);
 
