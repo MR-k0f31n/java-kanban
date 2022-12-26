@@ -4,7 +4,7 @@ import ru.yandex.kanban.data.EpicTask;
 import ru.yandex.kanban.data.enums.Status;
 import ru.yandex.kanban.data.SubTask;
 import ru.yandex.kanban.data.Task;
-import ru.yandex.kanban.manager.util.Managers;
+import ru.yandex.kanban.manager.Managers;
 import ru.yandex.kanban.manager.interfaces.TaskManager;
 
 public class Main {
@@ -12,7 +12,7 @@ public class Main {
     public static void main(String[] args) {
 
         System.out.println("Version on Sprint 6");
-        TaskManager taskManager = Managers.getDefault();
+        TaskManager taskManager = Managers.getInMemory();
 
         Task task1 = new Task("Не забыть покормить кота Пикселя",
                 "200 грамм корма на день ему достаточно");
