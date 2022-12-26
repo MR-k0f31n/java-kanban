@@ -5,11 +5,14 @@ import ru.yandex.kanban.data.SubTask;
 import ru.yandex.kanban.data.Task;
 import ru.yandex.kanban.data.enums.TypeTask;
 import ru.yandex.kanban.exceptions.ManagerSaveException;
+import ru.yandex.kanban.manager.Managers;
+import ru.yandex.kanban.manager.interfaces.TaskManager;
 import ru.yandex.kanban.manager.util.Converter;
 import ru.yandex.kanban.manager.util.Util;
 
-
-import java.io.*;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -96,7 +99,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     //после ваших коментариев и это тоже хочу унести, вопрос а стоит ли?
     // например в тот же класс конвентера или новый класс
-    private static void recoveryHistory (FileBackedTasksManager fileBackedTasksManager, List<Integer> historyList) {
+    private static void recoveryHistory(FileBackedTasksManager fileBackedTasksManager, List<Integer> historyList) {
         for (Integer id : historyList) {
             if (id != null) {
                 if (fileBackedTasksManager.taskMap.containsKey(id)) {
@@ -222,8 +225,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     public static void main(String[] args) {
-        FileBackedTasksManager manager = new FileBackedTasksManager("resources/history.csv");
-        Task task1 = new Task("Task","Description");
+        TaskManager manager = Managers.getDefault();
+        Task task1 = new Task("Task", "Description");
 
         int taskNum1 = manager.addNewTask(task1);
 
