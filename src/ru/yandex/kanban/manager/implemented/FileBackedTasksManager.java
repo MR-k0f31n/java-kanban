@@ -127,7 +127,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 }
             }
             synchEpicAndSubTask(fileBackedTasksManager);
-            fileBackedTasksManager.currencyID = maxId++;
+            fileBackedTasksManager.currencyID = maxId+1;
 
             for (Integer id : historyList) {
                 if (id != null) {
