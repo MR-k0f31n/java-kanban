@@ -5,15 +5,14 @@ import ru.yandex.kanban.data.enums.TypeTask;
 import java.util.ArrayList;
 
 public class EpicTask extends Task {
-    private ArrayList<Integer> subTaskIds = new ArrayList<>();
+    private final ArrayList<Integer> subTaskIds = new ArrayList<>();
 
     public EpicTask(String name, String description) {
         super(name, description);
     }
 
-    public EpicTask (int id, String name, String description, Status status, ArrayList<Integer> subTaskIds) {
+    public EpicTask (int id, String name, String description, Status status) {
         super(id, name, description, status);
-        this.subTaskIds = subTaskIds;
     }
 
     public ArrayList<Integer> getSubTaskIds() {

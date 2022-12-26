@@ -27,10 +27,6 @@ public class InMemoryTaskManager implements TaskManager {
         this.subTaskMap = new HashMap<>();
     }
 
-    private int getCurrencyID () {
-        return this.currencyID;
-    }
-
     @Override
     public ArrayList<Task> getAllListTask () { return new ArrayList<>(taskMap.values()); }
 
@@ -176,7 +172,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
 
-    private void syncEpicTaskStatus(int idEpic) {
+    protected void syncEpicTaskStatus(int idEpic) {
         int subNew = 0;
         int subDone = 0;
 

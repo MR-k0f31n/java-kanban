@@ -126,6 +126,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                     maxId = id;
                 }
             }
+            synchEpicAndSubTask(fileBackedTasksManager);
             fileBackedTasksManager.currencyID = maxId++;
 
             for (Integer id : historyList) {
@@ -145,13 +146,26 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return fileBackedTasksManager;
     }
 
+    private static void synchEpicAndSubTask (FileBackedTasksManager fileBackedTasksManager) {
+        for (SubTask task : fileBackedTasksManager.subTaskMap.values()) {
+            if (task != null) {
+                int idSub = task.getId();
+                int idEpic = task.getEpicID();
+                if(fileBackedTasksManager.epicTaskMap.containsKey(idEpic)) {
+                    fileBackedTasksManager.epicTaskMap.get(idEpic).addSubTaskIds(idSub);
+                    fileBackedTasksManager.syncEpicTaskStatus(idEpic);
+                }
+            }
+        }
+
+    }
 
     private static Task taskFromString(String[] strArr) {
         return new Task(Integer.parseInt(strArr[0]), strArr[2], strArr[4], Status.valueOf(strArr[3]));
     }
 
     private static EpicTask EpicTaskFromString(String[] strArr) {
-        return new EpicTask(Integer.parseInt(strArr[0]), strArr[2], strArr[4], Status.valueOf(strArr[3]), null);
+        return new EpicTask(Integer.parseInt(strArr[0]), strArr[2], strArr[4], Status.valueOf(strArr[3]));
     }
 
     private static SubTask SubTaskFromString(String[] strArr) {
