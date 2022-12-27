@@ -38,7 +38,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 writer.write(converter.convertToStringTask(task));
                 writer.write("\n");
             }
-            //хахаха) пардон тут и тесты и пробы и кастинг, лишбы заработало, перелопали пол интернета.
             for (EpicTask epicTask : epicTaskMap.values()) {
                 writer.write(converter.convertToStringTask(epicTask));
                 writer.write("\n");
@@ -97,8 +96,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return fileBackedTasksManager;
     }
 
-    //после ваших коментариев и это тоже хочу унести, вопрос а стоит ли?
-    // например в тот же класс конвентера или новый класс
     private static void recoveryHistory(FileBackedTasksManager fileBackedTasksManager, List<Integer> historyList) {
         for (Integer id : historyList) {
             if (id != null) {
@@ -126,7 +123,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
 
     }
-
 
     @Override
     public int addNewTask(Task task) {
