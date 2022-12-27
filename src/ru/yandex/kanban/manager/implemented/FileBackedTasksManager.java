@@ -60,7 +60,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager(file);
         if (file.exists()) {
             try {
-                String fileToLine = Files.readString(file.toPath());
+                String fileToLine = Files.readString(file.toPath(), StandardCharsets.UTF_8);
                 String[] line = fileToLine.split("\r?\n");
                 List<Integer> historyList = Converter.historyFromString(line[line.length - 1]);
                 int maxId = 0;
