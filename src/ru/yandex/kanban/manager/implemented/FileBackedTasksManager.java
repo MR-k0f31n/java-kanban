@@ -34,7 +34,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     private void save() {
-        try (Writer writer = new FileWriter(path, StandardCharsets.UTF_8, false)) {
+        try (Writer writer = new FileWriter(path.toString(), StandardCharsets.UTF_8, false)) {
             writer.write(HEAD + "\n");
             for (Task task : taskMap.values()) {
                 writer.write(converter.convertToStringTask(task));
@@ -58,43 +58,51 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     public static FileBackedTasksManager loadFromFile(File file) {
         FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager(file);
-        if (file.exists(file.toPath())) {}
-        try {
-            String file = Files.readString(filePath);
-            String[] line = file.split("\r?\n");
-            List<Integer> historyList = Converter.historyFromString(line[line.length - 1]);
-            int maxId = 0;
+        if (file.exists()) {
+            try {
+                String fileToLine = Files.readString(file.toPath());
+                String[] line = fileToLine.split("\r?\n");
+                List<Integer> historyList = Converter.historyFromString(line[line.length - 1]);
+                int maxId = 0;
 
-            for (int i = 1; i < line.length - 2; i++) {
-                String[] parts = line[i].split(",");
-                TypeTask type = TypeTask.valueOf(parts[1]);
-                int id = Integer.parseInt(parts[0]);
+                for (int i = 1; i < line.length - 2; i++) {
+                    String[] parts = line[i].split(",");
+                    TypeTask type = TypeTask.valueOf(parts[1]);
+                    int id = Integer.parseInt(parts[0]);
 
-                switch (type) {
-                    case TASK -> {
-                        Task task = Converter.taskFromString(parts);
-                        fileBackedTasksManager.taskMap.put(id, task);
+                    switch (type) {
+                        case TASK -> {
+                            Task task = Converter.taskFromString(parts);
+                            fileBackedTasksManager.taskMap.put(id, task);
+                        }
+                        case EPIC_TASK -> {
+                            EpicTask epicTask = Converter.EpicTaskFromString(parts);
+                            fileBackedTasksManager.epicTaskMap.put(id, epicTask);
+                        }
+                        case SUB_TASK -> {
+                            SubTask subTask = Converter.SubTaskFromString(parts);
+                            fileBackedTasksManager.subTaskMap.put(id, subTask);
+                        }
                     }
-                    case EPIC_TASK -> {
-                        EpicTask epicTask = Converter.EpicTaskFromString(parts);
-                        fileBackedTasksManager.epicTaskMap.put(id, epicTask);
-                    }
-                    case SUB_TASK -> {
-                        SubTask subTask = Converter.SubTaskFromString(parts);
-                        fileBackedTasksManager.subTaskMap.put(id, subTask);
+                    if (id > maxId) {
+                        maxId = id;
                     }
                 }
-                if (id > maxId) {
-                    maxId = id;
-                }
+                synchEpicAndSubTask(fileBackedTasksManager);
+                recoveryHistory(fileBackedTasksManager, historyList);
+                fileBackedTasksManager.currencyID = maxId + 1;
+
+
+            } catch (IOException exc) {
+                throw new ManagerSaveException("Невозможно прочитать файл.");
             }
-            synchEpicAndSubTask(fileBackedTasksManager);
-            recoveryHistory(fileBackedTasksManager, historyList);
-            fileBackedTasksManager.currencyID = maxId + 1;
-
-
-        } catch (IOException exc) {
-            throw new ManagerSaveException("Невозможно прочитать файл.");
+        } else {
+            System.out.println("Файл не обнаружен созадние...");
+            try {
+                Files.createFile(file.toPath());
+            } catch (IOException exc) {
+                System.out.println(exc.getMessage());
+            }
         }
         return fileBackedTasksManager;
     }
@@ -124,7 +132,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 }
             }
         }
-
     }
 
     @Override
@@ -225,11 +232,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     public static void main(String[] args) {
         TaskManager manager = Managers.getDefault();
-        Task task1 = new Task("Task", "Description");
+        Task task1 = new Task("Если я опять не так сделал", "Лучше пристрелите меня как собаку");
 
         int taskNum1 = manager.addNewTask(task1);
 
-        Task task2 = new Task("Task2", "DescTask2");
+        Task task2 = new Task("Александр", "Мне кажется вы переоцениваете старика =D ");
 
         int taskNum2 = manager.addNewTask(task2);
 
