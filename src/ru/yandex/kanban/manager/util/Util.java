@@ -4,5 +4,4 @@ public class Util {
     public static Converter getConverter() {
         return new Converter();
     }
-
 }

@@ -8,28 +8,30 @@ import ru.yandex.kanban.exceptions.ManagerSaveException;
 import ru.yandex.kanban.manager.Managers;
 import ru.yandex.kanban.manager.interfaces.TaskManager;
 import ru.yandex.kanban.manager.util.Converter;
-import ru.yandex.kanban.manager.util.Util;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
 import java.util.List;
+
+import static ru.yandex.kanban.manager.util.Util.getConverter;
 
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
     private final Converter converter;
-    private final String path;
+    private final Path path;
     private static final String HEAD = "id,type,name,status,description,epic";
 
-    public FileBackedTasksManager(String file) {
+    private FileBackedTasksManager(File file) {
         super();
-        this.path = file;
-        this.converter = Util.getConverter();
+        this.path = file.toPath();
+        this.converter = getConverter();
     }
-
 
     private void save() {
         try (Writer writer = new FileWriter(path, StandardCharsets.UTF_8, false)) {
@@ -54,10 +56,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    public static FileBackedTasksManager loadFromFile(String filePath) {
-        FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager(filePath);
+    public static FileBackedTasksManager loadFromFile(File file) {
+        FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager(file);
+        if (file.exists(file.toPath())) {}
         try {
-            String file = Files.readString(Path.of(filePath));
+            String file = Files.readString(filePath);
             String[] line = file.split("\r?\n");
             List<Integer> historyList = Converter.historyFromString(line[line.length - 1]);
             int maxId = 0;
@@ -269,12 +272,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         System.out.println("Сабы: " + manager.getAllSubTask());
         System.out.println("История: " + manager.getHistory());
 
-        FileBackedTasksManager newManager = loadFromFile("resources/history.csv");
+        TaskManager newManager = Managers.getDefault();
 
         System.out.println("newManager: все таски - " + newManager.getAllListTask());
         System.out.println("newManager: все эпики - " + newManager.getAllEpicTask());
         System.out.println("newManager: все сабы - " + newManager.getAllSubTask());
-        System.out.println("newManager: Текущий ID: " + newManager.currencyID);
         System.out.println("newManager: история - " + newManager.getHistory());
     }
 }

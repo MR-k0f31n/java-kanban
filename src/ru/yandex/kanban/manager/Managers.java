@@ -6,7 +6,12 @@ import ru.yandex.kanban.manager.interfaces.HistoryManager;
 import ru.yandex.kanban.manager.history.InMemoryHistoryManager;
 import ru.yandex.kanban.manager.interfaces.TaskManager;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 public class Managers {
+
     public static TaskManager getInMemory() {
         return new InMemoryTaskManager();
     }
@@ -16,8 +21,8 @@ public class Managers {
     }
 
     public static TaskManager getDefault() {
-        // Александр, я тупой, пожалуйста покажите как правильно передать путь в рут папку я замучался =((
-        return new FileBackedTasksManager("resources/history.csv");
+        //Спасибо!!!!! Я еще даже не джун, я пелёночник) ресурсов мало знаю.
+        return FileBackedTasksManager.loadFromFile(new File("resource/history.csv"));
     }
 
 }

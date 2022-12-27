@@ -10,6 +10,8 @@ import java.util.List;
 
 public class Converter {
 
+    public Converter() {
+    }
 
     public String convertToStringTask(Task task) {
         String[] arrString = {
@@ -84,5 +86,4 @@ public class Converter {
         }
         return list;
     }
-
 }
