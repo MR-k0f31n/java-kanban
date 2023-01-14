@@ -236,7 +236,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
         int taskNum1 = manager.addNewTask(task1);
 
-        Task task2 = new Task("Александр", "Мне кажется вы переоцениваете старика =D ");
+        Task task2 = new Task("task2", "descTask2");
 
         int taskNum2 = manager.addNewTask(task2);
 
@@ -272,7 +272,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         System.out.println("Сабы: " + manager.getAllSubTask());
         System.out.println("История: " + manager.getHistory());
 
-        manager.deleteEpicTaskById(epicTaskNum1); // testing delete from save file - OK.
+        //manager.deleteEpicTaskById(epicTaskNum1); // testing delete from save file - OK.
 
         System.out.println("Таски: " + manager.getAllListTask());
         System.out.println("Эпики: " + manager.getAllEpicTask());

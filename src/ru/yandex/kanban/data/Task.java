@@ -3,14 +3,13 @@ package ru.yandex.kanban.data;
 import ru.yandex.kanban.data.enums.Status;
 import ru.yandex.kanban.data.enums.TypeTask;
 
+import java.util.Objects;
+
 public class Task {
 
     protected Integer id;
-
     protected String name;
-
     protected Status status;
-
     protected String description;
 
     public Task (String name, String description) {
@@ -58,7 +57,7 @@ public class Task {
         this.description = description;
     }
 
-    public TypeTask getTypeTask () {
+    public TypeTask getTypeTask() {
         return TypeTask.TASK;
     }
 
@@ -70,5 +69,13 @@ public class Task {
                 ", status='" + status + '\'' +
                 ", description='" + description.length() + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Task task = (Task) o;
+        return Objects.equals(id, task.id) && Objects.equals(name, task.name) && status == task.status && Objects.equals(description, task.description);
     }
 }

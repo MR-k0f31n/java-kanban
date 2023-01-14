@@ -24,7 +24,7 @@ public class EpicTask extends Task {
         subTaskIds.add(id);
     }
 
-    public TypeTask getTypeTask () {
+    public final TypeTask getTypeTask () {
         return TypeTask.EPIC_TASK;
     }
 
