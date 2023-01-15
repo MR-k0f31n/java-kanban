@@ -3,17 +3,19 @@ package ru.yandex.kanban.data;
 import ru.yandex.kanban.data.enums.Status;
 import ru.yandex.kanban.data.enums.TypeTask;
 
+import java.time.LocalDateTime;
+
 public class SubTask extends Task {
 
     private int epicId;
 
-    public SubTask (String name, String description, int epicId) {
-        super(name, description);
+    public SubTask (String name, String description, LocalDateTime time, int duration, int epicId) {
+        super(name, description, time, duration);
         this.epicId = epicId;
     }
 
-    public SubTask (int id, String name, String description, Status status, int epicId) {
-        super(id, name, description, status);
+    public SubTask (int id, String name, String description, LocalDateTime startTime,  Status status, int duration, int epicId) {
+        super(id, name, description, startTime, status, duration);
         this.epicId = epicId;
     }
 
@@ -33,6 +35,8 @@ public class SubTask extends Task {
                 ", name='" + name.length() + '\'' +
                 ", status='" + status + '\'' +
                 ", description='" + description.length() + '\'' +
+                ", startTime=" + startTime +
+                ", duration=" + duration +
                 '}';
     }
 }

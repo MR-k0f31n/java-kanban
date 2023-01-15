@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import ru.yandex.kanban.data.enums.Status;
 import ru.yandex.kanban.data.enums.TypeTask;
 
+import java.time.LocalDateTime;
+
 class TaskTest {
 
     private Task task;
@@ -16,7 +18,9 @@ class TaskTest {
                 1,
                 "Задание было сложным",
                 "Но мы с лопатой",
-                Status.NEW
+                LocalDateTime.of(2022, 12, 21, 10, 25),
+                Status.NEW,
+                15
         );
     }
 
@@ -24,7 +28,9 @@ class TaskTest {
     public void testConstructorFromAddTask () {
         final Task taskTest = new Task(
                 "Create task1",
-                "Description task1"
+                "Description task1",
+                LocalDateTime.of(2022, 12, 21, 10, 25),
+                15
         );
 
         Assertions.assertEquals("Create task1", taskTest.getName());
@@ -37,7 +43,9 @@ class TaskTest {
                 1,
                 "Task with all field",
                 "Test Description",
-                Status.IN_PROGRESS
+                LocalDateTime.of(2022, 12, 21, 10, 25),
+                Status.IN_PROGRESS,
+                15
         );
 
         Assertions.assertEquals(1, taskTest.getId());
@@ -65,7 +73,9 @@ class TaskTest {
                 1,
                 "Задание было сложным",
                 "Но мы с лопатой",
-                Status.NEW
+                LocalDateTime.of(2022, 12, 21, 10, 25),
+                Status.NEW,
+                15
         );
 
         Assertions.assertEquals(taskTest, task);
@@ -73,7 +83,7 @@ class TaskTest {
 
     @Test
     public void testMethodToStringToTask () {
-        final String taskToString = "Task{id=1, name='20', status='NEW', description='15'}";
+        final String taskToString = "Task{id=1, name='20', status='NEW', description='15', startTime=2022-12-21T10:25, duration=null}";
         Assertions.assertEquals(taskToString, task.toString());
     }
 

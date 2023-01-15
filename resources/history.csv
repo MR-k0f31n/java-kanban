@@ -1,10 +1,4 @@
-id,type,name,status,description,epic
-1,TASK,Если я опять не так сделал,NEW,Лучше пристрелите меня как собаку
-2,TASK,task2,NEW,descTask2
-3,EPIC_TASK,Epic1,NEW,descrEpic1
-4,EPIC_TASK,Epic2,NEW,descrEpic2
-5,SUB_TASK,sub1,NEW,descrSub1,3
-6,SUB_TASK,sub2,NEW,descrSub2,4
-7,SUB_TASK,sub3,NEW,descrSub3,4
+id,type,name,status, dataTime, duration, description, epic
+1,TASK,TaskONe name,NEW,2022-12-21T10:25,15,Description from TaskONe
+2,TASK,TaskONe name,NEW,2022-12-21T12:25,15,Description from TaskONe
 
-7,4,1,6,5,3

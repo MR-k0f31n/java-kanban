@@ -8,9 +8,10 @@ import ru.yandex.kanban.data.Task;
 import ru.yandex.kanban.manager.Managers;
 import ru.yandex.kanban.manager.interfaces.TaskManager;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
 
@@ -19,12 +20,15 @@ public class InMemoryTaskManager implements TaskManager {
     protected final HashMap<Integer, Task> taskMap;
     protected final HashMap<Integer, SubTask> subTaskMap;
     protected final HashMap<Integer, EpicTask> epicTaskMap;
+    protected final TreeSet<Task> listOfTasksSortedByTime;
+    protected final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm | dd-MM-yy ");
 
     public InMemoryTaskManager() {
         this.history = Managers.getDefaultHistory();
         this.taskMap = new HashMap<>();
         this.epicTaskMap = new HashMap<>();
         this.subTaskMap = new HashMap<>();
+        this.listOfTasksSortedByTime = new TreeSet<>(Comparator.comparing(Task::getStartTime));
     }
 
     @Override
@@ -84,6 +88,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public int addNewTask(Task task) {
         task.setId(currencyID++);
+        validationOfTasksOverTime(task);
         taskMap.put(task.getId(), task);
         return task.getId();
     }
@@ -91,21 +96,22 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public int addNewTask(EpicTask epicTask) {
         epicTask.setId(currencyID++);
+        validationOfTasksOverTime(epicTask);
         epicTaskMap.put(epicTask.getId(), epicTask);
         return epicTask.getId();
     }
 
     @Override
-    public int addNewTask(SubTask subTask) {
+    public int addNewTask(SubTask subTask) throws RuntimeException {
         if (epicTaskMap.containsKey(subTask.getEpicID())) {
+            throw new RuntimeException ("Такого эпика нет");
+        }
             subTask.setId(currencyID++);
             epicTaskMap.get(subTask.getEpicID()).addSubTaskIds(subTask.getId());
             subTaskMap.put(subTask.getId(), subTask);
             syncEpicTaskStatus(subTask.getEpicID());
+            validationOfTasksOverTime(subTask);
             return subTask.getId();
-        } else {
-            return -1;
-        }
     }
 
     @Override
@@ -177,7 +183,6 @@ public class InMemoryTaskManager implements TaskManager {
         return subByEpicTaskList;
     }
 
-
     protected void syncEpicTaskStatus(int idEpic) {
         int subNew = 0;
         int subDone = 0;
@@ -209,8 +214,50 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
+    private void StarAndEndTimeForEpicTask (EpicTask epicTask) {
+        LocalDateTime endSubTask;
+        LocalDateTime firstSubTask;
+        Duration duration;
+
+        for (Integer idSub : epicTask.getSubTaskIds()) {
+            SubTask subTask = getSubtaskForMetodNotHistory(idSub);
+            List<LocalDateTime> time;
+            if(subTask.getStartTime() != null && subTask.getDuration() != null) {
+                time = (List<LocalDateTime>) Comparator.comparing(SubTask::getStartTime);
+            }
+        }
+
+    }
+
+    private EpicTask getEpicForMetodNotHistory(int id) {
+        return epicTaskMap.get(id);
+    }
+
+    private SubTask getSubtaskForMetodNotHistory(int id) {
+        return subTaskMap.get(id);
+    }
+
+    private void validationOfTasksOverTime(Task task) throws RuntimeException {
+        listOfTasksSortedByTime.add(task);
+        LocalDateTime prev = LocalDateTime.MIN;
+        for (Task priorityTask : listOfTasksSortedByTime) {
+            if (priorityTask.getStartTime() != null) {
+                if (prev.isAfter(priorityTask.getStartTime())) {
+                    throw new RuntimeException("Задачи " + task.getName() + " и " + priorityTask.getName()
+                            + " пересекаются по времени");
+                }
+                prev = priorityTask.getEndTime().orElse(priorityTask.getStartTime());
+            }
+        }
+    }
+
     @Override
     public List<Task> getHistory() {
         return history.getHistory();
+    }
+
+    @Override
+    public List<Task> getPrioritizedTasks() {
+        return listOfTasksSortedByTime.stream().toList();
     }
 }

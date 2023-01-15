@@ -2,17 +2,20 @@ package ru.yandex.kanban.data;
 import ru.yandex.kanban.data.enums.Status;
 import ru.yandex.kanban.data.enums.TypeTask;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Optional;
 
 public class EpicTask extends Task {
     private final ArrayList<Integer> subTaskIds = new ArrayList<>();
+    private LocalDateTime endTime;
 
-    public EpicTask(String name, String description) {
-        super(name, description);
+    public EpicTask(String name, String description, LocalDateTime time, int duration) {
+        super(name, description, time, duration);
     }
 
-    public EpicTask (int id, String name, String description, Status status) {
-        super(id, name, description, status);
+    public EpicTask (int id, String name, String description, LocalDateTime startTime, Status status, int duration) {
+        super(id, name, description, startTime, status, duration);
     }
 
     public ArrayList<Integer> getSubTaskIds() {
@@ -29,6 +32,19 @@ public class EpicTask extends Task {
     }
 
     @Override
+    public Optional<LocalDateTime> getEndTime() {
+        if (endTime == null) {
+            return Optional.empty();
+        } else {
+            return Optional.of(endTime);
+        }
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    @Override
     public String toString() {
         return "EpicTask{" +
                 "subTaskIDs=" + subTaskIds +
@@ -36,6 +52,8 @@ public class EpicTask extends Task {
                 ", name='" + name.length()  + '\'' +
                 ", status='" + status + '\'' +
                 ", description='" + description.length() + '\'' +
+                ", startTime=" + startTime +
+                ", duration=" + duration +
                 '}';
     }
 }

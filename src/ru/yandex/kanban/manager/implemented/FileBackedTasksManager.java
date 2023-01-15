@@ -17,6 +17,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static ru.yandex.kanban.manager.util.Util.getConverter;
@@ -25,7 +26,7 @@ import static ru.yandex.kanban.manager.util.Util.getConverter;
 public class FileBackedTasksManager extends InMemoryTaskManager {
     private final Converter converter;
     private final Path path;
-    private static final String HEAD = "id,type,name,status,description,epic";
+    private static final String HEAD = "id,type,name,status, dataTime, duration, description, epic";
 
     private FileBackedTasksManager(File file) {
         super();
@@ -228,62 +229,5 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     public void clearAllSubTask() {
         super.clearAllSubTask();
         save();
-    }
-
-    public static void main(String[] args) {
-        TaskManager manager = Managers.getDefault();
-        Task task1 = new Task("Если я опять не так сделал", "Лучше пристрелите меня как собаку");
-
-        int taskNum1 = manager.addNewTask(task1);
-
-        Task task2 = new Task("task2", "descTask2");
-
-        int taskNum2 = manager.addNewTask(task2);
-
-        EpicTask epicTask1 = new EpicTask("Epic1", "descrEpic1");
-
-        int epicTaskNum1 = manager.addNewTask(epicTask1);
-
-        EpicTask epicTask2 = new EpicTask("Epic2", "descrEpic2");
-
-        int epicTaskNum2 = manager.addNewTask(epicTask2);
-
-        SubTask subTask1 = new SubTask("sub1", "descrSub1", epicTaskNum1);
-
-        int subTaskNum1 = manager.addNewTask(subTask1);
-
-        SubTask subTask2 = new SubTask("sub2", "descrSub2", epicTaskNum2);
-
-        int subTaskNum2 = manager.addNewTask(subTask2);
-
-        SubTask subTask3 = new SubTask("sub3", "descrSub3", epicTaskNum2);
-
-        int subTaskNum3 = manager.addNewTask(subTask3);
-
-        manager.getSubById(subTaskNum3);
-        manager.getEpicById(epicTaskNum2);
-        manager.getTaskById(taskNum1);
-        manager.getSubById(subTaskNum2);
-        manager.getSubById(subTaskNum1);
-        manager.getEpicById(epicTaskNum1);
-
-        System.out.println("Таски: " + manager.getAllListTask());
-        System.out.println("Эпики: " + manager.getAllEpicTask());
-        System.out.println("Сабы: " + manager.getAllSubTask());
-        System.out.println("История: " + manager.getHistory());
-
-        //manager.deleteEpicTaskById(epicTaskNum1); // testing delete from save file - OK.
-
-        System.out.println("Таски: " + manager.getAllListTask());
-        System.out.println("Эпики: " + manager.getAllEpicTask());
-        System.out.println("Сабы: " + manager.getAllSubTask());
-        System.out.println("История: " + manager.getHistory());
-
-        TaskManager newManager = Managers.getDefault();
-
-        System.out.println("newManager: все таски - " + newManager.getAllListTask());
-        System.out.println("newManager: все эпики - " + newManager.getAllEpicTask());
-        System.out.println("newManager: все сабы - " + newManager.getAllSubTask());
-        System.out.println("newManager: история - " + newManager.getHistory());
     }
 }
