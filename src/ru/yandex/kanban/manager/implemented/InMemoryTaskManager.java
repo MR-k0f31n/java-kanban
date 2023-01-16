@@ -103,7 +103,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public int addNewTask(SubTask subTask) throws RuntimeException {
-        if (epicTaskMap.containsKey(subTask.getEpicID())) {
+        if (!epicTaskMap.containsKey(subTask.getEpicID())) {
             throw new RuntimeException ("Такого эпика нет");
         }
             subTask.setId(currencyID++);
@@ -212,6 +212,7 @@ public class InMemoryTaskManager implements TaskManager {
                 epicTaskMap.put(epicTask.getId(), epicTask);
             }
         }
+        StarAndEndTimeForEpicTask(epicTaskMap.get(idEpic));
     }
 
     private void StarAndEndTimeForEpicTask (EpicTask epicTask) {
@@ -219,22 +220,30 @@ public class InMemoryTaskManager implements TaskManager {
         LocalDateTime firstSubTask;
         Duration duration;
 
-        for (Integer idSub : epicTask.getSubTaskIds()) {
-            SubTask subTask = getSubtaskForMetodNotHistory(idSub);
-            List<LocalDateTime> time;
-            if(subTask.getStartTime() != null && subTask.getDuration() != null) {
-                time = (List<LocalDateTime>) Comparator.comparing(SubTask::getStartTime);
+        if (epicTask.getSubTaskIds().size() == 0) {
+            endSubTask = null;
+            firstSubTask = null;
+            duration = Duration.ZERO;
+        } else {
+            duration = epicTask.getDuration();
+            endSubTask = subTaskMap.get(epicTask.getSubTaskIds().get(0)).getStartTime();
+            firstSubTask = subTaskMap.get(epicTask.getSubTaskIds().get(0)).getStartTime();
+
+            for (int idSub : epicTask.getSubTaskIds()) {
+                LocalDateTime subTaskTime = subTaskMap.get(idSub).getStartTime();
+                if (firstSubTask.isAfter(subTaskTime)) {
+                    firstSubTask = subTaskTime;
+                }
+                if (endSubTask.isBefore(subTaskTime)) {
+                    endSubTask = subTaskTime;
+                }
+                duration.plus(subTaskMap.get(idSub).getDuration());
             }
         }
 
-    }
-
-    private EpicTask getEpicForMetodNotHistory(int id) {
-        return epicTaskMap.get(id);
-    }
-
-    private SubTask getSubtaskForMetodNotHistory(int id) {
-        return subTaskMap.get(id);
+        epicTask.setDuration(duration);
+        epicTask.setEndTime(endSubTask);
+        epicTask.setStartTime(firstSubTask);
     }
 
     private void validationOfTasksOverTime(Task task) throws RuntimeException {
@@ -246,7 +255,7 @@ public class InMemoryTaskManager implements TaskManager {
                     throw new RuntimeException("Задачи " + task.getName() + " и " + priorityTask.getName()
                             + " пересекаются по времени");
                 }
-                prev = priorityTask.getEndTime().orElse(priorityTask.getStartTime());
+                prev = priorityTask.getEndTime();
             }
         }
     }

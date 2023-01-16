@@ -190,22 +190,40 @@ abstract class TestManagers <T extends TaskManager> {
 
     @Test
     public void testPriorityTask () {
-        final int idTask = manager.addNewTask(new Task("TaskONe name",
-                "Description from TaskONe",
+        final int idEpicOne = manager.addNewTask(new EpicTask(
+                "EpicTaskOne name",
+                "EpicTaskOne des description",
                 LocalDateTime.of(2022, 12, 21, 10, 25),
                 15
         ));
-        final int idTask2 = manager.addNewTask(new Task("TaskONe name",
-                "Description from TaskONe",
-                LocalDateTime.of(2022, 12, 21, 12, 25),
-                15
-        ));
-        final int idTask3 = manager.addNewTask(new Task("TaskONe name",
-                "Description from TaskONe",
-                LocalDateTime.of(2022, 12, 20, 12, 25),
-                0
+
+        final int idSubTwoFromOneEpic = manager.addNewTask(new SubTask(
+                "SubTwoFromOneEpic name",
+                "SubTwoFromOneEpic des description",
+                LocalDateTime.of(2022, 12, 21, 15, 25),
+                15,
+                idEpicOne
         ));
 
-        System.out.println(manager.getPrioritizedTasks());
+        final int idSubOneFromFirstEpic = manager.addNewTask(new SubTask(
+                "SubOneFromOneEpic name",
+                "SubOneFromOneEpic des description",
+                LocalDateTime.of(2022, 12, 21, 9, 25),
+                15,
+                idEpicOne
+        ));
+
+        final int idSubThreeFromFirstEpic = manager.addNewTask(new SubTask(
+                "SubOneFromOneEpic name",
+                "SubOneFromOneEpic des description",
+                LocalDateTime.of(2022, 12, 21, 10, 25),
+                15,
+                idEpicOne
+        ));
+
+        System.out.println(manager.getEpicById(idEpicOne).getStartTime());
+        System.out.println(manager.getEpicById(idEpicOne).getEndTime());
+        System.out.println(manager.getEpicById(idEpicOne).getDuration());
+
     }
 }

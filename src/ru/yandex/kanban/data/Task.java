@@ -84,11 +84,11 @@ public class Task {
         this.duration = duration;
     }
 
-    public Optional<LocalDateTime> getEndTime(){
+    public LocalDateTime getEndTime(){
         if (startTime == null|| duration == null){
-            return Optional.empty();
+            return null;
         }
-        return Optional.of(startTime.plus(duration));
+        return startTime.plus(duration);
     }
 
 

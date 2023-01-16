@@ -32,12 +32,8 @@ public class EpicTask extends Task {
     }
 
     @Override
-    public Optional<LocalDateTime> getEndTime() {
-        if (endTime == null) {
-            return Optional.empty();
-        } else {
-            return Optional.of(endTime);
-        }
+    public LocalDateTime getEndTime() {
+        return endTime;
     }
 
     public void setEndTime(LocalDateTime endTime) {
