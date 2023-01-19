@@ -63,10 +63,15 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void clearAllEpicTask() {
-        for (Task task : listOfTasksSortedByTime) {
-            if (task.getTypeTask().equals(TypeTask.EPIC_TASK)) {
-                listOfTasksSortedByTime.remove(task);
-                history.remove(task.getId());
+        for (Task epicTask : listOfTasksSortedByTime) {
+            if (epicTask instanceof EpicTask) {
+                List<Integer> subsId = ((EpicTask) epicTask).getSubTaskIds();
+                for (Integer idSub : subsId) {
+                    listOfTasksSortedByTime.remove(subTaskMap.get(idSub));
+                    history.remove(idSub);
+                }
+                listOfTasksSortedByTime.remove(epicTask);
+                history.remove(epicTask.getId());
             }
         }
         epicTaskMap.clear();
@@ -74,6 +79,12 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void clearAllSubTask() {
+        for (Task subTask : listOfTasksSortedByTime) {
+            if (subTask instanceof SubTask) {
+                listOfTasksSortedByTime.remove(subTask);
+                history.remove(subTask.getId());
+            }
+        }
         subTaskMap.clear();
     }
 
@@ -158,8 +169,11 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteTaskById(int id) {
-        history.remove(id);
-        taskMap.remove(id);
+        if (taskMap.containsKey(id)) {
+            history.remove(id);
+            listOfTasksSortedByTime.remove(taskMap.get(id));
+            taskMap.remove(id);
+        }
     }
 
     @Override
@@ -167,9 +181,11 @@ public class InMemoryTaskManager implements TaskManager {
         if (epicTaskMap.containsKey(id)) {
             for (Integer subId : epicTaskMap.get(id).getSubTaskIds()) {
                 subTaskMap.remove(subId);
+                listOfTasksSortedByTime.remove(subTaskMap.get(subId));
                 history.remove(subId);
             }
             history.remove(id);
+            listOfTasksSortedByTime.remove(epicTaskMap.get(id));
             epicTaskMap.remove(id);
         }
     }
@@ -179,8 +195,9 @@ public class InMemoryTaskManager implements TaskManager {
         if (subTaskMap.containsKey(id)) {
             int epicId = subTaskMap.get(id).getEpicID();
             epicTaskMap.get(epicId).getSubTaskIds().remove((Integer) id);
-            subTaskMap.remove(id);
             history.remove(id);
+            listOfTasksSortedByTime.remove(subTaskMap.get(id));
+            subTaskMap.remove(id);
             syncEpicTaskStatus(epicId);
         }
     }
