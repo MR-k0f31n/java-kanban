@@ -1,5 +1,7 @@
 package ru.yandex.kanban.manager.implemented;
 
+import ru.yandex.kanban.data.enums.TypeTask;
+import ru.yandex.kanban.exceptions.ManagerSaveException;
 import ru.yandex.kanban.manager.interfaces.HistoryManager;
 import ru.yandex.kanban.data.EpicTask;
 import ru.yandex.kanban.data.enums.Status;
@@ -28,7 +30,9 @@ public class InMemoryTaskManager implements TaskManager {
         this.taskMap = new HashMap<>();
         this.epicTaskMap = new HashMap<>();
         this.subTaskMap = new HashMap<>();
-        this.listOfTasksSortedByTime = new TreeSet<>(Comparator.comparing(Task::getStartTime));
+        this.listOfTasksSortedByTime = new TreeSet<>(Comparator.comparing(Task::getStartTime,
+                        Comparator.nullsLast(Comparator.naturalOrder()))
+                .thenComparingInt(Task::getId));
     }
 
     @Override
@@ -48,11 +52,23 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void clearAllTask() {
+        for (Task task : listOfTasksSortedByTime) {
+            if (task.getTypeTask().equals(TypeTask.TASK)) {
+                listOfTasksSortedByTime.remove(task);
+                history.remove(task.getId());
+            }
+        }
         taskMap.clear();
     }
 
     @Override
     public void clearAllEpicTask() {
+        for (Task task : listOfTasksSortedByTime) {
+            if (task.getTypeTask().equals(TypeTask.EPIC_TASK)) {
+                listOfTasksSortedByTime.remove(task);
+                history.remove(task.getId());
+            }
+        }
         epicTaskMap.clear();
     }
 
@@ -88,30 +104,30 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public int addNewTask(Task task) {
         task.setId(currencyID++);
-        validationOfTasksOverTime(task);
         taskMap.put(task.getId(), task);
+        validationOfTasksOverTime(task);
         return task.getId();
     }
 
     @Override
     public int addNewTask(EpicTask epicTask) {
         epicTask.setId(currencyID++);
-        validationOfTasksOverTime(epicTask);
         epicTaskMap.put(epicTask.getId(), epicTask);
+        validationOfTasksOverTime(epicTask);
         return epicTask.getId();
     }
 
     @Override
-    public int addNewTask(SubTask subTask) throws RuntimeException {
+    public int addNewTask(SubTask subTask) throws ManagerSaveException {
         if (!epicTaskMap.containsKey(subTask.getEpicID())) {
-            throw new RuntimeException ("Такого эпика нет");
+            throw new ManagerSaveException("Такого эпика нет");
         }
-            subTask.setId(currencyID++);
-            epicTaskMap.get(subTask.getEpicID()).addSubTaskIds(subTask.getId());
-            subTaskMap.put(subTask.getId(), subTask);
-            syncEpicTaskStatus(subTask.getEpicID());
-            validationOfTasksOverTime(subTask);
-            return subTask.getId();
+        subTask.setId(currencyID++);
+        epicTaskMap.get(subTask.getEpicID()).addSubTaskIds(subTask.getId());
+        subTaskMap.put(subTask.getId(), subTask);
+        syncEpicTaskStatus(subTask.getEpicID());
+        validationOfTasksOverTime(subTask);
+        return subTask.getId();
     }
 
     @Override
@@ -215,46 +231,56 @@ public class InMemoryTaskManager implements TaskManager {
         StarAndEndTimeForEpicTask(epicTaskMap.get(idEpic));
     }
 
-    private void StarAndEndTimeForEpicTask (EpicTask epicTask) {
-        LocalDateTime endSubTask;
-        LocalDateTime firstSubTask;
+    private void StarAndEndTimeForEpicTask(EpicTask epicTask) {
+        LocalDateTime endSubTask = null;
+        LocalDateTime firstSubTask = null;
         Duration duration;
+        int durationInMinutes = 0;
 
-        if (epicTask.getSubTaskIds().size() == 0) {
-            endSubTask = null;
-            firstSubTask = null;
-            duration = Duration.ZERO;
-        } else {
-            duration = epicTask.getDuration();
-            endSubTask = subTaskMap.get(epicTask.getSubTaskIds().get(0)).getStartTime();
-            firstSubTask = subTaskMap.get(epicTask.getSubTaskIds().get(0)).getStartTime();
-
+        if (epicTask.getSubTaskIds().size() != 0) {
+            LocalDateTime subTaskTime;
             for (int idSub : epicTask.getSubTaskIds()) {
-                LocalDateTime subTaskTime = subTaskMap.get(idSub).getStartTime();
-                if (firstSubTask.isAfter(subTaskTime)) {
-                    firstSubTask = subTaskTime;
+                SubTask subTask = subTaskMap.get(idSub);
+                if (subTask.getDuration() != null) {
+                    durationInMinutes += subTask.getDuration().toMinutes();
                 }
-                if (endSubTask.isBefore(subTaskTime)) {
-                    endSubTask = subTaskTime;
+                if (subTask.getStartTime() != null) {
+                    subTaskTime = subTask.getStartTime();
+                    if (firstSubTask == null) {
+                        firstSubTask = subTaskTime;
+                        if (endSubTask == null) {
+                            endSubTask = subTaskTime;
+                        }
+                    }
+                    if (subTaskTime.isBefore(firstSubTask)) {
+                        firstSubTask = subTaskTime;
+                    }
+                    if (subTaskTime.isAfter(endSubTask)) {
+                        endSubTask = subTaskTime;
+                    }
                 }
-                duration.plus(subTaskMap.get(idSub).getDuration());
+            }
+            duration = Duration.ofMinutes(durationInMinutes);
+
+            epicTask.setDuration(duration);
+            if (firstSubTask != null) {
+                epicTask.setStartTime(firstSubTask);
+            }
+            if (duration != null) {
+                epicTask.setEndTime(endSubTask.plus(duration));
             }
         }
-
-        epicTask.setDuration(duration);
-        epicTask.setEndTime(endSubTask);
-        epicTask.setStartTime(firstSubTask);
     }
 
-    private void validationOfTasksOverTime(Task task) throws RuntimeException {
+    private void validationOfTasksOverTime(Task task) throws ManagerSaveException {
         listOfTasksSortedByTime.add(task);
         LocalDateTime prev = LocalDateTime.MIN;
         for (Task priorityTask : listOfTasksSortedByTime) {
             if (priorityTask.getStartTime() != null) {
-                if (prev.isAfter(priorityTask.getStartTime())) {
-                    throw new RuntimeException("Задачи " + task.getName() + " и " + priorityTask.getName()
-                            + " пересекаются по времени");
-                }
+                    if (prev.isAfter(priorityTask.getStartTime())) {
+                        throw new ManagerSaveException("Задачи " + task.getName() + " и " + priorityTask.getName()
+                                + " пересекаются по времени");
+                    }
                 prev = priorityTask.getEndTime();
             }
         }

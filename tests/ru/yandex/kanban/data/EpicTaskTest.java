@@ -6,12 +6,13 @@ import org.junit.jupiter.api.Test;
 import ru.yandex.kanban.data.enums.Status;
 import ru.yandex.kanban.data.enums.TypeTask;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class EpicTaskTest extends TaskTest{
+class EpicTaskTest {
 
     private EpicTask epicTask;
     @BeforeEach
@@ -48,14 +49,29 @@ class EpicTaskTest extends TaskTest{
         Assertions.assertEquals(subList, epicTask.getSubTaskIds());
     }
 
-    @Override
-    public void testMethodToStringToTask () {
-        final String taskToString = "EpicTask{subTaskIDs=[] ,id=1, name='20', status='NEW', description='15'}";
+    @Test
+    public void testOverrideMethodToStringToTask () {
+        final String taskToString =
+                "EpicTask{subTaskIDs=[], id=1, name='29', status='NEW', description='19'," +
+                        " startTime=2022-12-21T10:25, duration=PT15M}";
         Assertions.assertEquals(taskToString, epicTask.toString());
     }
 
-    @Override
-    public void testSetAndGetFunctionFromTask () {
+    @Test
+    public void testConstructorFromAddTaskEqualsTaskAndTestTask () {
+        final EpicTask taskTest = new EpicTask(
+                "Create task1",
+                "Description task1",
+                LocalDateTime.of(2022, 12, 21, 10, 25),
+                15
+        );
+
+        Assertions.assertEquals("Create task1", taskTest.getName());
+        Assertions.assertEquals("Description task1", taskTest.getDescription());
+    }
+
+    @Test
+    public void testSetAndGetFunctionFromTaskReturnAllField () {
         epicTask.setId(5);
         epicTask.setName("Create task1");
         epicTask.setDescription("Description task1");
@@ -65,12 +81,12 @@ class EpicTaskTest extends TaskTest{
         Assertions.assertEquals("Description task1", epicTask.getDescription());
     }
 
-    @Override
-    public void testEqualsFromTask () {
+    @Test
+    public void testOverrideEqualsFromTaskEqualsTask () {
         final EpicTask taskTest = new EpicTask(
                 1,
-                "Задание было сложным",
-                "Но мы с лопатой",
+                "Задание оказалось еще сложнее",
+                "Лопата уже хрустела",
                 LocalDateTime.of(2022, 12, 21, 10, 25),
                 Status.NEW,
                 15
@@ -79,8 +95,29 @@ class EpicTaskTest extends TaskTest{
         Assertions.assertEquals(taskTest, epicTask);
     }
 
-    @Override
-    public void itsTask () {
+    @Test
+    public void itsTaskReturnTask () {
         Assertions.assertEquals(TypeTask.EPIC_TASK, epicTask.getTypeTask());
+    }
+
+    @Test
+    public void testAllTimeMethodeCorrectCalculateTime () {
+        Assertions.assertEquals(epicTask.getStartTime(),
+                LocalDateTime.of(2022, 12, 21, 10, 25));
+        Assertions.assertEquals(epicTask.getDuration(), Duration.ofMinutes(15));
+        Assertions.assertNull(epicTask.getEndTime());
+
+        epicTask.setStartTime(null);
+        epicTask.setDuration(null);
+        Assertions.assertNull(epicTask.getStartTime());
+        Assertions.assertNull(epicTask.getDuration());
+
+
+    }
+
+    @Test
+    public void testSetEndTime () {
+        epicTask.setEndTime(LocalDateTime.of(2022, 12, 21, 10, 25));
+        Assertions.assertEquals(epicTask.getEndTime(), LocalDateTime.of(2022, 12, 21, 10, 25));
     }
 }

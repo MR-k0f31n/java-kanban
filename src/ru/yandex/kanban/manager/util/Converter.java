@@ -15,45 +15,85 @@ public class Converter {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("HH:mm | dd-MM-yy ");
 
     public String convertToStringTask(Task task) {
-        String[] arrString = {
-                Integer.toString(task.getId()),
-                task.getTypeTask().name(),
-                task.getName(),
-                task.getStatus().name(),
-                task.getStartTime().toString(),
-                String.valueOf(task.getDuration().toMinutes()),
-                task.getDescription()
-        };
-        return String.join(",", arrString);
+        if (task.getStartTime() != null) {
+            String[] arrString = {
+                    Integer.toString(task.getId()),
+                    task.getTypeTask().name(),
+                    task.getName(),
+                    task.getStatus().name(),
+                    task.getStartTime().toString(),
+                    String.valueOf(task.getDuration().toMinutes()),
+                    task.getDescription()
+            };
+            return String.join(",", arrString);
+        } else {
+            String[] arrString = {
+                    Integer.toString(task.getId()),
+                    task.getTypeTask().name(),
+                    task.getName(),
+                    task.getStatus().name(),
+                    "null",
+                    String.valueOf(task.getDuration().toMinutes()),
+                    task.getDescription()
+            };
+            return String.join(",", arrString);
+        }
     }
 
 
     public String convertToStringTask(EpicTask task) {
-        String[] arrString = {
-                Integer.toString(task.getId()),
-                task.getTypeTask().name(),
-                task.getName(),
-                task.getStatus().name(),
-                task.getStartTime().toString(),
-                String.valueOf(task.getDuration().toMinutes()),
-                task.getDescription()
-        };
-        return String.join(",", arrString);
+        if (task.getStartTime() != null) {
+            String[] arrString = {
+                    Integer.toString(task.getId()),
+                    task.getTypeTask().name(),
+                    task.getName(),
+                    task.getStatus().name(),
+                    task.getStartTime().toString(),
+                    String.valueOf(task.getDuration().toMinutes()),
+                    task.getDescription()
+            };
+            return String.join(",", arrString);
+        } else {
+            String[] arrString = {
+                    Integer.toString(task.getId()),
+                    task.getTypeTask().name(),
+                    task.getName(),
+                    task.getStatus().name(),
+                    "null",
+                    String.valueOf(task.getDuration().toMinutes()),
+                    task.getDescription()
+            };
+            return String.join(",", arrString);
+        }
     }
 
 
     public String convertToStringTask(SubTask task) {
-        String[] arrString = {
-                Integer.toString(task.getId()),
-                task.getTypeTask().name(),
-                task.getName(),
-                task.getStatus().name(),
-                task.getStartTime().toString(),
-                String.valueOf(task.getDuration().toMinutes()),
-                task.getDescription(),
-                Integer.toString(task.getEpicID())
-        };
-        return String.join(",", arrString);
+        if (task.getStartTime() != null) {
+            String[] arrString = {
+                    Integer.toString(task.getId()),
+                    task.getTypeTask().name(),
+                    task.getName(),
+                    task.getStatus().name(),
+                    task.getStartTime().toString(),
+                    String.valueOf(task.getDuration().toMinutes()),
+                    task.getDescription(),
+                    Integer.toString(task.getEpicID())
+            };
+            return String.join(",", arrString);
+        } else {
+            String[] arrString = {
+                    Integer.toString(task.getId()),
+                    task.getTypeTask().name(),
+                    task.getName(),
+                    task.getStatus().name(),
+                    "null",
+                    String.valueOf(task.getDuration().toMinutes()),
+                    task.getDescription(),
+                    Integer.toString(task.getEpicID())
+            };
+            return String.join(",", arrString);
+        }
     }
 
     public String toStringHistory(List<Task> list) {
@@ -69,39 +109,73 @@ public class Converter {
 
 
     public static Task taskFromString(String[] strArr) {
-        return new Task(
-                Integer.parseInt(strArr[0]),
-                strArr[2],
-                strArr[6],
-                LocalDateTime.parse(strArr[4], FORMATTER),
-                Status.valueOf(strArr[3]),
-                Integer.parseInt(strArr[5])
-        );
+        if (!strArr[4].equals("null")) {
+            return new Task(
+                    Integer.parseInt(strArr[0]),
+                    strArr[2],
+                    strArr[6],
+                    LocalDateTime.parse(strArr[4], FORMATTER),
+                    Status.valueOf(strArr[3]),
+                    Integer.parseInt(strArr[5])
+            );
+        } else {
+            return new Task(
+                    Integer.parseInt(strArr[0]),
+                    strArr[2],
+                    strArr[6],
+                    null,
+                    Status.valueOf(strArr[3]),
+                    Integer.parseInt(strArr[5])
+            );
+        }
         // file  0id, 1type, 2name, 3status, 4dataTime, 5duration, 6description, 7epic
         // constructor id, name, description, dataTime, status, duration, from Sub EpicID
     }
 
     public static EpicTask EpicTaskFromString(String[] strArr) {
-        return new EpicTask(
-                Integer.parseInt(strArr[0]),
-                strArr[2],
-                strArr[6],
-                LocalDateTime.parse(strArr[4], FORMATTER),
-                Status.valueOf(strArr[3]),
-                Integer.parseInt(strArr[5])
-        );
+        if (!strArr[4].equals("null")) {
+            return new EpicTask(
+                    Integer.parseInt(strArr[0]),
+                    strArr[2],
+                    strArr[6],
+                    LocalDateTime.parse(strArr[4], FORMATTER),
+                    Status.valueOf(strArr[3]),
+                    Integer.parseInt(strArr[5])
+            );
+        } else {
+            return new EpicTask(
+                    Integer.parseInt(strArr[0]),
+                    strArr[2],
+                    strArr[6],
+                    null,
+                    Status.valueOf(strArr[3]),
+                    Integer.parseInt(strArr[5])
+            );
+        }
     }
 
     public static SubTask SubTaskFromString(String[] strArr) {
-        return new SubTask(
-                Integer.parseInt(strArr[0]),
-                strArr[2],
-                strArr[6],
-                LocalDateTime.parse(strArr[4], FORMATTER),
-                Status.valueOf(strArr[3]),
-                Integer.parseInt(strArr[5]),
-                Integer.parseInt(strArr[7])
-        );
+        if (strArr[4].equals("null")) {
+            return new SubTask(
+                    Integer.parseInt(strArr[0]),
+                    strArr[2],
+                    strArr[6],
+                    LocalDateTime.parse(strArr[4], FORMATTER),
+                    Status.valueOf(strArr[3]),
+                    Integer.parseInt(strArr[5]),
+                    Integer.parseInt(strArr[7])
+            );
+        } else {
+            return new SubTask(
+                    Integer.parseInt(strArr[0]),
+                    strArr[2],
+                    strArr[6],
+                    null,
+                    Status.valueOf(strArr[3]),
+                    Integer.parseInt(strArr[5]),
+                    Integer.parseInt(strArr[7])
+            );
+        }
     }
 
     public static List<Integer> historyFromString(String str) {
