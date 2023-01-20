@@ -23,7 +23,6 @@ public class InMemoryTaskManager implements TaskManager {
     protected final HashMap<Integer, SubTask> subTaskMap;
     protected final HashMap<Integer, EpicTask> epicTaskMap;
     protected final TreeSet<Task> listOfTasksSortedByTime;
-    protected final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm | dd-MM-yy ");
 
     public InMemoryTaskManager() {
         this.history = Managers.getDefaultHistory();
@@ -174,7 +173,7 @@ public class InMemoryTaskManager implements TaskManager {
             throw new ManagerSaveException("Задача пуста!");
         }
         if (epicTaskMap.containsKey(newTask.getId())) {
-            if (epicTaskMap.get(newTask.getId()).getStatus().equals(newTask.getStatus())) {
+            if (!epicTaskMap.get(newTask.getId()).getStatus().equals(newTask.getStatus())) {
                 newTask.setStatus(epicTaskMap.get(newTask.getId()).getStatus());
                 // Protected to change the status manually
             }
@@ -262,7 +261,7 @@ public class InMemoryTaskManager implements TaskManager {
                 } else if (epicTask.getSubTaskIds().size() == subDone) {
                     epicTask.setStatus(Status.DONE);
                     epicTaskMap.put(epicTask.getId(), epicTask);
-                } else {
+                } else  {
                     epicTask.setStatus(Status.IN_PROGRESS);
                     epicTaskMap.put(epicTask.getId(), epicTask);
                 }
@@ -271,10 +270,10 @@ public class InMemoryTaskManager implements TaskManager {
                 epicTaskMap.put(epicTask.getId(), epicTask);
             }
         }
-        StarAndEndTimeForEpicTask(epicTaskMap.get(idEpic));
+        starAndEndTimeForEpicTask(epicTaskMap.get(idEpic));
     }
 
-    private void StarAndEndTimeForEpicTask(EpicTask epicTask) {
+    protected void starAndEndTimeForEpicTask(EpicTask epicTask) {
         LocalDateTime endSubTask = null;
         LocalDateTime firstSubTask = null;
         Duration duration;
@@ -315,20 +314,24 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    private void validationOfTasksOverTime(Task newTask) throws ManagerSaveException {
+    protected void validationOfTasksOverTime(Task newTask) throws ManagerSaveException {
         listOfTasksSortedByTime.add(newTask);
         boolean isCrossing = false;
         if (newTask.getStartTime() != null && newTask.getEndTime() != null) {
             LocalDateTime newTaskStartTime = newTask.getStartTime();
             LocalDateTime newTaskEndTime = newTask.getEndTime();
+            TypeTask newTaskType = newTask.getTypeTask();
             for (Task task : listOfTasksSortedByTime) {
                 LocalDateTime prevStartTime = task.getStartTime();
                 LocalDateTime prevEndTime = task.getEndTime();
+                TypeTask taskType = task.getTypeTask();
                 if (prevStartTime != null & prevEndTime != null) {
-                    if ((newTaskStartTime.isAfter(prevStartTime) && newTaskEndTime.isBefore(prevEndTime))
-                            || (newTaskStartTime.isBefore(prevStartTime) && newTaskEndTime.isAfter(prevEndTime))
-                            || (newTaskStartTime.isBefore(prevEndTime) && (newTaskEndTime.isAfter(prevEndTime)))) {
-                        isCrossing = true;
+                    if ((!newTaskType.equals(TypeTask.SUB_TASK) && (!taskType.equals(TypeTask.EPIC_TASK)))) {
+                        if ((newTaskStartTime.isAfter(prevStartTime) && newTaskEndTime.isBefore(prevEndTime))
+                                || (newTaskStartTime.isBefore(prevStartTime) && newTaskEndTime.isAfter(prevEndTime))
+                                || (newTaskStartTime.isBefore(prevEndTime) && (newTaskEndTime.isAfter(prevEndTime)))) {
+                            isCrossing = true;
+                        }
                     }
                 }
             }

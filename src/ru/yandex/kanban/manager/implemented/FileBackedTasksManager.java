@@ -5,8 +5,6 @@ import ru.yandex.kanban.data.SubTask;
 import ru.yandex.kanban.data.Task;
 import ru.yandex.kanban.data.enums.TypeTask;
 import ru.yandex.kanban.exceptions.ManagerSaveException;
-import ru.yandex.kanban.manager.Managers;
-import ru.yandex.kanban.manager.interfaces.TaskManager;
 import ru.yandex.kanban.manager.util.Converter;
 
 import java.io.File;
@@ -16,7 +14,6 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -94,6 +91,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 }
                 synchEpicAndSubTask(fileBackedTasksManager);
                 recoveryHistory(fileBackedTasksManager, historyList);
+                returnPriority(fileBackedTasksManager);
                 fileBackedTasksManager.currencyID = maxId + 1;
 
 
@@ -136,6 +134,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 }
             }
         }
+    }
+
+    private static void returnPriority (FileBackedTasksManager fileBackedTasksManager) {
+        fileBackedTasksManager.listOfTasksSortedByTime.addAll(fileBackedTasksManager.getAllListTask());
+        fileBackedTasksManager.listOfTasksSortedByTime.addAll(fileBackedTasksManager.getAllEpicTask());
+        fileBackedTasksManager.listOfTasksSortedByTime.addAll(fileBackedTasksManager.getAllSubTask());
     }
 
     @Override
@@ -231,6 +235,18 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     @Override
     public void clearAllSubTask() {
         super.clearAllSubTask();
+        save();
+    }
+
+    @Override
+    public void syncEpicTaskStatus(int idEpic) {
+        super.syncEpicTaskStatus(idEpic);
+        save();
+    }
+
+    @Override
+    public void starAndEndTimeForEpicTask(EpicTask epicTask) {
+        super.starAndEndTimeForEpicTask(epicTask);
         save();
     }
 }

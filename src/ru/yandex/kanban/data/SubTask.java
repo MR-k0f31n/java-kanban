@@ -4,6 +4,7 @@ import ru.yandex.kanban.data.enums.Status;
 import ru.yandex.kanban.data.enums.TypeTask;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class SubTask extends Task {
 
@@ -38,5 +39,14 @@ public class SubTask extends Task {
                 ", startTime=" + startTime +
                 ", duration=" + duration +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        SubTask subTask = (SubTask) o;
+        return epicId == subTask.epicId;
     }
 }

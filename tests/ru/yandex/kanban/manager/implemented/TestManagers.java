@@ -21,6 +21,7 @@ abstract class TestManagers<T extends TaskManager> {
     public abstract T createManager();
 
     private T manager;
+    File file = new File("resources", "history.csv");
 
 
     @BeforeEach
@@ -28,16 +29,12 @@ abstract class TestManagers<T extends TaskManager> {
         manager = createManager();
     }
 
-    public void clearHistoryCSV() {
-        File file = new File("resources", "history.csv");
-        Path path = file.toPath();
+    @AfterEach
+    public void afterEach() {
         try {
-            Writer writer = new FileWriter(path.toString(), StandardCharsets.UTF_8, false);
-            writer.write("");
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new ManagerSaveException(e.getMessage());
+            new FileWriter(file, false).close();
+        } catch (IOException exception) {
+            System.out.println(exception.getMessage());
         }
     }
 
@@ -123,10 +120,6 @@ abstract class TestManagers<T extends TaskManager> {
         taskPriority.add(subOne);
         taskPriority.add(subThree);
         Assertions.assertEquals(manager.getPrioritizedTasks(), taskPriority, "Приоритеты неверны");
-
-        if (manager instanceof FileBackedTasksManager) {
-            clearHistoryCSV();
-        }
     }
 
     @Test
@@ -147,10 +140,6 @@ abstract class TestManagers<T extends TaskManager> {
 
         manager.addNewTask(taskFirst);
         Assertions.assertThrows(ManagerSaveException.class, () -> manager.addNewTask(taskSecond));
-
-        if (manager instanceof FileBackedTasksManager) {
-            clearHistoryCSV();
-        }
     }
 
     @Test
@@ -178,10 +167,6 @@ abstract class TestManagers<T extends TaskManager> {
         listTest.add(taskSecond);
 
         Assertions.assertEquals(listTest, manager.getAllListTask());
-
-        if (manager instanceof FileBackedTasksManager) {
-            clearHistoryCSV();
-        }
     }
 
     @Test
@@ -213,10 +198,6 @@ abstract class TestManagers<T extends TaskManager> {
 
         Assertions.assertNotEquals(taskList, manager.getAllSubTask());
         Assertions.assertEquals(subTaskList, manager.getAllSubTask());
-
-        if (manager instanceof FileBackedTasksManager) {
-            clearHistoryCSV();
-        }
     }
 
     @Test
@@ -244,10 +225,6 @@ abstract class TestManagers<T extends TaskManager> {
         taskListTest.add(epicSecond);
 
         Assertions.assertEquals(taskListTest, manager.getAllEpicTask());
-
-        if (manager instanceof FileBackedTasksManager) {
-            clearHistoryCSV();
-        }
     }
 
     @Test
@@ -277,10 +254,6 @@ abstract class TestManagers<T extends TaskManager> {
 
         Assertions.assertEquals(0, manager.getAllListTask().size());
         Assertions.assertEquals(0, manager.getPrioritizedTasks().size());
-
-        if (manager instanceof FileBackedTasksManager) {
-            clearHistoryCSV();
-        }
     }
 
     @Test
@@ -313,10 +286,6 @@ abstract class TestManagers<T extends TaskManager> {
         Assertions.assertEquals(1, manager.getPrioritizedTasks().size());
         Assertions.assertEquals(0, manager.getAllSubTask().size());
         Assertions.assertEquals(1, manager.getAllEpicTask().size());
-
-        if (manager instanceof FileBackedTasksManager) {
-            clearHistoryCSV();
-        }
     }
 
     @Test
@@ -349,10 +318,6 @@ abstract class TestManagers<T extends TaskManager> {
         Assertions.assertEquals(0, manager.getPrioritizedTasks().size());
         Assertions.assertEquals(0, manager.getAllSubTask().size());
         Assertions.assertEquals(0, manager.getAllEpicTask().size());
-
-        if (manager instanceof FileBackedTasksManager) {
-            clearHistoryCSV();
-        }
     }
 
     @Test
@@ -377,10 +342,6 @@ abstract class TestManagers<T extends TaskManager> {
         );
 
         Assertions.assertThrows(ManagerSaveException.class, () -> manager.addNewTask(subTaskOne));
-
-        if (manager instanceof FileBackedTasksManager) {
-            clearHistoryCSV();
-        }
     }
 
     @Test
@@ -410,42 +371,154 @@ abstract class TestManagers<T extends TaskManager> {
         Task newTaskNull = null;
 
         Assertions.assertThrows(ManagerSaveException.class, () -> manager.addNewTask(newTaskNull));
-
-        if (manager instanceof FileBackedTasksManager) {
-            clearHistoryCSV();
-        }
     }
 
     @Test
-    public void testUpdateEpic_equalsNewTask() {
+    public void testUpdateStatusEpic() {
         final EpicTask epicOne = new EpicTask(
                 "EpicOne name",
                 "EpicTaskOne des description",
-                LocalDateTime.of(2022, 12, 20, 12, 25),
+                LocalDateTime.of(2022, 12, 31, 12, 25),
                 15
         );
 
-        int id = manager.addNewTask(epicOne);
+        int idEpic = manager.addNewTask(epicOne);
 
-        final EpicTask epicNew = new EpicTask(
-                id,
-                "epicNew name",
+        Assertions.assertEquals(Status.NEW, manager.getEpicById(idEpic).getStatus(), "Статус не новый");
+
+        final SubTask subTaskFirst = new SubTask(
+                "FirstSub name",
+                "SubOne des",
+                LocalDateTime.of(2022, 12, 18, 13, 25),
+                15,
+                idEpic
+        );
+
+        final SubTask subTaskSecond = new SubTask(
+                "SecondSub name",
+                "SubOne des",
+                LocalDateTime.of(2022, 12, 20, 13, 25),
+                15,
+                idEpic
+        );
+
+        final SubTask subTaskThree = new SubTask(
+                "ThreeSub name",
+                "SubOne des",
+                LocalDateTime.of(2022, 12, 25, 13, 25),
+                15,
+                idEpic
+        );
+
+        int idSubOne = manager.addNewTask(subTaskFirst);
+        int idSubSecond = manager.addNewTask(subTaskSecond);
+        int idSubThree = manager.addNewTask(subTaskThree);
+
+        Assertions.assertEquals(Status.NEW, manager.getEpicById(idEpic).getStatus(),
+                "Добавили сабов, статус не новый");
+
+        final SubTask subTaskFirstStatusDone = new SubTask(
+                idSubOne,
+                "FirstSub name",
+                "SubOne des",
+                LocalDateTime.of(2022, 12, 18, 13, 25),
+                Status.DONE,
+                15,
+                idEpic
+        );
+
+        final SubTask subTaskSecondStatusDone = new SubTask(
+                idSubSecond,
+                "SecondSub name",
+                "SubOne des",
+                LocalDateTime.of(2022, 12, 20, 13, 25),
+                Status.DONE,
+                15,
+                idEpic
+        );
+
+        final SubTask subTaskThreeStatusDone = new SubTask(
+                idSubThree,
+                "ThreeSub name",
+                "SubOne des",
+                LocalDateTime.of(2022, 12, 25, 13, 25),
+                Status.DONE,
+                15,
+                idEpic
+        );
+
+        manager.updateSubTask(subTaskFirstStatusDone);
+        manager.updateSubTask(subTaskSecondStatusDone);
+        manager.updateSubTask(subTaskThreeStatusDone);
+
+        Assertions.assertEquals(Status.DONE, manager.getEpicById(idEpic).getStatus(),
+                "Обновили сабы, статус не DONE");
+
+
+        final SubTask subTaskSecondStatusNew = new SubTask(
+                idSubSecond,
+                "SecondSub name",
+                "SubOne des",
+                LocalDateTime.of(2022, 12, 20, 13, 25),
+                Status.IN_PROGRESS,
+                15,
+                idEpic
+        );
+
+        manager.updateSubTask(subTaskSecondStatusNew);
+
+        Assertions.assertEquals(Status.IN_PROGRESS, manager.getEpicById(idEpic).getStatus(),
+                "1 Саб в NEW, Статус не IN_PROGRESS");
+
+        final SubTask subTaskFirstStatusInProgress = new SubTask(
+                idSubOne,
+                "FirstSub name",
+                "SubOne des",
+                LocalDateTime.of(2022, 12, 18, 13, 25),
+                Status.IN_PROGRESS,
+                15,
+                idEpic
+        );
+
+        final SubTask subTaskSecondStatusInProgress = new SubTask(
+                idSubSecond,
+                "SecondSub name",
+                "SubOne des",
+                LocalDateTime.of(2022, 12, 20, 13, 25),
+                Status.IN_PROGRESS,
+                15,
+                idEpic
+        );
+
+        final SubTask subTaskThreeStatusInProgress = new SubTask(
+                idSubThree,
+                "ThreeSub name",
+                "SubOne des",
+                LocalDateTime.of(2022, 12, 25, 13, 25),
+                Status.IN_PROGRESS,
+                15,
+                idEpic
+        );
+
+        manager.updateSubTask(subTaskFirstStatusInProgress);
+        manager.updateSubTask(subTaskSecondStatusInProgress);
+        manager.updateSubTask(subTaskThreeStatusInProgress);
+
+        Assertions.assertEquals(Status.IN_PROGRESS, manager.getEpicById(idEpic).getStatus(),
+                "Все сабы в IN_Progress, Статус не IN_PROGRESS");
+
+        final EpicTask epicOneNewStatus = new EpicTask(
+                idEpic,
+                "EpicOne name",
                 "EpicTaskOne des description",
-                LocalDateTime.of(2022, 12, 20, 12, 25),
-                Status.NEW,
+                LocalDateTime.of(2022, 12, 31, 12, 25),
+                Status.DONE,
                 15
         );
 
-        manager.updateEpicTask(epicNew);
+        manager.updateEpicTask(epicOneNewStatus);
 
-        Assertions.assertEquals(epicNew, manager.getEpicById(id), "Задача не обновилась!");
-
-        EpicTask newEpicTaskNull = null;
-
-        Assertions.assertThrows(ManagerSaveException.class, () -> manager.addNewTask(newEpicTaskNull));
-
-        if (manager instanceof FileBackedTasksManager) {
-            clearHistoryCSV();
-        }
+        Assertions.assertEquals(epicOne.getStatus(), manager.getEpicById(idEpic).getStatus(),
+                "Пытаемсы обновить статус руками, статус обновился");
     }
 }
