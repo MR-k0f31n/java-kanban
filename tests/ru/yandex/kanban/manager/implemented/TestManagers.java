@@ -9,8 +9,6 @@ import ru.yandex.kanban.exceptions.ManagerSaveException;
 import ru.yandex.kanban.manager.interfaces.TaskManager;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -18,9 +16,9 @@ import java.util.List;
 
 abstract class TestManagers<T extends TaskManager> {
 
-    public abstract T createManager();
+    abstract T createManager();
 
-    private T manager;
+    public T manager;
     File file = new File("resources", "history.csv");
 
 
@@ -520,5 +518,93 @@ abstract class TestManagers<T extends TaskManager> {
 
         Assertions.assertEquals(epicOne.getStatus(), manager.getEpicById(idEpic).getStatus(),
                 "Пытаемсы обновить статус руками, статус обновился");
+    }
+
+    @Test
+    public void testHistoryCreate_returnHistory () {
+        Assertions.assertEquals(0, manager.getHistory().size(), "Там кто-то есть 0_0");
+
+        Task taskSecond = new Task(
+                "TaskSecond name",
+                "Task des description",
+                LocalDateTime.of(2021, 12, 21, 10, 20),
+                15
+        );
+
+        Task taskFirst = new Task(
+                "TaskFirst name",
+                "Task des description",
+                LocalDateTime.of(2021, 10, 21, 10, 20),
+                15
+        );
+
+        Task taskThree = new Task(
+                "TaskThree name",
+                "Task des description",
+                LocalDateTime.of(2021, 11, 21, 10, 20),
+                15
+        );
+
+        int idOne = manager.addNewTask(taskFirst);
+        int idTwo = manager.addNewTask(taskSecond);
+        int idThree = manager.addNewTask(taskThree);
+
+        manager.getTaskById(idThree);
+        manager.getTaskById(idTwo);
+        manager.getTaskById(idOne);
+
+        List<Task> idTaskExpected = new LinkedList<>();
+        idTaskExpected.add(taskSecond);
+        idTaskExpected.add(taskFirst);
+        idTaskExpected.add(taskThree);
+
+        Assertions.assertEquals(idTaskExpected, manager.getHistory(), "История просмотра задач не верна.");
+
+        manager.getTaskById(idThree);
+        idTaskExpected.add(taskThree);
+
+        Assertions.assertNotEquals(idTaskExpected, manager.getHistory(), "В истории закрались дубли!");
+    }
+
+    @Test
+    public void testDeleteHistoryAnBack_returnHistory () {
+        Assertions.assertEquals(0, manager.getHistory().size(), "Там кто-то есть 0_0");
+
+        Task taskSecond = new Task(
+                "TaskSecond name",
+                "Task des description",
+                LocalDateTime.of(2021, 12, 21, 10, 20),
+                15
+        );
+
+        Task taskFirst = new Task(
+                "TaskFirst name",
+                "Task des description",
+                LocalDateTime.of(2021, 10, 21, 10, 20),
+                15
+        );
+
+        Task taskThree = new Task(
+                "TaskThree name",
+                "Task des description",
+                LocalDateTime.of(2021, 11, 21, 10, 20),
+                15
+        );
+
+        int idOne = manager.addNewTask(taskFirst);
+        int idTwo = manager.addNewTask(taskSecond);
+        int idThree = manager.addNewTask(taskThree);
+
+        manager.getTaskById(idThree);
+        manager.getTaskById(idTwo);
+        manager.getTaskById(idOne);
+
+        List<Task> idTaskExpected = new LinkedList<>();
+
+        manager.deleteTaskById(idOne);
+        idTaskExpected.add(taskThree);
+        idTaskExpected.add(taskSecond);
+
+        Assertions.assertEquals(idTaskExpected, manager.getHistory(), "С конца списка удаление не верное");
     }
 }

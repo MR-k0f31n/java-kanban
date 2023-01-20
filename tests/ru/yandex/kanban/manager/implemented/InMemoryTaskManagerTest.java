@@ -3,10 +3,10 @@ package ru.yandex.kanban.manager.implemented;
 import ru.yandex.kanban.manager.Managers;
 import ru.yandex.kanban.manager.interfaces.TaskManager;
 
-public class InMemoryTaskManagerTest extends TestManagers {
+public class InMemoryTaskManagerTest extends TestManagers<InMemoryTaskManager> {
 
     @Override
-    public TaskManager createManager() {
+    InMemoryTaskManager createManager() {
         return Managers.getInMemory();
     }
 }
