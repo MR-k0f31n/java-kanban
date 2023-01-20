@@ -15,8 +15,9 @@ public class Converter {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("HH:mm | dd-MM-yy ");
 
     public String convertToStringTask(Task task) {
+        String[] arrString;
         if (task.getStartTime() != null) {
-            String[] arrString = {
+            arrString = new String[]{
                     Integer.toString(task.getId()),
                     task.getTypeTask().name(),
                     task.getName(),
@@ -25,9 +26,8 @@ public class Converter {
                     String.valueOf(task.getDuration().toMinutes()),
                     task.getDescription()
             };
-            return String.join(",", arrString);
         } else {
-            String[] arrString = {
+            arrString = new String[]{
                     Integer.toString(task.getId()),
                     task.getTypeTask().name(),
                     task.getName(),
@@ -36,14 +36,15 @@ public class Converter {
                     String.valueOf(task.getDuration().toMinutes()),
                     task.getDescription()
             };
-            return String.join(",", arrString);
         }
+        return String.join(",", arrString);
     }
 
 
     public String convertToStringTask(EpicTask task) {
+        String[] arrString;
         if (task.getStartTime() != null) {
-            String[] arrString = {
+            arrString = new String[]{
                     Integer.toString(task.getId()),
                     task.getTypeTask().name(),
                     task.getName(),
@@ -52,9 +53,8 @@ public class Converter {
                     String.valueOf(task.getDuration().toMinutes()),
                     task.getDescription()
             };
-            return String.join(",", arrString);
         } else {
-            String[] arrString = {
+            arrString = new String[]{
                     Integer.toString(task.getId()),
                     task.getTypeTask().name(),
                     task.getName(),
@@ -63,14 +63,15 @@ public class Converter {
                     String.valueOf(task.getDuration().toMinutes()),
                     task.getDescription()
             };
-            return String.join(",", arrString);
         }
+        return String.join(",", arrString);
     }
 
 
     public String convertToStringTask(SubTask task) {
+        String[] arrString;
         if (task.getStartTime() != null) {
-            String[] arrString = {
+            arrString = new String[]{
                     Integer.toString(task.getId()),
                     task.getTypeTask().name(),
                     task.getName(),
@@ -80,9 +81,8 @@ public class Converter {
                     task.getDescription(),
                     Integer.toString(task.getEpicID())
             };
-            return String.join(",", arrString);
         } else {
-            String[] arrString = {
+            arrString = new String[]{
                     Integer.toString(task.getId()),
                     task.getTypeTask().name(),
                     task.getName(),
@@ -92,8 +92,8 @@ public class Converter {
                     task.getDescription(),
                     Integer.toString(task.getEpicID())
             };
-            return String.join(",", arrString);
         }
+        return String.join(",", arrString);
     }
 
     public String toStringHistory(List<Task> list) {

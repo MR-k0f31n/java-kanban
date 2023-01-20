@@ -52,8 +52,11 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void clearAllTask() {
-        for (Task task : listOfTasksSortedByTime) {
-            if (task.getTypeTask().equals(TypeTask.TASK)) {
+        List<Task> list = new ArrayList<>(listOfTasksSortedByTime);
+        for (Task task : list) {
+            boolean isTask = task.getTypeTask().equals(TypeTask.TASK);
+
+            if (isTask) {
                 listOfTasksSortedByTime.remove(task);
                 history.remove(task.getId());
             }
@@ -63,12 +66,15 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void clearAllEpicTask() {
-        for (Task epicTask : listOfTasksSortedByTime) {
+        List<Task> list = new ArrayList<>(listOfTasksSortedByTime);
+
+        for (Task epicTask : list) {
             if (epicTask instanceof EpicTask) {
                 List<Integer> subsId = ((EpicTask) epicTask).getSubTaskIds();
                 for (Integer idSub : subsId) {
                     listOfTasksSortedByTime.remove(subTaskMap.get(idSub));
                     history.remove(idSub);
+                    subTaskMap.remove(idSub);
                 }
                 listOfTasksSortedByTime.remove(epicTask);
                 history.remove(epicTask.getId());
@@ -79,7 +85,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void clearAllSubTask() {
-        for (Task subTask : listOfTasksSortedByTime) {
+        List<Task> list = new ArrayList<>(listOfTasksSortedByTime);
+
+        for (Task subTask : list) {
             if (subTask instanceof SubTask) {
                 listOfTasksSortedByTime.remove(subTask);
                 history.remove(subTask.getId());
@@ -113,7 +121,10 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public int addNewTask(Task task) {
+    public int addNewTask(Task task) throws ManagerSaveException {
+        if (task == null) {
+            throw new ManagerSaveException("Задача пуста!");
+        }
         task.setId(currencyID++);
         taskMap.put(task.getId(), task);
         validationOfTasksOverTime(task);
@@ -121,7 +132,10 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public int addNewTask(EpicTask epicTask) {
+    public int addNewTask(EpicTask epicTask) throws ManagerSaveException {
+        if (epicTask == null) {
+            throw new ManagerSaveException("Задача пуста!");
+        }
         epicTask.setId(currencyID++);
         epicTaskMap.put(epicTask.getId(), epicTask);
         validationOfTasksOverTime(epicTask);
@@ -130,6 +144,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public int addNewTask(SubTask subTask) throws ManagerSaveException {
+        if (subTask == null) {
+            throw new ManagerSaveException("Задача пуста!");
+        }
         if (!epicTaskMap.containsKey(subTask.getEpicID())) {
             throw new ManagerSaveException("Такого эпика нет");
         }
@@ -142,7 +159,10 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateTask(Task newTask) {
+    public void updateTask(Task newTask) throws ManagerSaveException {
+        if (newTask == null) {
+            throw new ManagerSaveException("Задача пуста!");
+        }
         if (taskMap.containsKey(newTask.getId())) {
             taskMap.put(newTask.getId(), newTask);
         }
@@ -150,6 +170,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateEpicTask(EpicTask newTask) {
+        if (newTask == null) {
+            throw new ManagerSaveException("Задача пуста!");
+        }
         if (epicTaskMap.containsKey(newTask.getId())) {
             if (epicTaskMap.get(newTask.getId()).getStatus().equals(newTask.getStatus())) {
                 newTask.setStatus(epicTaskMap.get(newTask.getId()).getStatus());
@@ -161,6 +184,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateSubTask(SubTask newTask) {
+        if (newTask == null) {
+            throw new ManagerSaveException("Задача пуста!");
+        }
         if (subTaskMap.containsKey(newTask.getId())) {
             subTaskMap.put(newTask.getId(), newTask);
             syncEpicTaskStatus(newTask.getEpicID());
@@ -289,16 +315,25 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    private void validationOfTasksOverTime(Task task) throws ManagerSaveException {
-        listOfTasksSortedByTime.add(task);
-        LocalDateTime prev = LocalDateTime.MIN;
-        for (Task priorityTask : listOfTasksSortedByTime) {
-            if (priorityTask.getStartTime() != null) {
-                    if (prev.isAfter(priorityTask.getStartTime())) {
-                        throw new ManagerSaveException("Задачи " + task.getName() + " и " + priorityTask.getName()
-                                + " пересекаются по времени");
+    private void validationOfTasksOverTime(Task newTask) throws ManagerSaveException {
+        listOfTasksSortedByTime.add(newTask);
+        boolean isCrossing = false;
+        if (newTask.getStartTime() != null && newTask.getEndTime() != null) {
+            LocalDateTime newTaskStartTime = newTask.getStartTime();
+            LocalDateTime newTaskEndTime = newTask.getEndTime();
+            for (Task task : listOfTasksSortedByTime) {
+                LocalDateTime prevStartTime = task.getStartTime();
+                LocalDateTime prevEndTime = task.getEndTime();
+                if (prevStartTime != null & prevEndTime != null) {
+                    if ((newTaskStartTime.isAfter(prevStartTime) && newTaskEndTime.isBefore(prevEndTime))
+                            || (newTaskStartTime.isBefore(prevStartTime) && newTaskEndTime.isAfter(prevEndTime))
+                            || (newTaskStartTime.isBefore(prevEndTime) && (newTaskEndTime.isAfter(prevEndTime)))) {
+                        isCrossing = true;
                     }
-                prev = priorityTask.getEndTime();
+                }
+            }
+            if (isCrossing) {
+                throw new ManagerSaveException("Есть пересеченеие по времени старта задач!");
             }
         }
     }

@@ -1,5 +1,4 @@
 id,type,name,status, dataTime, duration, description, epic
-2,TASK,Task name,NEW,2021-12-19T10:25,15,Task des description
-3,TASK,TaskSecond name,NEW,2021-12-19T10:40,15,Task des description
 1,EPIC_TASK,EpicOne name,NEW,2022-12-20T12:25,15,EpicTaskOne des description
 
+1
