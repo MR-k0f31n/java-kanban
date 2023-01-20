@@ -14,7 +14,6 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 
 import static ru.yandex.kanban.manager.util.Util.getConverter;
@@ -60,10 +59,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             try {
                 String fileToLine = Files.readString(file.toPath(), StandardCharsets.UTF_8);
                 String[] line = fileToLine.split("\r?\n");
-                List<Integer> historyList = new ArrayList<>();
-                if (!line[line.length - 1].isBlank()) {
-                    historyList = Converter.historyFromString(line[line.length - 1]);
-                }
+                List<Integer> historyList;
                 int maxId = 0;
 
                 for (int i = 1; i < line.length - 2; i++) {
@@ -89,6 +85,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                         maxId = id;
                     }
                 }
+                historyList = Converter.historyFromString(line[line.length - 1]);
                 synchEpicAndSubTask(fileBackedTasksManager);
                 recoveryHistory(fileBackedTasksManager, historyList);
                 returnPriority(fileBackedTasksManager);
@@ -136,7 +133,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    private static void returnPriority (FileBackedTasksManager fileBackedTasksManager) {
+    private static void returnPriority(FileBackedTasksManager fileBackedTasksManager) {
         fileBackedTasksManager.listOfTasksSortedByTime.addAll(fileBackedTasksManager.getAllListTask());
         fileBackedTasksManager.listOfTasksSortedByTime.addAll(fileBackedTasksManager.getAllEpicTask());
         fileBackedTasksManager.listOfTasksSortedByTime.addAll(fileBackedTasksManager.getAllSubTask());

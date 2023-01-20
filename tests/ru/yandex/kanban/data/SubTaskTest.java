@@ -9,14 +9,12 @@ import ru.yandex.kanban.data.enums.TypeTask;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class SubTaskTest {
 
     private SubTask subTask;
 
     @BeforeEach
-    public void create () {
+    public void create() {
         subTask = new SubTask(
                 1,
                 "Первый саб",
@@ -29,17 +27,17 @@ class SubTaskTest {
     }
 
     @Test
-    public void testReturnIdEpic () {
+    public void testReturnIdEpic() {
         Assertions.assertEquals(3, subTask.getEpicID());
     }
 
     @Test
-    public void itsTaskReturnTask () {
+    public void itsTaskReturnTask() {
         Assertions.assertEquals(TypeTask.SUB_TASK, subTask.getTypeTask());
     }
 
     @Test
-    public void testSetAndGetFunctionFromTaskReturnAllField () {
+    public void testSetAndGetFunctionFromTaskReturnAllField() {
         subTask.setId(5);
         subTask.setName("Create task1");
         subTask.setDescription("Description task1");
@@ -52,14 +50,14 @@ class SubTaskTest {
     }
 
     @Test
-    public void testOverrideMethodToStringToTask () {
+    public void testOverrideMethodToStringToTask() {
         final String taskToString = "SubTask{epicID=3, id=1, name='10', status='NEW', description='25', " +
                 "startTime=2022-12-21T10:25, duration=PT15M}";
         Assertions.assertEquals(taskToString, subTask.toString());
     }
 
     @Test
-    public void testOverrideEqualsFromTaskEqualsTask () {
+    public void testOverrideEqualsFromTaskEqualsTask() {
         final SubTask taskTest = new SubTask(
                 1,
                 "Задание было сложным",
@@ -74,7 +72,7 @@ class SubTaskTest {
     }
 
     @Test
-    public void testConstructorFromAddTaskEqualsTaskAndTestTask () {
+    public void testConstructorFromAddTaskEqualsTaskAndTestTask() {
         final SubTask taskTest = new SubTask(
                 "Первый саб",
                 "Описание первого сабТаска",
@@ -88,7 +86,7 @@ class SubTaskTest {
     }
 
     @Test
-    public void testAllTimeMethodeCorrectCalculateTime () {
+    public void testAllTimeMethodeCorrectCalculateTime() {
         Assertions.assertEquals(subTask.getStartTime(),
                 LocalDateTime.of(2022, 12, 21, 10, 25));
         Assertions.assertEquals(subTask.getDuration(), Duration.ofMinutes(15));

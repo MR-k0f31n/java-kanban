@@ -1,6 +1,5 @@
 package ru.yandex.kanban.data;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,7 +14,7 @@ class TaskTest {
     private Task task;
 
     @BeforeEach
-    public void create () {
+    public void create() {
         task = new Task(
                 1,
                 "Задание было сложным",
@@ -27,7 +26,7 @@ class TaskTest {
     }
 
     @Test
-    public void testConstructorFromAddTaskEqualsTaskAndTestTask () {
+    public void testConstructorFromAddTaskEqualsTaskAndTestTask() {
         final Task taskTest = new Task(
                 "Create task1",
                 "Description task1",
@@ -40,7 +39,7 @@ class TaskTest {
     }
 
     @Test
-    public void testConstructorWithAllFieldEqualsTAskAndTestTask () {
+    public void testConstructorWithAllFieldEqualsTAskAndTestTask() {
         final Task taskTest = new Task(
                 1,
                 "Task with all field",
@@ -57,7 +56,7 @@ class TaskTest {
     }
 
     @Test
-    public void testSetAndGetFunctionFromTaskReturnAllField () {
+    public void testSetAndGetFunctionFromTaskReturnAllField() {
         task.setId(5);
         task.setName("Create task1");
         task.setDescription("Description task1");
@@ -70,7 +69,7 @@ class TaskTest {
     }
 
     @Test
-    public void testOverrideEqualsFromTaskEqualsTask () {
+    public void testOverrideEqualsFromTaskEqualsTask() {
         final Task taskTest = new Task(
                 1,
                 "Задание было сложным",
@@ -84,18 +83,18 @@ class TaskTest {
     }
 
     @Test
-    public void testOverrideMethodToStringToTask () {
+    public void testOverrideMethodToStringToTask() {
         final String taskToString = "Task{id=1, name='20', status='NEW', description='15', startTime=2022-12-21T10:25, duration=PT15M}";
         Assertions.assertEquals(taskToString, task.toString());
     }
 
     @Test
-    public void itsTaskReturnTask () {
+    public void itsTaskReturnTask() {
         Assertions.assertEquals(TypeTask.TASK, task.getTypeTask());
     }
 
     @Test
-    public void testAllTimeMethodeCorrectCalculateTime () {
+    public void testAllTimeMethodeCorrectCalculateTime() {
         Assertions.assertEquals(task.getStartTime(),
                 LocalDateTime.of(2022, 12, 21, 10, 25));
         Assertions.assertEquals(task.getDuration(), Duration.ofMinutes(15));

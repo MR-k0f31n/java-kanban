@@ -10,13 +10,12 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class EpicTaskTest {
 
     private EpicTask epicTask;
+
     @BeforeEach
-    public void create () {
+    public void create() {
         epicTask = new EpicTask(
                 1,
                 "Задание оказалось еще сложнее",
@@ -28,18 +27,18 @@ class EpicTaskTest {
     }
 
     @Test
-    public void itsEpicTask () {
+    public void itsEpicTask() {
         Assertions.assertEquals(TypeTask.EPIC_TASK, epicTask.getTypeTask());
     }
 
     @Test
-    public void testNullInListSubs () {
+    public void testNullInListSubs() {
         Assertions.assertNotNull(epicTask.getSubTaskIds());
     }
 
     @Test
-    public void testAddList () {
-        final List subList = List.of(5, 15, 25, 35);
+    public void testAddList() {
+        final List<Integer> subList = List.of(5, 15, 25, 35);
 
         epicTask.addSubTaskIds(5);
         epicTask.addSubTaskIds(15);
@@ -50,7 +49,7 @@ class EpicTaskTest {
     }
 
     @Test
-    public void testOverrideMethodToStringToTask () {
+    public void testOverrideMethodToStringToTask() {
         final String taskToString =
                 "EpicTask{subTaskIDs=[], id=1, name='29', status='NEW', description='19'," +
                         " startTime=2022-12-21T10:25, duration=PT15M}";
@@ -58,7 +57,7 @@ class EpicTaskTest {
     }
 
     @Test
-    public void testConstructorFromAddTaskEqualsTaskAndTestTask () {
+    public void testConstructorFromAddTaskEqualsTaskAndTestTask() {
         final EpicTask taskTest = new EpicTask(
                 "Create task1",
                 "Description task1",
@@ -71,7 +70,7 @@ class EpicTaskTest {
     }
 
     @Test
-    public void testSetAndGetFunctionFromTaskReturnAllField () {
+    public void testSetAndGetFunctionFromTaskReturnAllField() {
         epicTask.setId(5);
         epicTask.setName("Create task1");
         epicTask.setDescription("Description task1");
@@ -82,7 +81,7 @@ class EpicTaskTest {
     }
 
     @Test
-    public void testOverrideEqualsFromTaskEqualsTask () {
+    public void testOverrideEqualsFromTaskEqualsTask() {
         final EpicTask taskTest = new EpicTask(
                 1,
                 "Задание оказалось еще сложнее",
@@ -96,12 +95,12 @@ class EpicTaskTest {
     }
 
     @Test
-    public void itsTaskReturnTask () {
+    public void itsTaskReturnTask() {
         Assertions.assertEquals(TypeTask.EPIC_TASK, epicTask.getTypeTask());
     }
 
     @Test
-    public void testAllTimeMethodeCorrectCalculateTime () {
+    public void testAllTimeMethodeCorrectCalculateTime() {
         Assertions.assertEquals(epicTask.getStartTime(),
                 LocalDateTime.of(2022, 12, 21, 10, 25));
         Assertions.assertEquals(epicTask.getDuration(), Duration.ofMinutes(15));
@@ -116,7 +115,7 @@ class EpicTaskTest {
     }
 
     @Test
-    public void testSetEndTime () {
+    public void testSetEndTime() {
         epicTask.setEndTime(LocalDateTime.of(2022, 12, 21, 10, 25));
         Assertions.assertEquals(epicTask.getEndTime(), LocalDateTime.of(2022, 12, 21, 10, 25));
     }

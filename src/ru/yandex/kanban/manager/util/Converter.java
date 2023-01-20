@@ -6,14 +6,10 @@ import ru.yandex.kanban.data.Task;
 import ru.yandex.kanban.data.enums.Status;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TreeSet;
 
 public class Converter {
-
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("HH:mm | dd-MM-yy ");
 
     public String convertToStringTask(Task task) {
         String[] arrString;
@@ -114,7 +110,7 @@ public class Converter {
                     Integer.parseInt(strArr[0]),
                     strArr[2],
                     strArr[6],
-                    LocalDateTime.parse(strArr[4], FORMATTER),
+                    LocalDateTime.parse(strArr[4]),
                     Status.valueOf(strArr[3]),
                     Integer.parseInt(strArr[5])
             );
@@ -138,7 +134,7 @@ public class Converter {
                     Integer.parseInt(strArr[0]),
                     strArr[2],
                     strArr[6],
-                    LocalDateTime.parse(strArr[4], FORMATTER),
+                    LocalDateTime.parse(strArr[4]),
                     Status.valueOf(strArr[3]),
                     Integer.parseInt(strArr[5])
             );
@@ -160,7 +156,7 @@ public class Converter {
                     Integer.parseInt(strArr[0]),
                     strArr[2],
                     strArr[6],
-                    LocalDateTime.parse(strArr[4], FORMATTER),
+                    LocalDateTime.parse(strArr[4]),
                     Status.valueOf(strArr[3]),
                     Integer.parseInt(strArr[5]),
                     Integer.parseInt(strArr[7])
@@ -181,7 +177,7 @@ public class Converter {
     public static List<Integer> historyFromString(String str) {
         List<Integer> list = new ArrayList<>();
 
-        if (!str.isBlank()) {
+        if (!str.equals("")) {
             String[] listIds = str.split(",");
 
             for (String id : listIds) {

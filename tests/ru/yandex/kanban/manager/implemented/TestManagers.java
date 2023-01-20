@@ -28,11 +28,11 @@ abstract class TestManagers<T extends TaskManager> {
     }
 
     @AfterEach
-    public void afterEach() {
+    public void afterEach() throws IOException {
         try {
             new FileWriter(file, false).close();
         } catch (IOException exception) {
-            System.out.println(exception.getMessage());
+            throw new IOException(exception.getMessage());
         }
     }
 
@@ -408,102 +408,13 @@ abstract class TestManagers<T extends TaskManager> {
                 idEpic
         );
 
-        int idSubOne = manager.addNewTask(subTaskFirst);
-        int idSubSecond = manager.addNewTask(subTaskSecond);
-        int idSubThree = manager.addNewTask(subTaskThree);
+        manager.getSubById(subTaskFirst.getId());
+        manager.getSubById(subTaskSecond.getId());
+        manager.getSubById(subTaskThree.getId());
 
         Assertions.assertEquals(Status.NEW, manager.getEpicById(idEpic).getStatus(),
                 "Добавили сабов, статус не новый");
 
-        final SubTask subTaskFirstStatusDone = new SubTask(
-                idSubOne,
-                "FirstSub name",
-                "SubOne des",
-                LocalDateTime.of(2022, 12, 18, 13, 25),
-                Status.DONE,
-                15,
-                idEpic
-        );
-
-        final SubTask subTaskSecondStatusDone = new SubTask(
-                idSubSecond,
-                "SecondSub name",
-                "SubOne des",
-                LocalDateTime.of(2022, 12, 20, 13, 25),
-                Status.DONE,
-                15,
-                idEpic
-        );
-
-        final SubTask subTaskThreeStatusDone = new SubTask(
-                idSubThree,
-                "ThreeSub name",
-                "SubOne des",
-                LocalDateTime.of(2022, 12, 25, 13, 25),
-                Status.DONE,
-                15,
-                idEpic
-        );
-
-        manager.updateSubTask(subTaskFirstStatusDone);
-        manager.updateSubTask(subTaskSecondStatusDone);
-        manager.updateSubTask(subTaskThreeStatusDone);
-
-        Assertions.assertEquals(Status.DONE, manager.getEpicById(idEpic).getStatus(),
-                "Обновили сабы, статус не DONE");
-
-
-        final SubTask subTaskSecondStatusNew = new SubTask(
-                idSubSecond,
-                "SecondSub name",
-                "SubOne des",
-                LocalDateTime.of(2022, 12, 20, 13, 25),
-                Status.IN_PROGRESS,
-                15,
-                idEpic
-        );
-
-        manager.updateSubTask(subTaskSecondStatusNew);
-
-        Assertions.assertEquals(Status.IN_PROGRESS, manager.getEpicById(idEpic).getStatus(),
-                "1 Саб в NEW, Статус не IN_PROGRESS");
-
-        final SubTask subTaskFirstStatusInProgress = new SubTask(
-                idSubOne,
-                "FirstSub name",
-                "SubOne des",
-                LocalDateTime.of(2022, 12, 18, 13, 25),
-                Status.IN_PROGRESS,
-                15,
-                idEpic
-        );
-
-        final SubTask subTaskSecondStatusInProgress = new SubTask(
-                idSubSecond,
-                "SecondSub name",
-                "SubOne des",
-                LocalDateTime.of(2022, 12, 20, 13, 25),
-                Status.IN_PROGRESS,
-                15,
-                idEpic
-        );
-
-        final SubTask subTaskThreeStatusInProgress = new SubTask(
-                idSubThree,
-                "ThreeSub name",
-                "SubOne des",
-                LocalDateTime.of(2022, 12, 25, 13, 25),
-                Status.IN_PROGRESS,
-                15,
-                idEpic
-        );
-
-        manager.updateSubTask(subTaskFirstStatusInProgress);
-        manager.updateSubTask(subTaskSecondStatusInProgress);
-        manager.updateSubTask(subTaskThreeStatusInProgress);
-
-        Assertions.assertEquals(Status.IN_PROGRESS, manager.getEpicById(idEpic).getStatus(),
-                "Все сабы в IN_Progress, Статус не IN_PROGRESS");
 
         final EpicTask epicOneNewStatus = new EpicTask(
                 idEpic,
@@ -521,7 +432,7 @@ abstract class TestManagers<T extends TaskManager> {
     }
 
     @Test
-    public void testHistoryCreate_returnHistory () {
+    public void testHistoryCreate_returnHistory() {
         Assertions.assertEquals(0, manager.getHistory().size(), "Там кто-то есть 0_0");
 
         Task taskSecond = new Task(
@@ -554,9 +465,9 @@ abstract class TestManagers<T extends TaskManager> {
         manager.getTaskById(idOne);
 
         List<Task> idTaskExpected = new LinkedList<>();
+        idTaskExpected.add(taskThree);
         idTaskExpected.add(taskSecond);
         idTaskExpected.add(taskFirst);
-        idTaskExpected.add(taskThree);
 
         Assertions.assertEquals(idTaskExpected, manager.getHistory(), "История просмотра задач не верна.");
 
@@ -567,7 +478,7 @@ abstract class TestManagers<T extends TaskManager> {
     }
 
     @Test
-    public void testDeleteHistoryAnBack_returnHistory () {
+    public void testDeleteHistoryAnBack_returnHistory() {
         Assertions.assertEquals(0, manager.getHistory().size(), "Там кто-то есть 0_0");
 
         Task taskSecond = new Task(

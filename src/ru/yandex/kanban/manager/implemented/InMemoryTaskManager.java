@@ -12,7 +12,6 @@ import ru.yandex.kanban.manager.interfaces.TaskManager;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
@@ -249,9 +248,10 @@ public class InMemoryTaskManager implements TaskManager {
             EpicTask epicTask = epicTaskMap.get(idEpic);
             if (epicTask.getSubTaskIds().size() != 0) {
                 for (Integer idSubs : epicTask.getSubTaskIds()) {
-                    if (subTaskMap.get(idSubs).getStatus().equals(Status.NEW)) {
+                    Status statusSubTask = subTaskMap.get(idSubs).getStatus();
+                    if (statusSubTask.equals(Status.NEW)) {
                         subNew++;
-                    } else if (subTaskMap.get(idSubs).getStatus().equals(Status.DONE)) {
+                    } else if (statusSubTask.equals(Status.DONE)) {
                         subDone++;
                     }
                 }
@@ -261,7 +261,7 @@ public class InMemoryTaskManager implements TaskManager {
                 } else if (epicTask.getSubTaskIds().size() == subDone) {
                     epicTask.setStatus(Status.DONE);
                     epicTaskMap.put(epicTask.getId(), epicTask);
-                } else  {
+                } else {
                     epicTask.setStatus(Status.IN_PROGRESS);
                     epicTaskMap.put(epicTask.getId(), epicTask);
                 }
@@ -290,9 +290,7 @@ public class InMemoryTaskManager implements TaskManager {
                     subTaskTime = subTask.getStartTime();
                     if (firstSubTask == null) {
                         firstSubTask = subTaskTime;
-                        if (endSubTask == null) {
-                            endSubTask = subTaskTime;
-                        }
+                        endSubTask = subTaskTime;
                     }
                     if (subTaskTime.isBefore(firstSubTask)) {
                         firstSubTask = subTaskTime;
@@ -308,7 +306,7 @@ public class InMemoryTaskManager implements TaskManager {
             if (firstSubTask != null) {
                 epicTask.setStartTime(firstSubTask);
             }
-            if (duration != null) {
+            if (duration != null && endSubTask != null) {
                 epicTask.setEndTime(endSubTask.plus(duration));
             }
         }
