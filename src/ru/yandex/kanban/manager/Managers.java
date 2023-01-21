@@ -10,6 +10,7 @@ import java.io.File;
 
 public class Managers {
 
+    private static final File FILE = new File("resources", "history.csv");
     public static TaskManager getInMemory() {
         return new InMemoryTaskManager();
     }
@@ -19,7 +20,7 @@ public class Managers {
     }
 
     public static TaskManager getDefault() {
-        return FileBackedTasksManager.loadFromFile(new File("resources", "history.csv"));
+        return FileBackedTasksManager.loadFromFile(FILE);
     }
 
 }

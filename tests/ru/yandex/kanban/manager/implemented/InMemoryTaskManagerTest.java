@@ -1,11 +1,12 @@
 package ru.yandex.kanban.manager.implemented;
 
 import ru.yandex.kanban.manager.Managers;
+import ru.yandex.kanban.manager.interfaces.TaskManager;
 
-public class InMemoryTaskManagerTest extends TestManagers<InMemoryTaskManager> {
+public class InMemoryTaskManagerTest extends TestManagers<TaskManager> {
 
     @Override
-    InMemoryTaskManager createManager() {
-        return (InMemoryTaskManager) Managers.getInMemory();
+    TaskManager createManager() {
+        return Managers.getInMemory();
     }
 }

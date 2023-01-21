@@ -57,34 +57,38 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager(file);
         if (file.exists()) {
             try {
-                String fileToLine = Files.readString(file.toPath(), StandardCharsets.UTF_8);
-                String[] line = fileToLine.split("\r?\n");
+                String fileToLine = Files.readString(file.toPath());
+                String[] line = fileToLine.split("\n");
                 List<Integer> historyList;
                 int maxId = 0;
 
                 for (int i = 1; i < line.length - 2; i++) {
                     String[] parts = line[i].split(",");
                     TypeTask type = TypeTask.valueOf(parts[1]);
-                    int id = Integer.parseInt(parts[0]);
+                    int id = 0;
 
                     switch (type) {
                         case TASK -> {
                             Task task = Converter.taskFromString(parts);
-                            fileBackedTasksManager.taskMap.put(id, task);
+                            fileBackedTasksManager.taskMap.put(task.getId(), task);
+                            id = task.getId();
                         }
                         case EPIC_TASK -> {
                             EpicTask epicTask = Converter.EpicTaskFromString(parts);
-                            fileBackedTasksManager.epicTaskMap.put(id, epicTask);
+                            fileBackedTasksManager.epicTaskMap.put(epicTask.getId(), epicTask);
+                            id = epicTask.getId();
                         }
                         case SUB_TASK -> {
                             SubTask subTask = Converter.SubTaskFromString(parts);
-                            fileBackedTasksManager.subTaskMap.put(id, subTask);
+                            fileBackedTasksManager.subTaskMap.put(subTask.getId(), subTask);
+                            id = subTask.getId();
                         }
                     }
                     if (id > maxId) {
                         maxId = id;
                     }
                 }
+                int size = line.length;
                 historyList = Converter.historyFromString(line[line.length - 1]);
                 synchEpicAndSubTask(fileBackedTasksManager);
                 recoveryHistory(fileBackedTasksManager, historyList);

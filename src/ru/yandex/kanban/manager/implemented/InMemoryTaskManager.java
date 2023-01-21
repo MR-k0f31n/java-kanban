@@ -1,7 +1,6 @@
 package ru.yandex.kanban.manager.implemented;
 
 import ru.yandex.kanban.data.enums.TypeTask;
-import ru.yandex.kanban.exceptions.ManagerSaveException;
 import ru.yandex.kanban.manager.interfaces.HistoryManager;
 import ru.yandex.kanban.data.EpicTask;
 import ru.yandex.kanban.data.enums.Status;
@@ -119,48 +118,45 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public int addNewTask(Task task) throws ManagerSaveException {
-        if (task == null) {
-            throw new ManagerSaveException("Задача пуста!");
-        }
+    public int addNewTask(Task task) {
         task.setId(currencyID++);
-        taskMap.put(task.getId(), task);
-        validationOfTasksOverTime(task);
-        return task.getId();
+        if (validationOfTasksOverTime(task)){
+            taskMap.put(task.getId(), task);
+            return task.getId();
+        } else {
+            throw new IllegalArgumentException("Есть пересечение по времени задач! Задача не была добавлена!");
+        }
     }
 
     @Override
-    public int addNewTask(EpicTask epicTask) throws ManagerSaveException {
-        if (epicTask == null) {
-            throw new ManagerSaveException("Задача пуста!");
-        }
+    public int addNewTask(EpicTask epicTask) {
         epicTask.setId(currencyID++);
-        epicTaskMap.put(epicTask.getId(), epicTask);
-        validationOfTasksOverTime(epicTask);
-        return epicTask.getId();
+        if (validationOfTasksOverTime(epicTask)) {
+            epicTaskMap.put(epicTask.getId(), epicTask);
+            return epicTask.getId();
+        } else {
+            throw new IllegalArgumentException("Есть пересечение по времени задач! Задача не была добавлена!");
+        }
     }
 
     @Override
-    public int addNewTask(SubTask subTask) throws ManagerSaveException {
-        if (subTask == null) {
-            throw new ManagerSaveException("Задача пуста!");
-        }
+    public int addNewTask(SubTask subTask) {
         if (!epicTaskMap.containsKey(subTask.getEpicID())) {
-            throw new ManagerSaveException("Такого эпика нет");
+            throw new IllegalArgumentException("Такого эпика нет! Задача не была добавлена!");
         }
         subTask.setId(currencyID++);
-        epicTaskMap.get(subTask.getEpicID()).addSubTaskIds(subTask.getId());
-        subTaskMap.put(subTask.getId(), subTask);
-        syncEpicTaskStatus(subTask.getEpicID());
-        validationOfTasksOverTime(subTask);
-        return subTask.getId();
+        if (validationOfTasksOverTime(subTask)) {
+            epicTaskMap.get(subTask.getEpicID()).addSubTaskIds(subTask.getId());
+            subTaskMap.put(subTask.getId(), subTask);
+            syncEpicTaskStatus(subTask.getEpicID());
+            return subTask.getId();
+        } else {
+            throw new RuntimeException("Есть пересечение по времени задач! Задача не была добавлена!");
+        }
     }
 
     @Override
-    public void updateTask(Task newTask) throws ManagerSaveException {
-        if (newTask == null) {
-            throw new ManagerSaveException("Задача пуста!");
-        }
+    public void updateTask(Task newTask) {
         if (taskMap.containsKey(newTask.getId())) {
             taskMap.put(newTask.getId(), newTask);
         }
@@ -168,9 +164,6 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateEpicTask(EpicTask newTask) {
-        if (newTask == null) {
-            throw new ManagerSaveException("Задача пуста!");
-        }
         if (epicTaskMap.containsKey(newTask.getId())) {
             if (!epicTaskMap.get(newTask.getId()).getStatus().equals(newTask.getStatus())) {
                 newTask.setStatus(epicTaskMap.get(newTask.getId()).getStatus());
@@ -182,9 +175,6 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateSubTask(SubTask newTask) {
-        if (newTask == null) {
-            throw new ManagerSaveException("Задача пуста!");
-        }
         if (subTaskMap.containsKey(newTask.getId())) {
             subTaskMap.put(newTask.getId(), newTask);
             syncEpicTaskStatus(newTask.getEpicID());
@@ -312,31 +302,39 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    protected void validationOfTasksOverTime(Task newTask) throws ManagerSaveException {
+    protected boolean validationOfTasksOverTime(Task newTask) {
+        LocalDateTime prevStartTime = LocalDateTime.MIN;
+        LocalDateTime prevEndTime = LocalDateTime.MIN;
+
         listOfTasksSortedByTime.add(newTask);
-        boolean isCrossing = false;
-        if (newTask.getStartTime() != null && newTask.getEndTime() != null) {
-            LocalDateTime newTaskStartTime = newTask.getStartTime();
-            LocalDateTime newTaskEndTime = newTask.getEndTime();
-            TypeTask newTaskType = newTask.getTypeTask();
-            for (Task task : listOfTasksSortedByTime) {
-                LocalDateTime prevStartTime = task.getStartTime();
-                LocalDateTime prevEndTime = task.getEndTime();
-                TypeTask taskType = task.getTypeTask();
-                if (prevStartTime != null & prevEndTime != null) {
-                    if ((!newTaskType.equals(TypeTask.SUB_TASK) && (!taskType.equals(TypeTask.EPIC_TASK)))) {
-                        if ((newTaskStartTime.isAfter(prevStartTime) && newTaskEndTime.isBefore(prevEndTime))
-                                || (newTaskStartTime.isBefore(prevStartTime) && newTaskEndTime.isAfter(prevEndTime))
-                                || (newTaskStartTime.isBefore(prevEndTime) && (newTaskEndTime.isAfter(prevEndTime)))) {
-                            isCrossing = true;
-                        }
+        boolean isNotCrossing = true;
+
+        LocalDateTime nextTaskStartTime;
+        LocalDateTime nextTaskEndTime;
+
+        TypeTask prevType;
+        String prevNameTask;
+        for (Task task : listOfTasksSortedByTime) {
+            prevType = task.getTypeTask();
+            prevNameTask = task.getName();
+            if ((task.getStartTime() != null) && (task.getEndTime() != null)) {
+                nextTaskStartTime = task.getStartTime();
+                nextTaskEndTime = task.getEndTime();
+
+                if ((nextTaskStartTime.isBefore(prevStartTime) && nextTaskEndTime.isAfter(prevStartTime))
+                        || (nextTaskStartTime.isAfter(prevStartTime) && nextTaskEndTime.isBefore(prevEndTime))
+                        || (nextTaskStartTime.isBefore(prevEndTime) && nextTaskEndTime.isAfter(prevEndTime))) {
+                    if (!prevType.equals(TypeTask.EPIC_TASK) && !task.getTypeTask().equals(TypeTask.SUB_TASK)){
+                        System.out.println(prevNameTask + " задача пересекается во времени с " + task.getName());
+                        isNotCrossing = false;
                     }
                 }
-            }
-            if (isCrossing) {
-                throw new ManagerSaveException("Есть пересеченеие по времени старта задач!");
+
+                prevStartTime = nextTaskStartTime;
+                prevEndTime = nextTaskEndTime;
             }
         }
+        return isNotCrossing;
     }
 
     @Override
