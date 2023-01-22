@@ -5,7 +5,6 @@ import ru.yandex.kanban.data.enums.TypeTask;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.Optional;
 
 public class EpicTask extends Task {
     private final ArrayList<Integer> subTaskIds = new ArrayList<>();

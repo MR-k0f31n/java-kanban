@@ -4,11 +4,10 @@ import ru.yandex.kanban.data.enums.Status;
 import ru.yandex.kanban.data.enums.TypeTask;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 public class SubTask extends Task {
 
-    private int epicId;
+    private final int epicId;
 
     public SubTask (String name, String description, LocalDateTime time, int duration, int epicId) {
         super(name, description, time, duration);
