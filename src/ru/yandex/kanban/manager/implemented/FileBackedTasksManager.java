@@ -29,7 +29,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         this.converter = getConverter();
     }
 
-    private void save() {
+    private void save() {1
         try (Writer writer = new FileWriter(path.toString())) {
             writer.write(HEAD + System.lineSeparator());
             for (Task task : taskMap.values()) {
