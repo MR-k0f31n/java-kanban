@@ -94,14 +94,18 @@ public class Converter {
     }
 
     public String toStringHistory(List<Task> list) {
-        StringBuilder sb = new StringBuilder();
-        String delimiter = "";
-        for (Task task : list) {
-            sb.append(delimiter);
-            delimiter = ",";
-            sb.append(task.getId());
+        if (list.isEmpty()) {
+            return " ";
+        } else {
+            StringBuilder sb = new StringBuilder();
+            String delimiter = "";
+            for (Task task : list) {
+                sb.append(delimiter);
+                delimiter = ",";
+                sb.append(task.getId());
+            }
+            return sb.toString();
         }
-        return sb.toString();
     }
 
     public static Task taskFromString(String[] strArr) {
@@ -177,7 +181,7 @@ public class Converter {
     public static List<Integer> historyFromString(String str) {
         List<Integer> list = new ArrayList<>();
 
-        if (!str.equals("")) {
+        if (!str.isBlank()) {
             String[] listIds = str.split(",");
 
             for (String id : listIds) {

@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -21,7 +22,7 @@ import static ru.yandex.kanban.manager.util.Util.getConverter;
 public class FileBackedTasksManager extends InMemoryTaskManager {
     private final Converter converter;
     private final Path path;
-    private static final String HEAD = "id,type,name,status, dataTime, duration, description, epic ";
+    private static final String HEAD = "id,type,name,status, dataTime, duration, description, epic";
 
     private FileBackedTasksManager(File file) {
         super();
@@ -29,8 +30,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         this.converter = getConverter();
     }
 
-    private void save() {1
-        try (Writer writer = new FileWriter(path.toString())) {
+    private void save() {
+        try (Writer writer = new FileWriter(path.toString(), false)) {
             writer.write(HEAD + System.lineSeparator());
             for (Task task : taskMap.values()) {
                 writer.write(converter.convertToStringTask(task)+ System.lineSeparator());
@@ -57,8 +58,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 String[] line = fileToLine.split(System.lineSeparator());
                 List<Integer> historyList;
                 int maxId = 0;
+                int str = line.length;
 
-                for (int i = 1; i < line.length - 2; i++) {
+                for (int i = 1; i < str - 2; i++) {
                     String[] parts = line[i].split(",");
                     TypeTask type = TypeTask.valueOf(parts[1]);
                     int id = 0;
@@ -84,11 +86,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                         maxId = id;
                     }
                 }
-                if (isNumeric(line[line.length - 1])) {
+                if (true) {
                     historyList = Converter.historyFromString(line[line.length - 1]);
                     recoveryHistory(fileBackedTasksManager, historyList);
                 }
-                //synchEpicAndSubTask(fileBackedTasksManager);
+                synchEpicAndSubTask(fileBackedTasksManager);
                 returnPriority(fileBackedTasksManager);
                 fileBackedTasksManager.currencyID = maxId + 1;
 
@@ -130,7 +132,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    /*private static void synchEpicAndSubTask(FileBackedTasksManager fileBackedTasksManager) {
+    private static void synchEpicAndSubTask(FileBackedTasksManager fileBackedTasksManager) {
         for (SubTask subTask : fileBackedTasksManager.subTaskMap.values()) {
             if (subTask != null) {
                 int idSub = subTask.getId();
@@ -141,7 +143,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 }
             }
         }
-    }*/
+    }
 
     private static void returnPriority(FileBackedTasksManager fileBackedTasksManager) {
         fileBackedTasksManager.listOfTasksSortedByTime.addAll(fileBackedTasksManager.getAllListTask());
