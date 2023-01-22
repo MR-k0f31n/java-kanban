@@ -119,39 +119,42 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public int addNewTask(Task task) {
-        task.setId(currencyID++);
-        if (validationOfTasksOverTime(task)){
-            taskMap.put(task.getId(), task);
-            return task.getId();
+        if (!isValidationOfTasksOverTime(task)) {
+            System.out.println("Задача не была добавлена!");
+            return -1;
         } else {
-            throw new IllegalArgumentException("Есть пересечение по времени задач! Задача не была добавлена!");
+            task.setId(currencyID++);
+            taskMap.put(task.getId(), task);
+            listOfTasksSortedByTime.add(task);
+            return task.getId();
         }
     }
 
     @Override
     public int addNewTask(EpicTask epicTask) {
-        epicTask.setId(currencyID++);
-        if (validationOfTasksOverTime(epicTask)) {
-            epicTaskMap.put(epicTask.getId(), epicTask);
-            return epicTask.getId();
+        if (!isValidationOfTasksOverTime(epicTask)) {
+            System.out.println("Задача не была добавлена!");
+            return -1;
         } else {
-            throw new IllegalArgumentException("Есть пересечение по времени задач! Задача не была добавлена!");
+            epicTask.setId(currencyID++);
+            epicTaskMap.put(epicTask.getId(), epicTask);
+            listOfTasksSortedByTime.add(epicTask);
+            return epicTask.getId();
         }
     }
 
     @Override
     public int addNewTask(SubTask subTask) {
-        if (!epicTaskMap.containsKey(subTask.getEpicID())) {
-            throw new IllegalArgumentException("Такого эпика нет! Задача не была добавлена!");
-        }
-        subTask.setId(currencyID++);
-        if (validationOfTasksOverTime(subTask)) {
+        if (!epicTaskMap.containsKey(subTask.getEpicID()) || !isValidationOfTasksOverTime(subTask)) {
+            System.out.println("Такого эпика нет или задачи пересекаются по времени! Задача не была добавлена!");
+            return -1;
+        } else {
+            subTask.setId(currencyID++);
             epicTaskMap.get(subTask.getEpicID()).addSubTaskIds(subTask.getId());
             subTaskMap.put(subTask.getId(), subTask);
+            listOfTasksSortedByTime.add(subTask);
             syncEpicTaskStatus(subTask.getEpicID());
             return subTask.getId();
-        } else {
-            throw new RuntimeException("Есть пересечение по времени задач! Задача не была добавлена!");
         }
     }
 
@@ -159,9 +162,11 @@ public class InMemoryTaskManager implements TaskManager {
     public void updateTask(Task newTask) {
         if (taskMap.containsKey(newTask.getId())) {
             taskMap.put(newTask.getId(), newTask);
+            listOfTasksSortedByTime.add(newTask);
         }
     }
 
+    //&& !isValidationOfTasksOverTime(newTask)
     @Override
     public void updateEpicTask(EpicTask newTask) {
         if (epicTaskMap.containsKey(newTask.getId())) {
@@ -170,17 +175,21 @@ public class InMemoryTaskManager implements TaskManager {
                 // Protected to change the status manually
             }
             epicTaskMap.put(newTask.getId(), newTask);
+            listOfTasksSortedByTime.add(newTask);
         }
     }
 
+    //&& !isValidationOfTasksOverTime(newTask)
     @Override
     public void updateSubTask(SubTask newTask) {
         if (subTaskMap.containsKey(newTask.getId())) {
             subTaskMap.put(newTask.getId(), newTask);
             syncEpicTaskStatus(newTask.getEpicID());
+            listOfTasksSortedByTime.add(newTask);
         }
     }
 
+    //&& !isValidationOfTasksOverTime(newTask)
     @Override
     public void deleteTaskById(int id) {
         if (taskMap.containsKey(id)) {
@@ -260,10 +269,10 @@ public class InMemoryTaskManager implements TaskManager {
                 epicTaskMap.put(epicTask.getId(), epicTask);
             }
         }
-        starAndEndTimeForEpicTask(epicTaskMap.get(idEpic));
+        calculateStartAndEndTimeForEpicTask(epicTaskMap.get(idEpic));
     }
 
-    protected void starAndEndTimeForEpicTask(EpicTask epicTask) {
+    protected void calculateStartAndEndTimeForEpicTask(EpicTask epicTask) {
         LocalDateTime endSubTask = null;
         LocalDateTime firstSubTask = null;
         Duration duration;
@@ -302,39 +311,32 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    protected boolean validationOfTasksOverTime(Task newTask) {
-        LocalDateTime prevStartTime = LocalDateTime.MIN;
-        LocalDateTime prevEndTime = LocalDateTime.MIN;
+    protected boolean isValidationOfTasksOverTime(Task newTask) {
+        if (newTask.getStartTime() == null && newTask.getEndTime() == null) {
+            return true;
+        }
+        LocalDateTime startTimeNewTask = newTask.getStartTime();
+        LocalDateTime endTimeNewTask = newTask.getEndTime();
 
-        listOfTasksSortedByTime.add(newTask);
-        boolean isNotCrossing = true;
 
-        LocalDateTime nextTaskStartTime;
-        LocalDateTime nextTaskEndTime;
-
-        TypeTask prevType;
-        String prevNameTask;
-        for (Task task : listOfTasksSortedByTime) {
-            prevType = task.getTypeTask();
-            prevNameTask = task.getName();
-            if ((task.getStartTime() != null) && (task.getEndTime() != null)) {
-                nextTaskStartTime = task.getStartTime();
-                nextTaskEndTime = task.getEndTime();
-
-                if ((nextTaskStartTime.isBefore(prevStartTime) && nextTaskEndTime.isAfter(prevStartTime))
-                        || (nextTaskStartTime.isAfter(prevStartTime) && nextTaskEndTime.isBefore(prevEndTime))
-                        || (nextTaskStartTime.isBefore(prevEndTime) && nextTaskEndTime.isAfter(prevEndTime))) {
-                    if (!prevType.equals(TypeTask.EPIC_TASK) && !task.getTypeTask().equals(TypeTask.SUB_TASK)){
-                        System.out.println(prevNameTask + " задача пересекается во времени с " + task.getName());
-                        isNotCrossing = false;
-                    }
+        for (Task existTask : listOfTasksSortedByTime) {
+            if ((existTask.getStartTime() == null) && (existTask.getEndTime() == null)) {
+                break;
+            }
+            if (existTask.getTypeTask().equals(TypeTask.EPIC_TASK)) {
+                continue;
+            }
+            LocalDateTime existTaskStarTime = existTask.getStartTime();
+            LocalDateTime existTaskEndTime = existTask.getEndTime();
+            if (endTimeNewTask != null) {
+                if ((startTimeNewTask.isAfter(existTaskStarTime)) && (startTimeNewTask.isBefore(existTaskEndTime)) ||
+                        (endTimeNewTask.isAfter(existTaskStarTime)) && (endTimeNewTask.isBefore(existTaskEndTime))) {
+                    System.out.println(newTask.getName() + " задача пересекается во времени с " + existTask.getName());
+                    return false;
                 }
-
-                prevStartTime = nextTaskStartTime;
-                prevEndTime = nextTaskEndTime;
             }
         }
-        return isNotCrossing;
+        return true;
     }
 
     @Override

@@ -57,7 +57,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    public void testAddHistory_correctLinkedList () {
+    public void Add_correctLinkedList () {
 
         List<Integer> listExpected = new LinkedList<>();
         List<Integer> listActual = new ArrayList<>();
@@ -79,7 +79,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    public void testAddDuplicateInHistory_correctLinkedList () {
+    public void Add_DuplicateInHistory_correctLinkedList () {
 
         List<Integer> listExpected = new LinkedList<>();
         List<Integer> listActual = new ArrayList<>();
@@ -102,7 +102,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    public void testDeleteFirstInHistory_correctLinkedList () {
+    public void remove_FirstInHistory_correctLinkedList () {
 
         List<Integer> listExpected = new LinkedList<>();
         List<Integer> listActual = new ArrayList<>();
@@ -126,7 +126,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    public void testDeleteCenterInHistory_correctLinkedList () {
+    public void remove_CenterInHistory_correctLinkedList () {
 
         List<Integer> listExpected = new LinkedList<>();
         List<Integer> listActual = new ArrayList<>();
@@ -151,7 +151,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    public void testDeleteLastInHistory_correctLinkedList () {
+    public void remove_LastInHistory_correctLinkedList () {
 
         List<Integer> listExpected = new LinkedList<>();
         List<Integer> listActual = new ArrayList<>();

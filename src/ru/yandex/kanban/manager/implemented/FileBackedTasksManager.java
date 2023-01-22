@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -34,7 +33,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         try (Writer writer = new FileWriter(path.toString(), false)) {
             writer.write(HEAD + System.lineSeparator());
             for (Task task : taskMap.values()) {
-                writer.write(converter.convertToStringTask(task)+ System.lineSeparator());
+                writer.write(converter.convertToStringTask(task) + System.lineSeparator());
             }
             for (EpicTask epicTask : epicTaskMap.values()) {
                 writer.write(converter.convertToStringTask(epicTask) + System.lineSeparator());
@@ -86,10 +85,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                         maxId = id;
                     }
                 }
-                if (true) {
-                    historyList = Converter.historyFromString(line[line.length - 1]);
-                    recoveryHistory(fileBackedTasksManager, historyList);
-                }
+                historyList = Converter.historyFromString(line[line.length - 1]);
+                recoveryHistory(fileBackedTasksManager, historyList);
                 synchEpicAndSubTask(fileBackedTasksManager);
                 returnPriority(fileBackedTasksManager);
                 fileBackedTasksManager.currencyID = maxId + 1;
@@ -107,15 +104,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             }
         }
         return fileBackedTasksManager;
-    }
-
-    public static boolean isNumeric(String str) {
-        try {
-            Double.parseDouble(str);
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
-        }
     }
 
     private static void recoveryHistory(FileBackedTasksManager fileBackedTasksManager, List<Integer> historyList) {
@@ -153,28 +141,44 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     @Override
     public int addNewTask(Task task) {
-        super.addNewTask(task);
-        save();
-        return task.getId();
+        if (!isValidationOfTasksOverTime(task)) {
+            System.out.println("Задача не была добавлена!");
+            return -1;
+        } else {
+            super.addNewTask(task);
+            save();
+            return task.getId();
+        }
     }
 
     @Override
     public int addNewTask(EpicTask task) {
-        super.addNewTask(task);
-        save();
-        return task.getId();
+        if (!isValidationOfTasksOverTime(task)) {
+            System.out.println("Задача не была добавлена!");
+            return -1;
+        } else {
+            super.addNewTask(task);
+            save();
+            return task.getId();
+        }
     }
 
     @Override
     public int addNewTask(SubTask task) {
-        super.addNewTask(task);
-        save();
-        return task.getId();
+        if (!isValidationOfTasksOverTime(task)) {
+            System.out.println("Задача не была добавлена!");
+            return -1;
+        } else {
+            super.addNewTask(task);
+            save();
+            return task.getId();
+        }
     }
 
     @Override
     public void updateTask(Task newTask) {
-        super.updateTask(newTask);
+        if (isValidationOfTasksOverTime(newTask))
+            super.updateTask(newTask);
         save();
     }
 
@@ -254,8 +258,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void starAndEndTimeForEpicTask(EpicTask epicTask) {
-        super.starAndEndTimeForEpicTask(epicTask);
+    public void calculateStartAndEndTimeForEpicTask(EpicTask epicTask) {
+        super.calculateStartAndEndTimeForEpicTask(epicTask);
         save();
     }
 }

@@ -1,5 +1,6 @@
 package ru.yandex.kanban.manager.implemented;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import ru.yandex.kanban.data.EpicTask;
@@ -31,7 +32,7 @@ public class FileBackedTasksManagerTest extends TestManagersTest<FileBackedTasks
         }
     }
     @Test
-    public void testLoadFromFile_expectedCorrectLoad () throws IOException {
+    public void LoadFromFile_expectedCorrectLoad () throws IOException {
         clean();
         FileBackedTasksManager fileBackedTasksManagerCreate = FileBackedTasksManager.loadFromFile(FILE_TEST_FROM_LOAD);
         Task taskOne = new Task("Name Task ONe",
@@ -63,7 +64,7 @@ public class FileBackedTasksManagerTest extends TestManagersTest<FileBackedTasks
 
 
     @Test
-    public void testLoadHistoryFromFile_expectedLoadHistoryCorrect () throws IOException {
+    public void loadFromFile_HistoryFromFile_expectedLoadHistoryCorrect () throws IOException {
         clean();
         FileBackedTasksManager fileBackedTasksManagerCreate = FileBackedTasksManager.loadFromFile(FILE_TEST_FROM_LOAD);
         Task taskOne = new Task("Name Task ONe",
@@ -99,6 +100,15 @@ public class FileBackedTasksManagerTest extends TestManagersTest<FileBackedTasks
         }
 
         Assertions.assertEquals(idBeforeLoadInHistory, idAfterLoadInHistory, "История загрузилась неудачно!");
+    }
+
+    @AfterEach
+    public void afterEach() throws IOException {
+        try {
+            new FileWriter(FILE, false).close();
+        } catch (IOException exception) {
+            throw new IOException(exception.getMessage());
+        }
     }
 
 }

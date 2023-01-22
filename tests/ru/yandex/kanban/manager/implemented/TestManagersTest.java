@@ -7,31 +7,29 @@ import ru.yandex.kanban.data.Task;
 import ru.yandex.kanban.data.enums.Status;
 import ru.yandex.kanban.manager.interfaces.TaskManager;
 
-import java.io.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 abstract class TestManagersTest<T extends TaskManager> {
 
-    public abstract T createManager();
+    protected abstract T createManager();
 
-    T manager;
-    File file = new File("resources", "history.csv");
-    Task taskFirst;
-    int idFirstTask;
-    Task taskSecond;
-    int idSecondTask;
+    protected T manager;
+    protected Task taskFirst;
+    protected int idFirstTask;
+    protected Task taskSecond;
+    protected int idSecondTask;
 
-    EpicTask epicTaskFirst;
-    int idFirstEpicTask;
+    protected EpicTask epicTaskFirst;
+    protected int idFirstEpicTask;
 
-    SubTask subTaskFirst;
-    int idFirstSubTask;
-    SubTask subTaskSecond;
-    int idSecondSubTask;
-    SubTask subTaskThree;
-    int idThreeSubTask;
+    protected SubTask subTaskFirst;
+    protected int idFirstSubTask;
+    protected SubTask subTaskSecond;
+    protected int idSecondSubTask;
+    protected SubTask subTaskThree;
+    protected int idThreeSubTask;
 
     @BeforeEach
     public void create() {
@@ -59,20 +57,20 @@ abstract class TestManagersTest<T extends TaskManager> {
     protected void createSubTask() {
         subTaskFirst = new SubTask("Name Sub One",
                 "Des Sub One",
-                LocalDateTime.of(2022, 10, 26, 4, 20, 20), 10,
+                LocalDateTime.of(2022, 10, 10, 4, 20, 20), 10,
                 idFirstEpicTask);
         idFirstSubTask = manager.addNewTask(subTaskFirst);
 
 
         subTaskSecond = new SubTask("Name Sub Two",
                 "Des EpicTask Two",
-                LocalDateTime.of(2022, 10, 29, 9, 20, 20), 10,
+                LocalDateTime.of(2022, 10, 11, 9, 20, 20), 10,
                 idFirstEpicTask);
         idSecondSubTask = manager.addNewTask(subTaskSecond);
 
         subTaskThree = new SubTask("Name Sub Three",
                 "Des Sub Three",
-                LocalDateTime.of(2022, 10, 25, 10, 20, 20), 10,
+                LocalDateTime.of(2022, 10, 13, 10, 20, 20), 10,
                 idFirstEpicTask);
         idThreeSubTask = manager.addNewTask(subTaskThree);
     }
@@ -80,20 +78,20 @@ abstract class TestManagersTest<T extends TaskManager> {
     protected void updateSubTaskDone() {
         SubTask subTaskFirstDone = new SubTask(idFirstSubTask, "Name Sub One",
                 "Des Sub One",
-                LocalDateTime.of(2022, 10, 26, 4, 20, 20), Status.DONE, 10,
+                LocalDateTime.of(2022, 10, 15, 4, 20, 20), Status.DONE, 10,
                 idFirstEpicTask);
         manager.updateSubTask(subTaskFirstDone);
 
 
         SubTask subTaskSecondDone = new SubTask(idSecondSubTask, "Name Sub Two",
                 "Des EpicTask Two",
-                LocalDateTime.of(2022, 10, 29, 9, 20, 20), Status.DONE, 10,
+                LocalDateTime.of(2022, 10, 18, 9, 20, 20), Status.DONE, 10,
                 idFirstEpicTask);
         manager.updateSubTask(subTaskSecondDone);
 
         SubTask subTaskThreeDone = new SubTask(idThreeSubTask, "Name Sub Three",
                 "Des Sub Three",
-                LocalDateTime.of(2022, 10, 25, 10, 20, 20), Status.DONE, 10,
+                LocalDateTime.of(2022, 11, 1, 10, 20, 20), Status.DONE, 10,
                 idFirstEpicTask);
         manager.updateSubTask(subTaskThreeDone);
     }
@@ -101,45 +99,36 @@ abstract class TestManagersTest<T extends TaskManager> {
     protected void updateSubTaskInProgress() {
         SubTask subTaskFirstInProgress = new SubTask(idFirstSubTask, "Name Sub One",
                 "Des Sub One",
-                LocalDateTime.of(2022, 10, 26, 4, 20, 20), Status.IN_PROGRESS, 10,
+                LocalDateTime.of(2022, 11, 28, 4, 20, 20), Status.IN_PROGRESS, 10,
                 idFirstEpicTask);
         manager.updateSubTask(subTaskFirstInProgress);
 
 
         SubTask subTaskSecondInProgress = new SubTask(idSecondSubTask, "Name Sub Two",
                 "Des EpicTask Two",
-                LocalDateTime.of(2022, 10, 29, 9, 20, 20), Status.IN_PROGRESS, 10,
+                LocalDateTime.of(2022, 12, 30, 9, 20, 20), Status.IN_PROGRESS, 10,
                 idFirstEpicTask);
         manager.updateSubTask(subTaskSecondInProgress);
 
         SubTask subTaskThreeInProgress = new SubTask(idThreeSubTask, "Name Sub Three",
                 "Des Sub Three",
-                LocalDateTime.of(2022, 10, 25, 10, 20, 20), Status.IN_PROGRESS, 10,
+                LocalDateTime.of(2022, 12, 2, 10, 20, 20), Status.IN_PROGRESS, 10,
                 idFirstEpicTask);
         manager.updateSubTask(subTaskThreeInProgress);
     }
 
-    @AfterEach
-    public void afterEach() throws IOException {
-        try {
-            new FileWriter(file, false).close();
-        } catch (IOException exception) {
-            throw new IOException(exception.getMessage());
-        }
-    }
-
     @Test
-    public void testGetPriorityList_ReturnCorrectListPriority() {
+    public void getPrioritizedTasks_returnCorrectListPriority() {
         createTasks();
         createSubTask();
         List<Integer> listIdTaskOnPriorityExpected = new ArrayList<>();
         List<Integer> listIdActual = new ArrayList<>();
 
-        listIdTaskOnPriorityExpected.add(idThreeSubTask);
-        listIdTaskOnPriorityExpected.add(idFirstEpicTask);
-        listIdTaskOnPriorityExpected.add(idFirstTask);
         listIdTaskOnPriorityExpected.add(idFirstSubTask);
+        listIdTaskOnPriorityExpected.add(idFirstEpicTask);
         listIdTaskOnPriorityExpected.add(idSecondSubTask);
+        listIdTaskOnPriorityExpected.add(idThreeSubTask);
+        listIdTaskOnPriorityExpected.add(idFirstTask);
         listIdTaskOnPriorityExpected.add(idSecondTask);
 
         for (Task task : manager.getPrioritizedTasks()) {
@@ -150,7 +139,7 @@ abstract class TestManagersTest<T extends TaskManager> {
     }
 
     @Test
-    public void calculateStatusEpic_CorrectCalculateStatusFromEpic() {
+    public void calculateStatusEpic_correctCalculateStatusFromEpic() {
         createTasks();
         Assertions.assertEquals(Status.NEW, manager.getEpicById(idFirstEpicTask).getStatus(),
                 "Список подзадач пусть, статус не новый");
@@ -178,7 +167,7 @@ abstract class TestManagersTest<T extends TaskManager> {
     }
 
     @Test
-    public void testAvailabilityEpicTaskInSubTask_returnCorrectIdEpic () {
+    public void availabilityEpicTaskInSubTask_returnCorrectIdEpic() {
         createTasks();
         List<Integer> listId = new ArrayList<>();
 
@@ -188,10 +177,47 @@ abstract class TestManagersTest<T extends TaskManager> {
         createSubTask();
         listId.addAll(manager.getEpicById(idFirstEpicTask).getSubTaskIds());
 
-        for (int idSub : listId){
+        for (int idSub : listId) {
             Assertions.assertEquals(idFirstEpicTask, manager.getSubById(idSub).getEpicID(),
                     "не все задачи получили ID задачи");
         }
+    }
 
+    @Test
+    public void isValidationOfTasksOverTime_expectedTrue () {
+        createTasks();
+        Task taskFirst = new Task("Name Task One NEW",
+                "Des Task one",
+                LocalDateTime.of(2022, 10, 25, 10, 20, 20), 10);
+        int idTest = manager.addNewTask(taskFirst);
+
+        Assertions.assertNotEquals(-1, idTest, "Новая задача не прошла валидации по времени");
+    }
+
+    @Test
+    public void isValidationOfTasksOverTime_expectedFalse () {
+        createTasks();
+        createSubTask();
+
+        Task taskFirst = new Task("Name Task One NEW",
+                "Des Task one",
+                LocalDateTime.of(2022, 10, 25, 11, 19, 20), 10);
+        int idTaskTest = manager.addNewTask(taskFirst);
+
+        Assertions.assertEquals(-1, idTaskTest, "Задачи должны были пересечься по времени");
+    }
+
+    @Test
+    public void isValidationOfTasksOverTime_FromSubTask_expectedFalse () {
+        createTasks();
+        createSubTask();
+
+        SubTask subTaskFirstDone = new SubTask(idFirstSubTask, "Name Sub One",
+                "Des Sub One",
+                LocalDateTime.of(2022,10,10,4,22,20), Status.DONE, 10,
+                idFirstEpicTask);
+        int idSubTest = manager.addNewTask(subTaskFirstDone);
+
+        Assertions.assertEquals(-1, idSubTest, "Подзадачи должны были пересечься по времени");
     }
 }
