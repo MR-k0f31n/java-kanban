@@ -139,7 +139,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 int idEpic = subTask.getEpicID();
                 if (fileBackedTasksManager.epicTaskMap.containsKey(idEpic)) {
                     fileBackedTasksManager.epicTaskMap.get(idEpic).addSubTaskIds(idSub);
-                    //fileBackedTasksManager.syncEpicTaskStatus(idEpic);
+                    fileBackedTasksManager.syncEpicTaskStatus(idEpic);
                 }
             }
         }
@@ -180,13 +180,13 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     @Override
     public void updateEpicTask(EpicTask newTask) {
-        super.updateTask(newTask);
+        super.updateEpicTask(newTask);
         save();
     }
 
     @Override
     public void updateSubTask(SubTask newTask) {
-        super.updateTask(newTask);
+        super.updateSubTask(newTask);
         save();
     }
 

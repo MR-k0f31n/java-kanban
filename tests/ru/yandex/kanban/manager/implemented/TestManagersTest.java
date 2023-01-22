@@ -98,6 +98,27 @@ abstract class TestManagersTest<T extends TaskManager> {
         manager.updateSubTask(subTaskThreeDone);
     }
 
+    protected void updateSubTaskInProgress() {
+        SubTask subTaskFirstInProgress = new SubTask(idFirstSubTask, "Name Sub One",
+                "Des Sub One",
+                LocalDateTime.of(2022, 10, 26, 4, 20, 20), Status.IN_PROGRESS, 10,
+                idFirstEpicTask);
+        manager.updateSubTask(subTaskFirstInProgress);
+
+
+        SubTask subTaskSecondInProgress = new SubTask(idSecondSubTask, "Name Sub Two",
+                "Des EpicTask Two",
+                LocalDateTime.of(2022, 10, 29, 9, 20, 20), Status.IN_PROGRESS, 10,
+                idFirstEpicTask);
+        manager.updateSubTask(subTaskSecondInProgress);
+
+        SubTask subTaskThreeInProgress = new SubTask(idThreeSubTask, "Name Sub Three",
+                "Des Sub Three",
+                LocalDateTime.of(2022, 10, 25, 10, 20, 20), Status.IN_PROGRESS, 10,
+                idFirstEpicTask);
+        manager.updateSubTask(subTaskThreeInProgress);
+    }
+
     @AfterEach
     public void afterEach() throws IOException {
         try {
@@ -128,7 +149,7 @@ abstract class TestManagersTest<T extends TaskManager> {
         Assertions.assertEquals(listIdTaskOnPriorityExpected, listIdActual, "Приоритеты раставлены не верно!");
     }
 
-    /*@Test
+    @Test
     public void calculateStatusEpic_CorrectCalculateStatusFromEpic() {
         createTasks();
         Assertions.assertEquals(Status.NEW, manager.getEpicById(idFirstEpicTask).getStatus(),
@@ -138,27 +159,39 @@ abstract class TestManagersTest<T extends TaskManager> {
         Assertions.assertEquals(Status.NEW, manager.getEpicById(idFirstEpicTask).getStatus(),
                 "Список подзадач заполнился, статус не новый");
 
-        SubTask subTaskFirstDone = new SubTask(idFirstSubTask, "Name Sub One",
-                "Des Sub One",
-                LocalDateTime.of(2022, 10, 26, 4, 20, 20), Status.DONE, 10,
-                idFirstEpicTask);
-        manager.updateSubTask(subTaskFirstDone);
-
-
-        SubTask subTaskSecondDone = new SubTask(idSecondSubTask, "Name Sub Two",
-                "Des EpicTask Two",
-                LocalDateTime.of(2022, 10, 29, 9, 20, 20), Status.DONE, 10,
-                idFirstEpicTask);
-        manager.updateSubTask(subTaskSecondDone);
-
-        SubTask subTaskThreeDone = new SubTask(idThreeSubTask, "Name Sub Three",
-                "Des Sub Three",
-                LocalDateTime.of(2022, 10, 25, 10, 20, 20), Status.DONE, 10,
-                idFirstEpicTask);
-        manager.updateSubTask(subTaskThreeDone);
-        System.out.println(manager.getAllSubTask());
-        System.out.println(manager.getAllEpicTask());
+        updateSubTaskDone();
         Assertions.assertEquals(Status.DONE, manager.getEpicById(idFirstEpicTask).getStatus(),
                 "Подзадачи DONE, Статус не обновился");
-    }*/
+
+        SubTask newSub = new SubTask(idSecondSubTask, "Name Sub Two",
+                "Des EpicTask Two",
+                LocalDateTime.of(2022, 10, 29, 9, 20, 20), Status.NEW, 10,
+                idFirstEpicTask);
+        manager.updateSubTask(newSub);
+
+        Assertions.assertEquals(Status.IN_PROGRESS, manager.getEpicById(idFirstEpicTask).getStatus(),
+                "Статус подзадач NEW и DONE статус эпика не IN_progress");
+
+        updateSubTaskInProgress();
+        Assertions.assertEquals(Status.IN_PROGRESS, manager.getEpicById(idFirstEpicTask).getStatus(),
+                "Статус подзадач IN_progress статус эпика не IN_progress");
+    }
+
+    @Test
+    public void testAvailabilityEpicTaskInSubTask_returnCorrectIdEpic () {
+        createTasks();
+        List<Integer> listId = new ArrayList<>();
+
+        Assertions.assertEquals(listId, manager.getEpicById(idFirstEpicTask).getSubTaskIds(),
+                "Кто-то вошел в эпик раньше времени");
+
+        createSubTask();
+        listId.addAll(manager.getEpicById(idFirstEpicTask).getSubTaskIds());
+
+        for (int idSub : listId){
+            Assertions.assertEquals(idFirstEpicTask, manager.getSubById(idSub).getEpicID(),
+                    "не все задачи получили ID задачи");
+        }
+
+    }
 }
