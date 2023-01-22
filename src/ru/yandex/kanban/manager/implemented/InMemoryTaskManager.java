@@ -15,7 +15,7 @@ import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
 
-    private final HistoryManager history;
+    protected final HistoryManager history;
     protected int currencyID = 1;
     protected final HashMap<Integer, Task> taskMap;
     protected final HashMap<Integer, SubTask> subTaskMap;

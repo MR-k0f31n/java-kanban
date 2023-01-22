@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -22,7 +21,7 @@ import static ru.yandex.kanban.manager.util.Util.getConverter;
 public class FileBackedTasksManager extends InMemoryTaskManager {
     private final Converter converter;
     private final Path path;
-    private static final String HEAD = "id,type,name,status, dataTime, duration, description, epic";
+    private static final String HEAD = "id,type,name,status, dataTime, duration, description, epic ";
 
     private FileBackedTasksManager(File file) {
         super();
@@ -31,22 +30,19 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     private void save() {
-        try (Writer writer = new FileWriter(path.toString(), StandardCharsets.UTF_8, false)) {
-            writer.write(HEAD + "\n");
+        try (Writer writer = new FileWriter(path.toString())) {
+            writer.write(HEAD + System.lineSeparator());
             for (Task task : taskMap.values()) {
-                writer.write(converter.convertToStringTask(task));
-                writer.write("\n");
+                writer.write(converter.convertToStringTask(task)+ System.lineSeparator());
             }
             for (EpicTask epicTask : epicTaskMap.values()) {
-                writer.write(converter.convertToStringTask(epicTask));
-                writer.write("\n");
+                writer.write(converter.convertToStringTask(epicTask) + System.lineSeparator());
             }
             for (SubTask subTask : subTaskMap.values()) {
-                writer.write(converter.convertToStringTask(subTask));
-                writer.write("\n");
+                writer.write(converter.convertToStringTask(subTask) + System.lineSeparator());
             }
-            writer.write("\n");
-            writer.write(converter.toStringHistory(getHistory()));
+            writer.write(System.lineSeparator());
+            writer.write(converter.toStringHistory(getHistory()) + System.lineSeparator());
         } catch (IOException e) {
             e.printStackTrace();
             throw new ManagerSaveException(e.getMessage());
@@ -58,7 +54,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         if (file.exists()) {
             try {
                 String fileToLine = Files.readString(file.toPath());
-                String[] line = fileToLine.split("\n");
+                String[] line = fileToLine.split(System.lineSeparator());
                 List<Integer> historyList;
                 int maxId = 0;
 
@@ -88,10 +84,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                         maxId = id;
                     }
                 }
-                int size = line.length;
-                historyList = Converter.historyFromString(line[line.length - 1]);
-                synchEpicAndSubTask(fileBackedTasksManager);
-                recoveryHistory(fileBackedTasksManager, historyList);
+                if (isNumeric(line[line.length - 1])) {
+                    historyList = Converter.historyFromString(line[line.length - 1]);
+                    recoveryHistory(fileBackedTasksManager, historyList);
+                }
+                //synchEpicAndSubTask(fileBackedTasksManager);
                 returnPriority(fileBackedTasksManager);
                 fileBackedTasksManager.currencyID = maxId + 1;
 
@@ -110,32 +107,41 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return fileBackedTasksManager;
     }
 
+    public static boolean isNumeric(String str) {
+        try {
+            Double.parseDouble(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
     private static void recoveryHistory(FileBackedTasksManager fileBackedTasksManager, List<Integer> historyList) {
         for (Integer id : historyList) {
             if (id != null) {
                 if (fileBackedTasksManager.taskMap.containsKey(id)) {
-                    fileBackedTasksManager.getTaskById(id);
+                    fileBackedTasksManager.history.add(fileBackedTasksManager.taskMap.get(id));
                 } else if (fileBackedTasksManager.epicTaskMap.containsKey(id)) {
-                    fileBackedTasksManager.getEpicById(id);
+                    fileBackedTasksManager.history.add(fileBackedTasksManager.epicTaskMap.get(id));
                 } else if (fileBackedTasksManager.subTaskMap.containsKey(id)) {
-                    fileBackedTasksManager.getSubById(id);
+                    fileBackedTasksManager.history.add(fileBackedTasksManager.subTaskMap.get(id));
                 }
             }
         }
     }
 
-    private static void synchEpicAndSubTask(FileBackedTasksManager fileBackedTasksManager) {
+    /*private static void synchEpicAndSubTask(FileBackedTasksManager fileBackedTasksManager) {
         for (SubTask subTask : fileBackedTasksManager.subTaskMap.values()) {
             if (subTask != null) {
                 int idSub = subTask.getId();
                 int idEpic = subTask.getEpicID();
                 if (fileBackedTasksManager.epicTaskMap.containsKey(idEpic)) {
                     fileBackedTasksManager.epicTaskMap.get(idEpic).addSubTaskIds(idSub);
-                    fileBackedTasksManager.syncEpicTaskStatus(idEpic);
+                    //fileBackedTasksManager.syncEpicTaskStatus(idEpic);
                 }
             }
         }
-    }
+    }*/
 
     private static void returnPriority(FileBackedTasksManager fileBackedTasksManager) {
         fileBackedTasksManager.listOfTasksSortedByTime.addAll(fileBackedTasksManager.getAllListTask());

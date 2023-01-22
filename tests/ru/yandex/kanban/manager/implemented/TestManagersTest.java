@@ -5,16 +5,14 @@ import ru.yandex.kanban.data.EpicTask;
 import ru.yandex.kanban.data.SubTask;
 import ru.yandex.kanban.data.Task;
 import ru.yandex.kanban.data.enums.Status;
-import ru.yandex.kanban.exceptions.ManagerSaveException;
 import ru.yandex.kanban.manager.interfaces.TaskManager;
 
 import java.io.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
-abstract class TestManagers<T extends TaskManager> {
+abstract class TestManagersTest<T extends TaskManager> {
 
     abstract T createManager();
 
@@ -40,7 +38,7 @@ abstract class TestManagers<T extends TaskManager> {
         manager = createManager();
     }
 
-    @BeforeEach
+
     public void createTasks () {
         taskFirst = new Task("Name Task ONe",
                 "Des Task one",
@@ -52,11 +50,13 @@ abstract class TestManagers<T extends TaskManager> {
                 null,10);
         idSecondTask = manager.addNewTask(taskSecond);
 
-        epicTaskFirst = new EpicTask("Name EpicTask Two",
-                "Des EpicTask Two",
+        epicTaskFirst = new EpicTask("Name EpicTask One",
+                "Des EpicTask One",
                 LocalDateTime.of(2022,10,20,5,20,20),10);
         idFirstEpicTask = manager.addNewTask(epicTaskFirst);
+    }
 
+    public void createSubTask () {
         subTaskFirst = new SubTask("Name Sub One",
                 "Des Sub One",
                 LocalDateTime.of(2022,10,26,4,20,20),10,
@@ -75,12 +75,28 @@ abstract class TestManagers<T extends TaskManager> {
                 LocalDateTime.of(2022,10,25,10,20,20),10,
                 idFirstEpicTask);
         idThreeSubTask = manager.addNewTask(subTaskThree);
-
-        manager.getTaskById(idSecondTask);
-        manager.getTaskById(idFirstEpicTask);
-        manager.getSubById(idFirstSubTask);
     }
 
+    public void updateSubTaskDone () {
+        SubTask subTaskFirstDone = new SubTask(idFirstSubTask,"Name Sub One",
+                "Des Sub One",
+                LocalDateTime.of(2022,10,26,4,20,20),Status.DONE, 10,
+                idFirstEpicTask);
+        manager.updateSubTask(subTaskFirstDone);
+
+
+        SubTask subTaskSecondDone = new SubTask(idSecondSubTask, "Name Sub Two",
+                "Des EpicTask Two",
+                LocalDateTime.of(2022,10,29,9,20,20),Status.DONE, 10,
+                idFirstEpicTask);
+        manager.updateSubTask(subTaskSecondDone);
+
+        SubTask subTaskThreeDone = new SubTask(idThreeSubTask,"Name Sub Three",
+                "Des Sub Three",
+                LocalDateTime.of(2022,10,25,10,20,20),Status.DONE, 10,
+                idFirstEpicTask);
+        manager.updateSubTask(subTaskThreeDone);
+    }
 
     @AfterEach
     public void afterEach() throws IOException {
@@ -93,8 +109,10 @@ abstract class TestManagers<T extends TaskManager> {
 
     @Test
     public void testGetPriorityList_ReturnCorrectListPriority () {
-        List<Integer> listIdTaskOnPriorityExpected = new LinkedList<>();
-        List<Integer> listIdActual = new LinkedList<>();
+        createTasks();
+        createSubTask();
+        List<Integer> listIdTaskOnPriorityExpected = new ArrayList<>();
+        List<Integer> listIdActual = new ArrayList<>();
 
         listIdTaskOnPriorityExpected.add(idThreeSubTask);
         listIdTaskOnPriorityExpected.add(idFirstEpicTask);
@@ -103,6 +121,25 @@ abstract class TestManagers<T extends TaskManager> {
         listIdTaskOnPriorityExpected.add(idSecondSubTask);
         listIdTaskOnPriorityExpected.add(idSecondTask);
 
+        for (Task task : manager.getPrioritizedTasks()) {
+            listIdActual.add(task.getId());
+        }
 
+        Assertions.assertEquals(listIdTaskOnPriorityExpected, listIdActual, "Приоритеты раставлены не верно!");
+    }
+
+    @Test
+    public void calculateStatusEpic_CorrectCalculateStatusFromEpic () {
+        createTasks();
+        Assertions.assertEquals(Status.NEW, epicTaskFirst.getStatus(), "Список подзадач пусть, статус не новый");
+
+        createSubTask();
+        Assertions.assertEquals(Status.NEW, epicTaskFirst.getStatus(),
+                "Список подзадач заполнился, статус не новый");
+
+        updateSubTaskDone();
+        System.out.println(manager.getAllSubTask());
+        System.out.println(manager.getAllEpicTask());
+        Assertions.assertEquals(Status.DONE, manager.getEpicById(idFirstEpicTask).getStatus(), "Подзадачи DONE, Статус не обновился");
     }
 }

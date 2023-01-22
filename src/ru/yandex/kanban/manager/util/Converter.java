@@ -151,7 +151,7 @@ public class Converter {
     }
 
     public static SubTask SubTaskFromString(String[] strArr) {
-        if (strArr[4].equals("null")) {
+        if (!strArr[4].equals("null")) {
             return new SubTask(
                     Integer.parseInt(strArr[0]),
                     strArr[2],
