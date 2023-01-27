@@ -165,8 +165,6 @@ public class InMemoryTaskManager implements TaskManager {
             listOfTasksSortedByTime.add(newTask);
         }
     }
-
-    //&& !isValidationOfTasksOverTime(newTask)
     @Override
     public void updateEpicTask(EpicTask newTask) {
         if (epicTaskMap.containsKey(newTask.getId())) {
@@ -179,7 +177,6 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    //&& !isValidationOfTasksOverTime(newTask)
     @Override
     public void updateSubTask(SubTask newTask) {
         if (subTaskMap.containsKey(newTask.getId())) {
@@ -189,7 +186,6 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    //&& !isValidationOfTasksOverTime(newTask)
     @Override
     public void deleteTaskById(int id) {
         if (taskMap.containsKey(id)) {
