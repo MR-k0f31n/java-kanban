@@ -122,12 +122,11 @@ public class InMemoryTaskManager implements TaskManager {
         if (!isValidationOfTasksOverTime(task)) {
             System.out.println("Задача не была добавлена!");
             return -1;
-        } else {
-            task.setId(currencyID++);
-            taskMap.put(task.getId(), task);
-            listOfTasksSortedByTime.add(task);
-            return task.getId();
         }
+        task.setId(currencyID++);
+        taskMap.put(task.getId(), task);
+        listOfTasksSortedByTime.add(task);
+        return task.getId();
     }
 
     @Override
@@ -135,12 +134,11 @@ public class InMemoryTaskManager implements TaskManager {
         if (!isValidationOfTasksOverTime(epicTask)) {
             System.out.println("Задача не была добавлена!");
             return -1;
-        } else {
-            epicTask.setId(currencyID++);
-            epicTaskMap.put(epicTask.getId(), epicTask);
-            listOfTasksSortedByTime.add(epicTask);
-            return epicTask.getId();
         }
+        epicTask.setId(currencyID++);
+        epicTaskMap.put(epicTask.getId(), epicTask);
+        listOfTasksSortedByTime.add(epicTask);
+        return epicTask.getId();
     }
 
     @Override
@@ -148,14 +146,13 @@ public class InMemoryTaskManager implements TaskManager {
         if (!epicTaskMap.containsKey(subTask.getEpicID()) || !isValidationOfTasksOverTime(subTask)) {
             System.out.println("Такого эпика нет или задачи пересекаются по времени! Задача не была добавлена!");
             return -1;
-        } else {
-            subTask.setId(currencyID++);
-            epicTaskMap.get(subTask.getEpicID()).addSubTaskIds(subTask.getId());
-            subTaskMap.put(subTask.getId(), subTask);
-            listOfTasksSortedByTime.add(subTask);
-            syncEpicTaskStatus(subTask.getEpicID());
-            return subTask.getId();
         }
+        subTask.setId(currencyID++);
+        epicTaskMap.get(subTask.getEpicID()).addSubTaskIds(subTask.getId());
+        subTaskMap.put(subTask.getId(), subTask);
+        listOfTasksSortedByTime.add(subTask);
+        syncEpicTaskStatus(subTask.getEpicID());
+        return subTask.getId();
     }
 
     @Override
