@@ -339,6 +339,6 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public List<Task> getPrioritizedTasks() {
-        return listOfTasksSortedByTime.stream().toList();
+        return new ArrayList<>(listOfTasksSortedByTime);
     }
 }

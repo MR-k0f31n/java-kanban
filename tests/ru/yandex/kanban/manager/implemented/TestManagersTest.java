@@ -7,13 +7,14 @@ import ru.yandex.kanban.data.Task;
 import ru.yandex.kanban.data.enums.Status;
 import ru.yandex.kanban.manager.interfaces.TaskManager;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 abstract class TestManagersTest<T extends TaskManager> {
 
-    protected abstract T createManager();
+    protected abstract T createManager() throws IOException, InterruptedException;
 
     protected T manager;
     protected Task taskFirst;
@@ -32,7 +33,7 @@ abstract class TestManagersTest<T extends TaskManager> {
     protected int idThreeSubTask;
 
     @BeforeEach
-    public void create() {
+    public void create() throws IOException, InterruptedException {
         manager = createManager();
     }
 

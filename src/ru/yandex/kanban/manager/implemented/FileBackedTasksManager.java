@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -19,17 +20,17 @@ import static ru.yandex.kanban.manager.util.Util.getConverter;
 
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
-    private final Converter converter;
-    private final Path path;
-    private static final String HEAD = "id,type,name,status, dataTime, duration, description, epic";
+    protected final Converter converter;
+    protected final Path path;
+    protected static final String HEAD = "id,type,name,status, dataTime, duration, description, epic";
 
-    private FileBackedTasksManager(File file) {
+    protected FileBackedTasksManager(File file) {
         super();
         this.path = file.toPath();
         this.converter = getConverter();
     }
 
-    private void save() {
+    protected void save() {
         try (Writer writer = new FileWriter(path.toString(), false)) {
             writer.write(HEAD + System.lineSeparator());
             for (Task task : taskMap.values()) {
@@ -106,7 +107,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return fileBackedTasksManager;
     }
 
-    private static void recoveryHistory(FileBackedTasksManager fileBackedTasksManager, List<Integer> historyList) {
+    protected static void recoveryHistory(FileBackedTasksManager fileBackedTasksManager, List<Integer> historyList) {
         for (Integer id : historyList) {
             if (id != null) {
                 if (fileBackedTasksManager.taskMap.containsKey(id)) {
@@ -120,7 +121,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    private static void synchEpicAndSubTask(FileBackedTasksManager fileBackedTasksManager) {
+    protected static void synchEpicAndSubTask(FileBackedTasksManager fileBackedTasksManager) {
         for (SubTask subTask : fileBackedTasksManager.subTaskMap.values()) {
             if (subTask != null) {
                 int idSub = subTask.getId();
@@ -133,7 +134,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    private static void returnPriority(FileBackedTasksManager fileBackedTasksManager) {
+    protected static void returnPriority(FileBackedTasksManager fileBackedTasksManager) {
         fileBackedTasksManager.listOfTasksSortedByTime.addAll(fileBackedTasksManager.getAllListTask());
         fileBackedTasksManager.listOfTasksSortedByTime.addAll(fileBackedTasksManager.getAllEpicTask());
         fileBackedTasksManager.listOfTasksSortedByTime.addAll(fileBackedTasksManager.getAllSubTask());

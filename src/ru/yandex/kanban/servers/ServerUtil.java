@@ -1,6 +1,6 @@
-package ru.yandex.kanban.serverHTTP;
+package ru.yandex.kanban.servers;
 
-import ru.yandex.kanban.serverHTTP.implemented.KVServer;
+import ru.yandex.kanban.servers.implemented.KVServer;
 
 import java.io.IOException;
 
