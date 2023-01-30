@@ -56,7 +56,7 @@ public class KVServer {
                     }
                 }
             } else {
-                System.out.println("/load ждёт GET-запрос, а получил: " + h.getRequestMethod());
+                System.out.println("/load ждет GET-запрос, а получил: " + h.getRequestMethod());
                 h.sendResponseHeaders(405, 0);
             }
         } finally {

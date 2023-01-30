@@ -17,8 +17,8 @@ import java.net.URI;
 import java.util.List;
 
 public class HttpTaskManager extends FileBackedTasksManager {
-    private KVTaskClient kvTaskClient;
-    private Gson json = new GsonBuilder()
+    private final KVTaskClient kvTaskClient;
+    private final Gson gson = new GsonBuilder()
             .setPrettyPrinting()
             .serializeNulls()
             .create();
@@ -30,40 +30,13 @@ public class HttpTaskManager extends FileBackedTasksManager {
 
     @Override
     public void save() {
-            kvTaskClient.put("Task", json.toJson(super.getAllListTask()));
-            kvTaskClient.put("Epic", json.toJson(super.getAllEpicTask()));
-            kvTaskClient.put("Subtask", json.toJson(super.getAllSubTask()));
-            kvTaskClient.put("History", json.toJson(super.getHistory()));
+            kvTaskClient.put("Task", gson.toJson(super.getAllListTask()));
+            kvTaskClient.put("Epic", gson.toJson(super.getAllEpicTask()));
+            kvTaskClient.put("Subtask", gson.toJson(super.getAllSubTask()));
+            kvTaskClient.put("History", gson.toJson(super.getHistory()));
     }
 
     public void load() throws IOException, InterruptedException {
-        List<Task> tasks = json.fromJson(kvTaskClient.load("Task"),
-                new TypeToken<List<Task>>() {}.getType());
-        List<EpicTask> epics = json.fromJson(kvTaskClient.load("Epic"),
-                new TypeToken<List<EpicTask>>() {}.getType());
-        List<SubTask> subTasks = json.fromJson(kvTaskClient.load("SubTask"),
-                new TypeToken<List<SubTask>>() {}.getType());
-        List<Task> history = json.fromJson(kvTaskClient.load("History"),
-                new TypeToken<List<Task>>() {}.getType());
 
-        for (Task task : tasks) {
-            addNewTask(task);
-        }
-        for (EpicTask epic : epics) {
-            addNewTask(epic);
-        }
-        for (SubTask subTask : subTasks) {
-            addNewTask(subTask);
-        }
-        for (Task task : history) {
-            int taskId = task.getId();
-            if (tasks.contains(task)) {
-                getTaskById(taskId);
-            } else if (subTasks.contains(task)) {
-                getSubById(taskId);
-            } else {
-                getEpicById(taskId);
-            }
-        }
     }
 }

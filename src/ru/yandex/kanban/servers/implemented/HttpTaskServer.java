@@ -9,6 +9,7 @@ import ru.yandex.kanban.data.SubTask;
 import ru.yandex.kanban.data.Task;
 import ru.yandex.kanban.manager.Managers;
 import ru.yandex.kanban.manager.interfaces.TaskManager;
+import ru.yandex.kanban.servers.implemented.handlers.TaskHandler;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,19 +22,14 @@ import java.util.List;
 
 
 public class HttpTaskServer {
-    private final URI url = URI.create("http://localhost:8078");
-    private HttpServer httpServer;
+    private final HttpServer httpServer;
     private static final int PORT = 8078;
-    private static final String GET = "GET";
-    private static final String POST = "POST";
-    private static final String DELETE = "DELETE";
-    private static TaskManager taskManager;
-    private static Gson gson = new GsonBuilder().setPrettyPrinting()
-            .serializeNulls().create();
+    private final TaskManager taskManager;
 
-    public void startServer() throws IOException, InterruptedException {
+    public HttpTaskServer() throws IOException, InterruptedException {
         taskManager = Managers.getDefault();
         this.httpServer = HttpServer.create();
+
         httpServer.bind(new InetSocketAddress(PORT), 0);
         httpServer.createContext("/tasks/task/", new TaskHandler());
         httpServer.createContext("/tasks/epic/", new EpicHandler());
@@ -76,74 +72,7 @@ public class HttpTaskServer {
         }
     }
 
-    static class TaskHandler implements HttpHandler {
-        @Override
-        public void handle(HttpExchange httpExchange) throws IOException {
-            URI path = httpExchange.getRequestURI();
-            String stringPath = path.toString();
-            String method = httpExchange.getRequestMethod();
-            try {
-                switch (method) {
-                    case GET:
-                        if (stringPath.equals("/tasks/task/")) {
-                            List<Task> tasksList = taskManager.getAllListTask();
-                            String response = gson.toJson(tasksList);
-                            httpExchange.sendResponseHeaders(200, 0);
-                            try (OutputStream outputStream = httpExchange.getResponseBody()) {
-                                outputStream.write(response.getBytes());
-                            }
-                        } else if (stringPath.startsWith("/tasks/task/?id=")) {
-                            String[] id = stringPath.split("=");
-                            Task task = taskManager.getTaskById(Integer.parseInt(id[1]));
-                            String response = gson.toJson(task);
-                            httpExchange.sendResponseHeaders(200, 0);
-                            try (OutputStream outputStream = httpExchange.getResponseBody()) {
-                                outputStream.write(response.getBytes());
-                            }
-                        } else
-                            System.out.println("Неверный путь");
-                        break;
-                    case POST:
-                        InputStream inputStream = httpExchange.getRequestBody();
-                        String jsonString = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
-                        JsonElement jsonElement = JsonParser.parseString(jsonString);
-                        if (!jsonElement.isJsonObject()) {
-                            System.out.println("Это не jsonObject");
-                        }
-                        JsonObject jsonObject = jsonElement.getAsJsonObject();
-                        Task task = gson.fromJson(jsonObject, Task.class);
-                        List<Task> taskList = taskManager.getAllListTask();
-                        if (httpExchange.getRequestURI().toString().equals("/tasks/task/")) {
-                            if (taskList.contains(task)) {
-                                taskManager.updateTask(task);
-                            } else {
-                                taskManager.addNewTask(task);
-                            }
-                        }
-                        httpExchange.sendResponseHeaders(201, 0);
-                        httpExchange.close();
-                        break;
-                    case DELETE:
-                        if ("/tasks/task/".equals(stringPath)) {
-                            taskManager.clearAllTask();
-                        } else {
-                            if (stringPath.startsWith("/tasks/task/?id=")) {
-                                String[] mass = stringPath.split("=");
-                                taskManager.deleteTaskById(Integer.parseInt(mass[1]));
-                            }
-                        }
-                        httpExchange.sendResponseHeaders(200, 0);
-                        httpExchange.close();
-                        break;
-                    default:
-                        System.out.println("Вызвали не GET у task");
-                }
-            } catch (Throwable e) {
-                httpExchange.sendResponseHeaders(400, 0);
-                httpExchange.close();
-            }
-        }
-    }
+
 
     static class EpicHandler implements HttpHandler {
         @Override
