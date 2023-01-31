@@ -20,6 +20,7 @@ public class KVTaskClient {
     }
 
     public void register()  throws IOException, InterruptedException {
+        System.out.println("Началась обработка события /register клиента.");
         URI uri = URI.create(this.url + "/register");
 
         HttpRequest request = HttpRequest.newBuilder()
@@ -33,6 +34,7 @@ public class KVTaskClient {
     }
 
     public void put(String key, String json) {
+        System.out.println("Началась обработка события /save клиента.");
         URI uri = URI.create(url + "/save/" + key + "?API_TOKEN=" + apiToken);
 
         HttpRequest httpRequest = HttpRequest.newBuilder()
@@ -46,7 +48,6 @@ public class KVTaskClient {
         try {
             HttpResponse<String> response = httpClient.send(httpRequest, handler);
             System.out.println("Код состояния: " + response.statusCode());
-            System.out.println("Тело ответа: " + response.body());
         } catch (IOException | InterruptedException e) {
             System.out.println("Во время выполнения запроса возникла ошибка." +
                     "Проверьте, пожалуйста, адрес и повторите попытку.");
@@ -54,6 +55,7 @@ public class KVTaskClient {
     }
 
     public String load(String key) {
+        System.out.println("Началась обработка события /load клиента.");
         URI uri = URI.create(url + "/load/" + key + "?API_TOKEN=" + apiToken);
 
         HttpRequest httpRequest = HttpRequest.newBuilder()
@@ -66,7 +68,6 @@ public class KVTaskClient {
         try {
             HttpResponse<String> response = httpClient.send(httpRequest, handler);
             System.out.println("Код состояния: " + response.statusCode());
-            System.out.println("Тело ответа: " + response.body());
             return response.body();
         } catch (IOException | InterruptedException e) {
             System.out.println("Во время выполнения запроса возникла ошибка." +
