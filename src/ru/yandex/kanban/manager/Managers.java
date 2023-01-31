@@ -27,6 +27,6 @@ public class Managers {
     }
 
     public static TaskManager getDefault() throws IOException, InterruptedException {
-        return new HttpTaskManager(FILE);
+        return new HttpTaskManager();
     }
 }

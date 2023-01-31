@@ -15,7 +15,7 @@ import com.sun.net.httpserver.HttpServer;
  * Постман: https://www.getpostman.com/collections/a83b61d9e1c81c10575c
  */
 public class KVServer {
-    public static final int PORT = 8078;
+    private static final int PORT = 8078;
     private final String apiToken;
     private final HttpServer server;
     private final Map<String, String> data = new HashMap<>();
@@ -118,7 +118,7 @@ public class KVServer {
     }
 
     public void stop() {
-        System.out.println("Сервер выключен");
+        System.out.println("Сервер остановлен");
         System.out.println("---------------------------------");
         server.stop(0);
     }

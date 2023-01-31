@@ -23,9 +23,10 @@ public class HttpTaskManager extends FileBackedTasksManager {
             .serializeNulls()
             .create();
 
-    public HttpTaskManager(File file) throws IOException, InterruptedException {
-        super(file);
+    public HttpTaskManager() throws IOException, InterruptedException {
+        super();
         this.kvTaskClient = new KVTaskClient("http://localhost:8078");
+        load();
     }
 
     @Override
