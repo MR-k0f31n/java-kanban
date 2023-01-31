@@ -1,6 +1,7 @@
 package ru.yandex.kanban.servers.implemented;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonParser;
 
 import java.io.IOException;
 import java.net.URI;
@@ -54,7 +55,7 @@ public class KVTaskClient {
         }
     }
 
-    public String load(String key) {
+    public JsonArray load(String key) {
         System.out.println("Началась обработка события /load клиента.");
         URI uri = URI.create(url + "/load/" + key + "?API_TOKEN=" + apiToken);
 
@@ -64,15 +65,16 @@ public class KVTaskClient {
                 .version(HttpClient.Version.HTTP_1_1)
                 .header("Content-Type", "application/json")
                 .build();
+
         HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
         try {
             HttpResponse<String> response = httpClient.send(httpRequest, handler);
             System.out.println("Код состояния: " + response.statusCode());
-            return response.body();
+            return JsonParser.parseString(response.body()).getAsJsonArray();
         } catch (IOException | InterruptedException e) {
             System.out.println("Во время выполнения запроса возникла ошибка." +
                     "Проверьте, пожалуйста, адрес и повторите попытку.");
-            return "Во время выполнения запроса возникла ошибка.";
+            return null;
         }
     }
 }

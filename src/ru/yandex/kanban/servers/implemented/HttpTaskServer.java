@@ -14,18 +14,16 @@ public class HttpTaskServer {
     private final HttpServer httpServer;
     private static final int PORT = 8078;
 
-    private final TaskManager taskManager;
-
     public HttpTaskServer() throws IOException, InterruptedException {
         this.httpServer = HttpServer.create();
 
-        this.taskManager = Managers.getDefault();
+        TaskManager taskManager = Managers.getDefault();
 
         httpServer.bind(new InetSocketAddress(PORT), 0);
         httpServer.createContext("/tasks/task/", new TaskHandler(taskManager));
         httpServer.createContext("/tasks/epic/", new EpicHandler(taskManager));
         httpServer.createContext("/tasks/subtask/", new SubtaskHandler(taskManager));
-        httpServer.createContext("/tasks", new PrioritizedTasksHandler(taskManager));
+        httpServer.createContext("/tasks", new TaskHandler(taskManager));
         httpServer.createContext("/tasks/history/", new HistoryHandler(taskManager));
 
         System.out.println("Запускаем HTTP сервер на порту " + PORT);

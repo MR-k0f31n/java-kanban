@@ -24,7 +24,7 @@ public class TaskHandler implements HttpHandler {
     private static final String POST = "POST";
     private static final String DELETE = "DELETE";
 
-    private TaskHandler(TaskManager taskManager) {
+    public TaskHandler(TaskManager taskManager) {
         this.taskManager = taskManager;
     }
 
@@ -35,6 +35,7 @@ public class TaskHandler implements HttpHandler {
 
         switch (method) {
             case GET:
+                System.out.println("Началась обработка метода GET запрос от клиента.");
                 if (stringPath.equals("/tasks/")) {
                     System.out.println("Началась обработка /tasks запроса от клиента.");
                     getPrioritizedTasks(httpExchange);
@@ -48,16 +49,21 @@ public class TaskHandler implements HttpHandler {
                     getTaskById(httpExchange, idTask);
                 } else {
                     System.out.println("Неверный путь");
+                    String response = "Неверный путь";
+                    httpExchange.sendResponseHeaders(404, 0);
+                    try (OutputStream outputStream = httpExchange.getResponseBody()) {
+                        outputStream.write(response.getBytes());
+                    }
                 }
+                httpExchange.close();
                 break;
             case POST:
-                System.out.println("Началась обработка /tasks/task запроса от клиента.");
+                System.out.println("Началась обработка метода POST запрос от клиента.");
                 String response;
                 InputStream inputStream = httpExchange.getRequestBody();
                 String jsonString = new String(inputStream.readAllBytes(), DEFAULT_CHARSET);
 
                 Task task = gson.fromJson(jsonString, Task.class);
-
                 List<Task> taskList = taskManager.getAllListTask();
                 if (task != null) {
                     if (taskList.contains(task)) {
@@ -79,15 +85,25 @@ public class TaskHandler implements HttpHandler {
                 httpExchange.close();
                 break;
             case DELETE:
-                if ("/tasks/task/".equals(stringPath)) {
+                System.out.println("Началась обработка метода DELETE запрос от клиента.");
+                if (stringPath.equals("/tasks/task/")) {
                     taskManager.clearAllTask();
+                    response = "Все задачи были удалены";
+                    httpExchange.sendResponseHeaders(200, 0);
+                    try (OutputStream outputStream = httpExchange.getResponseBody()) {
+                        outputStream.write(response.getBytes());
+                    }
                 } else {
                     if (stringPath.startsWith("/tasks/task/?id=")) {
                         String[] mass = stringPath.split("=");
                         taskManager.deleteTaskById(Integer.parseInt(mass[1]));
+                        response = "Задача была удалена ID " + mass[1];
+                        httpExchange.sendResponseHeaders(200, 0);
+                        try (OutputStream outputStream = httpExchange.getResponseBody()) {
+                            outputStream.write(response.getBytes());
+                        }
                     }
                 }
-                httpExchange.sendResponseHeaders(200, 0);
                 httpExchange.close();
                 break;
             default:
