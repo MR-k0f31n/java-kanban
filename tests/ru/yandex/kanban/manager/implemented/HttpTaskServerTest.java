@@ -99,7 +99,7 @@ class HttpTaskServerTest {
         EpicTask epic1 = new EpicTask("Name EpicTask One",
                 "Des EpicTask One",
                 LocalDateTime.of(2022, 10, 20, 5, 20, 20), 10);
-        URI url = URI.create("http://localhost:8080/tasks/epic/");
+        URI url = URI.create("http://localhost:8078/tasks/epic/");
         String json = gson.toJson(epic1);
         HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(json);
         HttpRequest request = HttpRequest.newBuilder().uri(url).POST(body).build();
@@ -110,7 +110,7 @@ class HttpTaskServerTest {
         SubTask sub1_1 = new SubTask("Name Sub One",
                 "Des Sub One",
                 LocalDateTime.of(2022, 10, 10, 4, 20, 20), 10, epicId);
-        url = URI.create("http://localhost:8080/tasks/subtask/");
+        url = URI.create("http://localhost:8078/tasks/subtask/");
         json = gson.toJson(sub1_1);
         body = HttpRequest.BodyPublishers.ofString(json);
         request = HttpRequest.newBuilder().uri(url).POST(body).build();
@@ -118,7 +118,7 @@ class HttpTaskServerTest {
         assertEquals(201, response.statusCode());
 
 
-        url = URI.create("http://localhost:8080/tasks/subtask/?id=3");
+        url = URI.create("http://localhost:8078/tasks/subtask/?id=3");
         request = HttpRequest.newBuilder().uri(url).GET().build();
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, response.statusCode());
@@ -133,24 +133,24 @@ class HttpTaskServerTest {
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(218, response.statusCode());
 
-        url = URI.create("http://localhost:8080/tasks/subtask/?id=3");
+        url = URI.create("http://localhost:8078/tasks/subtask/?id=3");
         request = HttpRequest.newBuilder().uri(url).GET().build();
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, response.statusCode());
         task = gson.fromJson(response.body(), SubTask.class);
         assertEquals("11", task.getName());
 
-        url = URI.create("http://localhost:8080/tasks/subtask/?id=3");
+        url = URI.create("http://localhost:8078/tasks/subtask/?id=3");
         HttpRequest request3 = HttpRequest.newBuilder().uri(url).DELETE().build();
         HttpResponse<String> response3 = client.send(request3, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, response3.statusCode());
 
-        url = URI.create("http://localhost:8080/tasks/epic/?id=2");
+        url = URI.create("http://localhost:8078/tasks/epic/?id=2");
         HttpRequest request2 = HttpRequest.newBuilder().uri(url).DELETE().build();
         HttpResponse<String> response2 = client.send(request2, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, response2.statusCode());
 
-        url = URI.create("http://localhost:8080/tasks/epic/");
+        url = URI.create("http://localhost:8078/tasks/epic/");
         HttpRequest request1 = HttpRequest.newBuilder().uri(url).GET().build();
         HttpResponse<String> response1 = client.send(request1, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, response1.statusCode());
@@ -158,7 +158,7 @@ class HttpTaskServerTest {
         assertEquals(0, arrayTasks.size());
 
 
-        url = URI.create("http://localhost:8080/tasks/subtask/");
+        url = URI.create("http://localhost:8078/tasks/subtask/");
         HttpRequest request4 = HttpRequest.newBuilder().uri(url).GET().build();
         HttpResponse<String> response4 = client.send(request4, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, response4.statusCode());
@@ -169,13 +169,13 @@ class HttpTaskServerTest {
 
     @Test
     void deleteAllTasks() throws IOException, InterruptedException {
-        URI url = URI.create("http://localhost:8080/tasks/task/");
+        URI url = URI.create("http://localhost:8078/tasks/task/");
         HttpRequest request = HttpRequest.newBuilder().uri(url).DELETE().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, response.statusCode());
 
 
-        url = URI.create("http://localhost:8080/tasks/task/");
+        url = URI.create("http://localhost:8078/tasks/task/");
         request = HttpRequest.newBuilder().uri(url).GET().build();
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, response.statusCode());
@@ -189,7 +189,7 @@ class HttpTaskServerTest {
         EpicTask epic1 = new EpicTask("Name EpicTask One",
                 "Des EpicTask One",
                 LocalDateTime.of(2022, 10, 20, 5, 20, 20), 10);
-        URI url = URI.create("http://localhost:8080/tasks/epic/");
+        URI url = URI.create("http://localhost:8078/tasks/epic/");
         String json = gson.toJson(epic1);
         HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(json);
         HttpRequest request = HttpRequest.newBuilder().uri(url).POST(body).build();
@@ -207,25 +207,25 @@ class HttpTaskServerTest {
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(201, response.statusCode());
 
-        url = URI.create("http://localhost:8080/tasks/epic/");
+        url = URI.create("http://localhost:8078/tasks/epic/");
         request = HttpRequest.newBuilder().uri(url).DELETE().build();
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, response.statusCode());
 
-        url = URI.create("http://localhost:8080/tasks/subtask/");
+        url = URI.create("http://localhost:8078/tasks/subtask/");
         request = HttpRequest.newBuilder().uri(url).DELETE().build();
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, response.statusCode());
 
 
-        url = URI.create("http://localhost:8080/tasks/subtask/");
+        url = URI.create("http://localhost:8078/tasks/subtask/");
         request = HttpRequest.newBuilder().uri(url).GET().build();
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, response.statusCode());
         JsonArray arrayTasks = JsonParser.parseString(response.body()).getAsJsonArray();
         assertEquals(0, arrayTasks.size());
 
-        url = URI.create("http://localhost:8080/tasks/epic/");
+        url = URI.create("http://localhost:8078/tasks/epic/");
         request = HttpRequest.newBuilder().uri(url).GET().build();
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, response.statusCode());

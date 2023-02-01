@@ -55,7 +55,7 @@ public class KVTaskClient {
         }
     }
 
-    public JsonArray load(String key) {
+    public String load(String key) {
         System.out.println("Началась обработка события /load клиента.");
         URI uri = URI.create(url + "/load/" + key + "?API_TOKEN=" + apiToken);
 
@@ -70,11 +70,11 @@ public class KVTaskClient {
         try {
             HttpResponse<String> response = httpClient.send(httpRequest, handler);
             System.out.println("Код состояния: " + response.statusCode());
-            return JsonParser.parseString(response.body()).getAsJsonArray();
+            return response.body();
         } catch (IOException | InterruptedException e) {
             System.out.println("Во время выполнения запроса возникла ошибка." +
                     "Проверьте, пожалуйста, адрес и повторите попытку.");
-            return null;
+            return "Во время выполнения запроса возникла ошибка.";
         }
     }
 }
