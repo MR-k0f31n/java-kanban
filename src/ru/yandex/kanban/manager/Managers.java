@@ -9,7 +9,7 @@ import ru.yandex.kanban.manager.interfaces.TaskManager;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
+
 
 public class Managers {
 
@@ -27,6 +27,6 @@ public class Managers {
     }
 
     public static TaskManager getDefault() throws IOException, InterruptedException {
-        return new HttpTaskManager(FILE);
+        return new HttpTaskManager();
     }
 }

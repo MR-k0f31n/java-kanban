@@ -17,52 +17,66 @@ import java.net.URI;
 import java.util.List;
 
 public class HttpTaskManager extends FileBackedTasksManager {
-    private KVTaskClient kvTaskClient;
-    private Gson json = new GsonBuilder()
+    private final KVTaskClient kvTaskClient;
+    private final Gson gson = new GsonBuilder()
             .setPrettyPrinting()
             .serializeNulls()
             .create();
 
-    public HttpTaskManager(File file) throws IOException, InterruptedException {
-        super(file);
+    public HttpTaskManager() throws IOException, InterruptedException {
+        super();
         this.kvTaskClient = new KVTaskClient("http://localhost:8078");
+        load();
     }
 
     @Override
     public void save() {
-            kvTaskClient.put("Task", json.toJson(super.getAllListTask()));
-            kvTaskClient.put("Epic", json.toJson(super.getAllEpicTask()));
-            kvTaskClient.put("Subtask", json.toJson(super.getAllSubTask()));
-            kvTaskClient.put("History", json.toJson(super.getHistory()));
+        kvTaskClient.put("Task", gson.toJson(super.getAllListTask()));
+        kvTaskClient.put("Epic", gson.toJson(super.getAllEpicTask()));
+        kvTaskClient.put("Subtask", gson.toJson(super.getAllSubTask()));
+        kvTaskClient.put("History", gson.toJson(super.getHistory()));
     }
 
-    public void load() throws IOException, InterruptedException {
-        List<Task> tasks = json.fromJson(kvTaskClient.load("Task"),
-                new TypeToken<List<Task>>() {}.getType());
-        List<EpicTask> epics = json.fromJson(kvTaskClient.load("Epic"),
-                new TypeToken<List<EpicTask>>() {}.getType());
-        List<SubTask> subTasks = json.fromJson(kvTaskClient.load("SubTask"),
-                new TypeToken<List<SubTask>>() {}.getType());
-        List<Task> history = json.fromJson(kvTaskClient.load("History"),
-                new TypeToken<List<Task>>() {}.getType());
+    public void load() {
+        JsonArray loadTask = kvTaskClient.load("Task");
+        JsonArray loadEpicTask = kvTaskClient.load("Epic");
+        JsonArray loadSubTask = kvTaskClient.load("Subtask");
+        JsonArray loadHistory = kvTaskClient.load("History");
 
-        for (Task task : tasks) {
-            addNewTask(task);
+        if (loadTask != null) {
+            for (JsonElement jsonElement : loadTask) {
+                Task task = gson.fromJson(jsonElement, Task.class);
+                super.taskMap.put(task.getId(), task);
+                super.listOfTasksSortedByTime.add(task);
+            }
         }
-        for (EpicTask epic : epics) {
-            addNewTask(epic);
+
+        if (loadEpicTask != null) {
+            for (JsonElement jsonElement : loadEpicTask) {
+                EpicTask epicTask = gson.fromJson(jsonElement, EpicTask.class);
+                super.epicTaskMap.put(epicTask.getId(), epicTask);
+                super.listOfTasksSortedByTime.add(epicTask);
+            }
         }
-        for (SubTask subTask : subTasks) {
-            addNewTask(subTask);
+
+        if (loadSubTask != null && loadEpicTask != null) {
+            for (JsonElement jsonElement : loadSubTask) {
+                SubTask subTask = gson.fromJson(jsonElement, SubTask.class);
+                super.subTaskMap.put(subTask.getId(), subTask);
+                super.listOfTasksSortedByTime.add(subTask);
+            }
         }
-        for (Task task : history) {
-            int taskId = task.getId();
-            if (tasks.contains(task)) {
-                getTaskById(taskId);
-            } else if (subTasks.contains(task)) {
-                getSubById(taskId);
-            } else {
-                getEpicById(taskId);
+
+        if (loadHistory != null) {
+            for (JsonElement JsonElement : loadHistory) {
+                Integer idTask = JsonElement.getAsInt();
+                if (taskMap.containsKey(idTask)) {
+                    history.add(taskMap.get(idTask));
+                } else if (subTaskMap.containsKey(idTask)) {
+                    history.add(subTaskMap.get(idTask));
+                } else if (epicTaskMap.containsKey(idTask)) {
+                    history.add(epicTaskMap.get(idTask));
+                }
             }
         }
     }

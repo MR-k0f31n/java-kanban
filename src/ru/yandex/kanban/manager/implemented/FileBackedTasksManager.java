@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -21,12 +20,17 @@ import static ru.yandex.kanban.manager.util.Util.getConverter;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
     protected final Converter converter;
-    protected final Path path;
+    protected Path path;
     protected static final String HEAD = "id,type,name,status, dataTime, duration, description, epic";
 
-    protected FileBackedTasksManager(File file) {
+    private FileBackedTasksManager(File file) {
         super();
         this.path = file.toPath();
+        this.converter = getConverter();
+    }
+
+    protected FileBackedTasksManager() {
+        super();
         this.converter = getConverter();
     }
 

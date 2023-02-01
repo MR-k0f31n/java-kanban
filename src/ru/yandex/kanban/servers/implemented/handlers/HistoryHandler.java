@@ -1,0 +1,63 @@
+package ru.yandex.kanban.servers.implemented.handlers;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import ru.yandex.kanban.data.Task;
+import ru.yandex.kanban.manager.interfaces.TaskManager;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URI;
+import java.util.List;
+
+public class HistoryHandler implements HttpHandler {
+    private final TaskManager taskManager;
+    private final Gson gson = new GsonBuilder().setPrettyPrinting()
+            .serializeNulls().create();
+    private static final String GET = "GET";
+
+    public HistoryHandler(TaskManager taskManager) {
+        this.taskManager = taskManager;
+    }
+
+    @Override
+    public void handle(HttpExchange httpExchange) throws IOException {
+        String stringPath = httpExchange.getRequestURI().getPath();
+        String method = httpExchange.getRequestMethod();
+        String response;
+
+        switch (method) {
+            case GET:
+                System.out.println("Началась обработка метода GET запрос от клиента.");
+                if (stringPath.equals("/tasks/history")) {
+                    System.out.println("Началась обработка /tasks/history запроса от клиента.");
+                    if (taskManager.getHistory().isEmpty()) {
+                        response = "История получение задач пуста!";
+                    } else {
+                        response = gson.toJson(taskManager.getHistory());
+                    }
+                    httpExchange.sendResponseHeaders(200, 0);
+                    try (OutputStream outputStream = httpExchange.getResponseBody()) {
+                        outputStream.write(response.getBytes());
+                    }
+                } else {
+                    System.out.println("Неверный путь");
+                    response = "Неверный путь";
+                    httpExchange.sendResponseHeaders(404, 0);
+                    try (OutputStream outputStream = httpExchange.getResponseBody()) {
+                        outputStream.write(response.getBytes());
+                    }
+                }
+                break;
+            default:
+                System.out.println("Метод не найден");
+                response = "Во время выполнения запроса возникла ошибка.";
+                httpExchange.sendResponseHeaders(404, 0);
+                try (OutputStream outputStream = httpExchange.getResponseBody()) {
+                    outputStream.write(response.getBytes());
+                }
+        }
+    }
+}
