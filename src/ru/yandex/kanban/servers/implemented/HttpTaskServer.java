@@ -8,8 +8,6 @@ import ru.yandex.kanban.servers.implemented.handlers.*;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
-
-
 public class HttpTaskServer {
     private final HttpServer httpServer;
     private static final int PORT = 8080;
