@@ -1,8 +1,5 @@
 package ru.yandex.kanban.servers.implemented;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonParser;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -14,41 +11,47 @@ public class KVTaskClient {
     private String apiToken;
     private final HttpClient httpClient;
 
-    public KVTaskClient(String url) throws IOException, InterruptedException {
+    public KVTaskClient(String url) {
         this.url = url;
         httpClient = HttpClient.newHttpClient();
-        register();
+        apiToken = register();
     }
 
-    public void register()  throws IOException, InterruptedException {
-        System.out.println("Началась обработка события /register клиента.");
-        URI uri = URI.create(this.url + "/register");
+
+    public String register() {
+        String responseBody = "";
+        System.out.println("\nKVTaskClient: Начало обработки события /register клиента.");
+        URI register = URI.create("http://localhost:8078" + "/register");
 
         HttpRequest request = HttpRequest.newBuilder()
+                .uri(register)
                 .GET()
-                .uri(uri)
-                .header("Content-Type", "application/json")
                 .build();
-
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        apiToken = response.body();
+        try {
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            responseBody = response.body();
+            if (response.statusCode() == 200) {
+                System.out.println("\nKVTaskClient: Событие /register прошло успешно");
+            }
+        } catch (IOException | InterruptedException e) {
+            System.out.println(e.getMessage());
+        }
+        return responseBody;
     }
 
     public void put(String key, String json) {
-        System.out.println("Началась обработка события /save клиента.");
-        URI uri = URI.create(url + "/save/" + key + "?API_TOKEN=" + apiToken);
+        System.out.println("\nKVTaskClient: Начало обработки события /save клиента.");
+        URI put = URI.create("http://localhost:8078/save/" + key + "?API_TOKEN=" + apiToken);
 
         HttpRequest httpRequest = HttpRequest.newBuilder()
+                .uri(put)
                 .POST(HttpRequest.BodyPublishers.ofString(json))
-                .uri(uri)
-                .version(HttpClient.Version.HTTP_1_1)
-                .header("Content-Type", "application/json")
                 .build();
 
-        HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
         try {
+            HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
             HttpResponse<String> response = httpClient.send(httpRequest, handler);
-            System.out.println("Код состояния: " + response.statusCode());
+            System.out.println("\nKVTaskClient: Код состояния PUT метода: " + response.statusCode());
         } catch (IOException | InterruptedException e) {
             System.out.println("Во время выполнения запроса возникла ошибка." +
                     "Проверьте, пожалуйста, адрес и повторите попытку.");
@@ -56,20 +59,20 @@ public class KVTaskClient {
     }
 
     public String load(String key) {
-        System.out.println("Началась обработка события /load клиента.");
-        URI uri = URI.create(url + "/load/" + key + "?API_TOKEN=" + apiToken);
+        System.out.println("\nKVTaskClient: Начало обработки события /load клиента.");
+        URI load = URI.create("http://localhost:8078/load/" + key + "?API_TOKEN=" + apiToken);
 
         HttpRequest httpRequest = HttpRequest.newBuilder()
+                .uri(load)
                 .GET()
-                .uri(uri)
-                .version(HttpClient.Version.HTTP_1_1)
-                .header("Content-Type", "application/json")
+                /*.version(HttpClient.Version.HTTP_1_1)
+                .header("Content-Type", "application/json")*/
                 .build();
 
-        HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
         try {
+            HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
             HttpResponse<String> response = httpClient.send(httpRequest, handler);
-            System.out.println("Код состояния: " + response.statusCode());
+            System.out.println("\nKVTaskClient: Код состояния PUT метода: " + response.statusCode());
             return response.body();
         } catch (IOException | InterruptedException e) {
             System.out.println("Во время выполнения запроса возникла ошибка." +
