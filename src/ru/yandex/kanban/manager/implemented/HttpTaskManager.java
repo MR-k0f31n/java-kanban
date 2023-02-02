@@ -8,6 +8,7 @@ import ru.yandex.kanban.servers.implemented.KVTaskClient;
 import ru.yandex.kanban.servers.implemented.util.AdapterFromLocalData;
 import ru.yandex.kanban.servers.implemented.util.AdapterFromDuration;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
@@ -20,10 +21,18 @@ public class HttpTaskManager extends FileBackedTasksManager {
             .registerTypeAdapter(Duration.class, new AdapterFromDuration())
             .create();
 
-    public HttpTaskManager() {
+    public HttpTaskManager() throws IOException, InterruptedException {
         super();
         this.kvTaskClient = new KVTaskClient();
         load();
+    }
+
+    public String getApiToken () {
+        return kvTaskClient.getApiToken();
+    }
+
+    public void  setApiToken (String apiToken) {
+        kvTaskClient.setApiToken(apiToken);
     }
 
     @Override
@@ -35,6 +44,7 @@ public class HttpTaskManager extends FileBackedTasksManager {
     }
 
     public void load() {
+        int maxID = 0;
         String loadTaskString = kvTaskClient.load("task");
         String loadEpicTaskString = kvTaskClient.load("epicTask");
         String loadSubTaskString = kvTaskClient.load("subTask");
@@ -49,6 +59,10 @@ public class HttpTaskManager extends FileBackedTasksManager {
                     Task task = gson.fromJson(jsonElement, Task.class);
                     super.taskMap.put(task.getId(), task);
                     super.listOfTasksSortedByTime.add(task);
+                    int idTask = task.getId();
+                    if (idTask > maxID) {
+                        maxID = idTask;
+                    }
                 }
             }
         }
@@ -62,6 +76,10 @@ public class HttpTaskManager extends FileBackedTasksManager {
                     EpicTask epicTask = gson.fromJson(jsonElement, EpicTask.class);
                     super.epicTaskMap.put(epicTask.getId(), epicTask);
                     super.listOfTasksSortedByTime.add(epicTask);
+                    int idTask = epicTask.getId();
+                    if (idTask > maxID) {
+                        maxID = idTask;
+                    }
                 }
             }
         }
@@ -74,6 +92,10 @@ public class HttpTaskManager extends FileBackedTasksManager {
                     SubTask subTask = gson.fromJson(jsonElement, SubTask.class);
                     super.subTaskMap.put(subTask.getId(), subTask);
                     super.listOfTasksSortedByTime.add(subTask);
+                    int idTask = subTask.getId();
+                    if (idTask > maxID) {
+                        maxID = idTask;
+                    }
                 }
             }
         }
@@ -83,16 +105,12 @@ public class HttpTaskManager extends FileBackedTasksManager {
             if (loadHistory != null) {
                 JsonArray loadHistoryToArray = loadHistory.getAsJsonArray();
                 for (JsonElement JsonElement : loadHistoryToArray) {
-                    Integer idTask = JsonElement.getAsInt();
-                    if (taskMap.containsKey(idTask)) {
-                        history.add(taskMap.get(idTask));
-                    } else if (subTaskMap.containsKey(idTask)) {
-                        history.add(subTaskMap.get(idTask));
-                    } else if (epicTaskMap.containsKey(idTask)) {
-                        history.add(epicTaskMap.get(idTask));
-                    }
+                    Task task = gson.fromJson(JsonElement, Task.class);
+                    history.add(task);
                 }
             }
         }
+
+        currencyID = maxID + 1;
     }
 }

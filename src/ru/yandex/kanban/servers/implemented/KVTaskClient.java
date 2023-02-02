@@ -7,17 +7,25 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class KVTaskClient {
-    private final String apiToken;
+
+    private String apiToken;
     private final HttpClient httpClient;
 
-    public KVTaskClient() {
+    public KVTaskClient() throws IOException, InterruptedException {
         httpClient = HttpClient.newHttpClient();
-        apiToken = register();
+        apiToken = reg();
+        System.out.println("Присвоент токен: " + apiToken);
     }
 
+    public String getApiToken() {
+        return apiToken;
+    }
 
-    public String register() {
-        String responseBody = "";
+    public void setApiToken(String apiToken) {
+        this.apiToken = apiToken;
+    }
+
+    public String reg() throws IOException, InterruptedException {
         System.out.println("\nKVTaskClient: Начало обработки события /register клиента.");
         URI register = URI.create("http://localhost:8078" + "/register");
 
@@ -27,16 +35,13 @@ public class KVTaskClient {
                 .version(HttpClient.Version.HTTP_1_1)
                 .header("Content-Type", "application/json")
                 .build();
-        try {
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            responseBody = response.body();
-            if (response.statusCode() == 200) {
-                System.out.println("\nKVTaskClient: Событие /register прошло успешно");
-            }
-        } catch (IOException | InterruptedException e) {
-            System.out.println(e.getMessage());
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        if (response.statusCode() == 200) {
+            System.out.println("\nKVTaskClient: Событие /register прошло успешно");
         }
-        return responseBody;
+
+        return response.body();
     }
 
     public void put(String key, String json) {
