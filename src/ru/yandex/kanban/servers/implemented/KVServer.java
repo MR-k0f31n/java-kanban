@@ -31,7 +31,7 @@ public class KVServer {
 
     private void load(HttpExchange h) throws IOException {
         try {
-            System.out.println("\n/load");
+            System.out.println("\nKVServer: начал обрботку события /load");
             if (!hasAuth(h)) {
                 System.out.println("Запрос неавторизован, нужен параметр в query API_TOKEN со значением апи-ключа");
                 h.sendResponseHeaders(403, 0);
@@ -40,7 +40,7 @@ public class KVServer {
             if (h.getRequestMethod().equals("GET")) {
                 String key = h.getRequestURI().getPath().substring("/load/".length());
                 if (key.isEmpty()) {
-                    System.out.println("Ключ для сохранения пустой. Ключ указывается в пути: /save/{key}");
+                    System.out.println("Ключ пустой. Ключ указывается в пути: /save/{key}");
                     h.sendResponseHeaders(400, 0);
                 } else {
                     if (!data.containsKey(key)) {
@@ -67,34 +67,31 @@ public class KVServer {
 
     private void save(HttpExchange h) throws IOException {
         try {
-            System.out.println("\nKVServer: начал обрботку события /load");
+            System.out.println("\nKVServer: начал обрботку события /save");
             if (!hasAuth(h)) {
-                System.out.println("Запрос неавторизован, нужен параметр в query API_KEY со значением апи-ключа");
+                System.out.println("Запрос неавторизован, нужен параметр в query API_TOKEN со значением апи-ключа");
                 h.sendResponseHeaders(403, 0);
                 return;
             }
-
-            switch (h.getRequestMethod()) {
-                case "GET":
-                    System.out.println("\nKVServer: начал обрботку метода /GET");
-                    String key = h.getRequestURI().getPath().substring("/load/".length());
-                    if (key.isEmpty()) {
-                        System.out.println("Key пустой. key указывается в пути: /load/{key}");
-                        h.sendResponseHeaders(400, 0);
-                        return;
-                    }
-                    String value = data.get(key);
-                    if (value != null) {
-                        sendText(h, value);
-                        System.out.println("Значение ключа " + key + " успешно отправлено!");
-                    } else {
-                        System.out.println("Значение ключа " + key + " несуществует!");
-                        h.sendResponseHeaders(400, 0);
-                    }
-                    break;
-                default:
-                    System.out.println("/load ждёт GET-запрос, а получил: " + h.getRequestMethod());
-                    h.sendResponseHeaders(405, 0);
+            if ("POST".equals(h.getRequestMethod())) {
+                String key = h.getRequestURI().getPath().substring("/save/".length());
+                if (key.isEmpty()) {
+                    System.out.println("Key для сохранения пустой. key указывается в пути: /save/{key}");
+                    h.sendResponseHeaders(400, 0);
+                    return;
+                }
+                String value = readText(h);
+                if (value.isEmpty()) {
+                    System.out.println("Value для сохранения пустой. value указывается в теле запроса");
+                    h.sendResponseHeaders(400, 0);
+                    return;
+                }
+                data.put(key, value);
+                System.out.println("Значение для ключа " + key + " успешно обновлено!");
+                h.sendResponseHeaders(200, 0);
+            } else {
+                System.out.println("/save ждёт POST-запрос, а получил: " + h.getRequestMethod());
+                h.sendResponseHeaders(405, 0);
             }
         } finally {
             h.close();
@@ -122,7 +119,7 @@ public class KVServer {
     }
 
     public void stop() {
-        System.out.println("Сервер остановлен");
+        System.out.println("\nKV Сервер остановлен");
         System.out.println("---------------------------------");
         server.stop(0);
     }

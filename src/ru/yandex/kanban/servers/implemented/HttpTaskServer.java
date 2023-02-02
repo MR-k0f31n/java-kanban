@@ -34,7 +34,7 @@ public class HttpTaskServer {
     }
 
     public void stop() {
-        System.out.println("HTTP сервер остановлен");
+        System.out.println("\nHTTP сервер остановлен");
         System.out.println("---------------------------------");
         httpServer.stop(0);
     }

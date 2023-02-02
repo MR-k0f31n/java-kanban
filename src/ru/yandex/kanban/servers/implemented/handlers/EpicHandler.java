@@ -6,12 +6,11 @@ import com.sun.net.httpserver.HttpHandler;
 import ru.yandex.kanban.data.EpicTask;
 import ru.yandex.kanban.manager.interfaces.TaskManager;
 import ru.yandex.kanban.servers.implemented.util.AdapterFromLocalData;
-import ru.yandex.kanban.servers.implemented.util.DurationAdapter;
+import ru.yandex.kanban.servers.implemented.util.AdapterFromDuration;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -24,10 +23,8 @@ public class EpicHandler implements HttpHandler {
     private final Gson gson = new GsonBuilder()
             .serializeNulls()
             .registerTypeAdapter(LocalDateTime.class, new AdapterFromLocalData())
-            .registerTypeAdapter(Duration.class, new DurationAdapter())
+            .registerTypeAdapter(Duration.class, new AdapterFromDuration())
             .create();
-            /*new GsonBuilder().setPrettyPrinting()
-            .serializeNulls().create()*/;
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
     private static final String GET = "GET";
     private static final String POST = "POST";
@@ -72,8 +69,9 @@ public class EpicHandler implements HttpHandler {
                 httpExchange.close();
                 break;
             case POST:
+                System.out.println("Началась обработка метода POST запрос от клиента.");
                 InputStream inputStream = httpExchange.getRequestBody();
-                String jsonString = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+                String jsonString = new String(inputStream.readAllBytes(), DEFAULT_CHARSET);
 
                 EpicTask epic = gson.fromJson(jsonString, EpicTask.class);
                 List<EpicTask> epicTaskList = taskManager.getAllEpicTask();
@@ -98,6 +96,7 @@ public class EpicHandler implements HttpHandler {
                 httpExchange.close();
                 break;
             case DELETE:
+                System.out.println("Началась обработка метода DELETE запрос от клиента.");
                 if ("/tasks/epic/".equals(stringPath)) {
                     taskManager.clearAllEpicTask();
                     String response = "Все задачи и подзадачи были удалены";

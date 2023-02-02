@@ -6,7 +6,7 @@ import ru.yandex.kanban.data.SubTask;
 import ru.yandex.kanban.data.Task;
 import ru.yandex.kanban.servers.implemented.KVTaskClient;
 import ru.yandex.kanban.servers.implemented.util.AdapterFromLocalData;
-import ru.yandex.kanban.servers.implemented.util.DurationAdapter;
+import ru.yandex.kanban.servers.implemented.util.AdapterFromDuration;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -18,13 +18,13 @@ public class HttpTaskManager extends FileBackedTasksManager {
     private final Gson gson = new GsonBuilder()
             .serializeNulls()
             .registerTypeAdapter(LocalDateTime.class, new AdapterFromLocalData())
-            .registerTypeAdapter(Duration.class, new DurationAdapter())
+            .registerTypeAdapter(Duration.class, new AdapterFromDuration())
             .create();
 
-    public HttpTaskManager() throws IOException, InterruptedException {
+    public HttpTaskManager() {
         super();
-        this.kvTaskClient = new KVTaskClient("http://localhost:8078");
-        //load();
+        this.kvTaskClient = new KVTaskClient();
+        load();
     }
 
     @Override
