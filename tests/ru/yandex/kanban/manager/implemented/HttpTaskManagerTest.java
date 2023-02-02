@@ -30,22 +30,22 @@ class HttpTaskManagerTest extends TestManagersTest<HttpTaskManager> {
     }
 
     @Test
-    public void loadFromKVServer_CorrectLoad () throws IOException, InterruptedException {
+    public void loadFromKVServer_CorrectLoad() throws IOException, InterruptedException {
         HttpTaskManager taskManager = new HttpTaskManager();
 
         Task taskOne = new Task("Name Task ONe",
                 "Des Task one",
-                LocalDateTime.of(2022,10,25,11,20,20),10);
+                LocalDateTime.of(2022, 10, 25, 11, 20, 20), 10);
         taskManager.addNewTask(taskOne);
 
         Task taskSecond = new Task("Name Task Two",
                 "Des Task Two",
-                null,10);
+                null, 10);
         taskManager.addNewTask(taskSecond);
 
         EpicTask epicTaskFirst = new EpicTask("Name EpicTask One",
                 "Des EpicTask One",
-                LocalDateTime.of(2022,10,20,5,20,20),10);
+                LocalDateTime.of(2022, 10, 20, 5, 20, 20), 10);
         taskManager.addNewTask(epicTaskFirst);
 
         int sizeMapTakBeforeLoad = taskManager.getAllListTask().size();

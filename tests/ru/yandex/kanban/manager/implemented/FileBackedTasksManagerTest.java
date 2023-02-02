@@ -18,6 +18,7 @@ public class FileBackedTasksManagerTest extends TestManagersTest<FileBackedTasks
 
     private static final File FILE = new File("resources", "history.csv");
     private static final File FILE_TEST_FROM_LOAD = new File("resources", "testFromLoad.csv");
+
     @Override
     public FileBackedTasksManager createManager() {
         return FileBackedTasksManager.loadFromFile(FILE);
@@ -31,23 +32,24 @@ public class FileBackedTasksManagerTest extends TestManagersTest<FileBackedTasks
             throw new IOException(exception.getMessage());
         }
     }
+
     @Test
-    public void LoadFromFile_expectedCorrectLoad () throws IOException {
+    public void LoadFromFile_expectedCorrectLoad() throws IOException {
         clean();
         FileBackedTasksManager fileBackedTasksManagerCreate = FileBackedTasksManager.loadFromFile(FILE_TEST_FROM_LOAD);
         Task taskOne = new Task("Name Task ONe",
                 "Des Task one",
-                LocalDateTime.of(2022,10,25,11,20,20),10);
+                LocalDateTime.of(2022, 10, 25, 11, 20, 20), 10);
         fileBackedTasksManagerCreate.addNewTask(taskOne);
 
         Task taskSecond = new Task("Name Task Two",
                 "Des Task Two",
-                null,10);
+                null, 10);
         fileBackedTasksManagerCreate.addNewTask(taskSecond);
 
         EpicTask epicTaskFirst = new EpicTask("Name EpicTask One",
                 "Des EpicTask One",
-                LocalDateTime.of(2022,10,20,5,20,20),10);
+                LocalDateTime.of(2022, 10, 20, 5, 20, 20), 10);
         fileBackedTasksManagerCreate.addNewTask(epicTaskFirst);
 
         int sizeMapTakBeforeLoad = fileBackedTasksManagerCreate.getAllListTask().size();
@@ -64,23 +66,23 @@ public class FileBackedTasksManagerTest extends TestManagersTest<FileBackedTasks
 
 
     @Test
-    public void loadFromFile_HistoryFromFile_expectedLoadHistoryCorrect () throws IOException {
+    public void loadFromFile_HistoryFromFile_expectedLoadHistoryCorrect() throws IOException {
         clean();
         FileBackedTasksManager fileBackedTasksManagerCreate = FileBackedTasksManager.loadFromFile(FILE_TEST_FROM_LOAD);
         Task taskOne = new Task("Name Task ONe",
                 "Des Task one",
-                LocalDateTime.of(2022,10,25,11,20,20),10);
+                LocalDateTime.of(2022, 10, 25, 11, 20, 20), 10);
         int idFTaskOne = fileBackedTasksManagerCreate.addNewTask(taskOne);
 
 
         Task taskSecond = new Task("Name Task Two",
                 "Des Task Two",
-                null,10);
+                null, 10);
         int idSecondTask = fileBackedTasksManagerCreate.addNewTask(taskSecond);
 
         EpicTask epicTaskFirst = new EpicTask("Name EpicTask One",
                 "Des EpicTask One",
-                LocalDateTime.of(2022,10,20,5,20,20),10);
+                LocalDateTime.of(2022, 10, 20, 5, 20, 20), 10);
         int idFirstEpicTask = fileBackedTasksManagerCreate.addNewTask(epicTaskFirst);
 
         fileBackedTasksManagerCreate.getTaskById(idFTaskOne);
