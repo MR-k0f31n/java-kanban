@@ -4,24 +4,21 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import ru.yandex.kanban.data.Task;
 import ru.yandex.kanban.manager.interfaces.TaskManager;
 import ru.yandex.kanban.servers.implemented.util.AdapterFromLocalData;
-import ru.yandex.kanban.servers.implemented.util.DurationAdapter;
+import ru.yandex.kanban.servers.implemented.util.AdapterFromDuration;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URI;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.List;
 
 public class HistoryHandler implements HttpHandler {
     private final TaskManager taskManager;
     private final Gson gson = new GsonBuilder()
             .serializeNulls()
             .registerTypeAdapter(LocalDateTime.class, new AdapterFromLocalData())
-            .registerTypeAdapter(Duration.class, new DurationAdapter())
+            .registerTypeAdapter(Duration.class, new AdapterFromDuration())
             .create();
     private static final String GET = "GET";
 

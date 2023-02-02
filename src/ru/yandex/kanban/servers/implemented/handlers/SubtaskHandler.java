@@ -6,7 +6,7 @@ import com.sun.net.httpserver.HttpHandler;
 import ru.yandex.kanban.data.SubTask;
 import ru.yandex.kanban.manager.interfaces.TaskManager;
 import ru.yandex.kanban.servers.implemented.util.AdapterFromLocalData;
-import ru.yandex.kanban.servers.implemented.util.DurationAdapter;
+import ru.yandex.kanban.servers.implemented.util.AdapterFromDuration;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,7 +22,7 @@ public class SubtaskHandler implements HttpHandler {
     private final Gson gson = new GsonBuilder()
             .serializeNulls()
             .registerTypeAdapter(LocalDateTime.class, new AdapterFromLocalData())
-            .registerTypeAdapter(Duration.class, new DurationAdapter())
+            .registerTypeAdapter(Duration.class, new AdapterFromDuration())
             .create();
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
     private static final String GET = "GET";

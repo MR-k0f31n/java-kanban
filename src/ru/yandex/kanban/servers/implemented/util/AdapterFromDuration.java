@@ -7,7 +7,7 @@ import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import java.time.Duration;
 
-public class DurationAdapter extends TypeAdapter<Duration> {
+public class AdapterFromDuration extends TypeAdapter<Duration> {
 
     @Override
     public void write(JsonWriter jsonWriter, Duration duration) throws IOException {

@@ -7,12 +7,10 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class KVTaskClient {
-    private final String url;
-    private String apiToken;
+    private final String apiToken;
     private final HttpClient httpClient;
 
-    public KVTaskClient(String url) {
-        this.url = url;
+    public KVTaskClient() {
         httpClient = HttpClient.newHttpClient();
         apiToken = register();
     }
@@ -26,6 +24,8 @@ public class KVTaskClient {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(register)
                 .GET()
+                .version(HttpClient.Version.HTTP_1_1)
+                .header("Content-Type", "application/json")
                 .build();
         try {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
@@ -46,6 +46,8 @@ public class KVTaskClient {
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(put)
                 .POST(HttpRequest.BodyPublishers.ofString(json))
+                .version(HttpClient.Version.HTTP_1_1)
+                .header("Content-Type", "application/json")
                 .build();
 
         try {
@@ -65,14 +67,14 @@ public class KVTaskClient {
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(load)
                 .GET()
-                /*.version(HttpClient.Version.HTTP_1_1)
-                .header("Content-Type", "application/json")*/
+                .version(HttpClient.Version.HTTP_1_1)
+                .header("Content-Type", "application/json")
                 .build();
 
         try {
             HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
             HttpResponse<String> response = httpClient.send(httpRequest, handler);
-            System.out.println("\nKVTaskClient: Код состояния PUT метода: " + response.statusCode());
+            System.out.println("\nKVTaskClient: Код состояния Load метода: " + response.statusCode());
             return response.body();
         } catch (IOException | InterruptedException e) {
             System.out.println("Во время выполнения запроса возникла ошибка." +
