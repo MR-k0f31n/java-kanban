@@ -123,7 +123,7 @@ public class TaskHandler implements HttpHandler {
         }
     }
 
-    private void getPrioritizedTasks (HttpExchange httpExchange) throws IOException {
+    private void getPrioritizedTasks(HttpExchange httpExchange) throws IOException {
         String response;
         if (taskManager.getPrioritizedTasks().isEmpty()) {
             response = "На данный момент список всех задач пуст";
@@ -137,7 +137,7 @@ public class TaskHandler implements HttpHandler {
         }
     }
 
-    private void getAllTask (HttpExchange httpExchange) throws IOException {
+    private void getAllTask(HttpExchange httpExchange) throws IOException {
         String response;
         if (taskManager.getAllListTask().isEmpty()) {
             response = "На данный момент список задач пуст";
@@ -151,7 +151,7 @@ public class TaskHandler implements HttpHandler {
         }
     }
 
-    private void getTaskById (HttpExchange httpExchange, int id) throws IOException {
+    private void getTaskById(HttpExchange httpExchange, int id) throws IOException {
         String response = gson.toJson(taskManager.getTaskById(id));
         httpExchange.sendResponseHeaders(200, 0);
         try (OutputStream outputStream = httpExchange.getResponseBody()) {

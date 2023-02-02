@@ -79,7 +79,7 @@ public class KVTaskClient {
         } catch (IOException | InterruptedException e) {
             System.out.println("Во время выполнения запроса возникла ошибка." +
                     "Проверьте, пожалуйста, адрес и повторите попытку.");
-            return "Во время выполнения запроса возникла ошибка.";
+            return e.getMessage();
         }
     }
 }
