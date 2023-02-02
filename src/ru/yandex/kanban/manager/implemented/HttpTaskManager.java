@@ -5,28 +5,33 @@ import ru.yandex.kanban.data.EpicTask;
 import ru.yandex.kanban.data.SubTask;
 import ru.yandex.kanban.data.Task;
 import ru.yandex.kanban.servers.implemented.KVTaskClient;
+import ru.yandex.kanban.servers.implemented.util.AdapterFromLocalData;
+import ru.yandex.kanban.servers.implemented.util.DurationAdapter;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 
 public class HttpTaskManager extends FileBackedTasksManager {
     private final KVTaskClient kvTaskClient;
     private final Gson gson = new GsonBuilder()
-            .setPrettyPrinting()
             .serializeNulls()
+            .registerTypeAdapter(LocalDateTime.class, new AdapterFromLocalData())
+            .registerTypeAdapter(Duration.class, new DurationAdapter())
             .create();
 
     public HttpTaskManager() throws IOException, InterruptedException {
         super();
         this.kvTaskClient = new KVTaskClient("http://localhost:8078");
-        load();
+        //load();
     }
 
     @Override
     public void save() {
-        kvTaskClient.put("task", gson.toJson(taskMap.values()));
-        kvTaskClient.put("epicTask", gson.toJson(epicTaskMap.values()));
-        kvTaskClient.put("subTask", gson.toJson(subTaskMap.values()));
+        kvTaskClient.put("task", gson.toJson(getAllListTask()));
+        kvTaskClient.put("epicTask", gson.toJson(getAllEpicTask()));
+        kvTaskClient.put("subTask", gson.toJson(getAllSubTask()));
         kvTaskClient.put("history", gson.toJson(getHistory()));
     }
 

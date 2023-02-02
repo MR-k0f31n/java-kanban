@@ -5,18 +5,25 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import ru.yandex.kanban.data.SubTask;
 import ru.yandex.kanban.manager.interfaces.TaskManager;
+import ru.yandex.kanban.servers.implemented.util.AdapterFromLocalData;
+import ru.yandex.kanban.servers.implemented.util.DurationAdapter;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class SubtaskHandler implements HttpHandler {
     private final TaskManager taskManager;
-    private final Gson gson = new GsonBuilder().setPrettyPrinting()
-            .serializeNulls().create();
+    private final Gson gson = new GsonBuilder()
+            .serializeNulls()
+            .registerTypeAdapter(LocalDateTime.class, new AdapterFromLocalData())
+            .registerTypeAdapter(Duration.class, new DurationAdapter())
+            .create();
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
     private static final String GET = "GET";
     private static final String POST = "POST";

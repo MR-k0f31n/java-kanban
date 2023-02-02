@@ -12,7 +12,7 @@ import java.net.InetSocketAddress;
 
 public class HttpTaskServer {
     private final HttpServer httpServer;
-    private static final int PORT = 8078;
+    private static final int PORT = 8080;
 
     public HttpTaskServer() throws IOException, InterruptedException {
         this.httpServer = HttpServer.create();
@@ -25,7 +25,9 @@ public class HttpTaskServer {
         httpServer.createContext("/tasks/subtask/", new SubtaskHandler(taskManager));
         httpServer.createContext("/tasks", new TaskHandler(taskManager));
         httpServer.createContext("/tasks/history/", new HistoryHandler(taskManager));
+    }
 
+    public void start() {
         System.out.println("Запускаем HTTP сервер на порту " + PORT);
         System.out.println("---------------------------------");
         httpServer.start();
