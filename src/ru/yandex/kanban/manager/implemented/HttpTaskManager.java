@@ -27,14 +27,6 @@ public class HttpTaskManager extends FileBackedTasksManager {
         load();
     }
 
-    public String getApiToken () {
-        return kvTaskClient.getApiToken();
-    }
-
-    public void  setApiToken (String apiToken) {
-        kvTaskClient.setApiToken(apiToken);
-    }
-
     @Override
     public void save() {
         kvTaskClient.put("task", gson.toJson(getAllListTask()));
@@ -111,6 +103,6 @@ public class HttpTaskManager extends FileBackedTasksManager {
             }
         }
 
-        currencyID = maxID + 1;
+        super.currencyID = maxID + 1;
     }
 }

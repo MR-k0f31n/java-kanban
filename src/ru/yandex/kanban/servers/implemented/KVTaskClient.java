@@ -8,21 +8,13 @@ import java.net.http.HttpResponse;
 
 public class KVTaskClient {
 
-    private String apiToken;
+    private final String apiToken;
     private final HttpClient httpClient;
 
     public KVTaskClient() throws IOException, InterruptedException {
         httpClient = HttpClient.newHttpClient();
         apiToken = reg();
         System.out.println("Присвоент токен: " + apiToken);
-    }
-
-    public String getApiToken() {
-        return apiToken;
-    }
-
-    public void setApiToken(String apiToken) {
-        this.apiToken = apiToken;
     }
 
     public String reg() throws IOException, InterruptedException {
@@ -62,6 +54,7 @@ public class KVTaskClient {
         } catch (IOException | InterruptedException e) {
             System.out.println("Во время выполнения запроса возникла ошибка." +
                     "Проверьте, пожалуйста, адрес и повторите попытку.");
+            System.out.println("\n" + e.getMessage());
         }
     }
 
@@ -84,6 +77,7 @@ public class KVTaskClient {
         } catch (IOException | InterruptedException e) {
             System.out.println("Во время выполнения запроса возникла ошибка." +
                     "Проверьте, пожалуйста, адрес и повторите попытку.");
+            System.out.println("\n" + e.getMessage());
             return e.getMessage();
         }
     }
